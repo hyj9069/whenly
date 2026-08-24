@@ -238,7 +238,88 @@ function HomeScreen({ onCreate, onJoin, onEnterRoom }) {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 11 }}>
         <button className="btn btn-blue" onClick={onCreate}>✨ 방 만들기</button>
         <button className="btn btn-pink" onClick={onJoin}>👋 방 코드로 참여하기</button>
+        <button className="btn btn-ghost" onClick={onFind}>🔍 내 방 찾기</button>
       </div>
+    </div>
+  )
+}
+
+function FindRoomScreen({ onBack, onEnterRoom, onToast }) {
+  const [name, setName] = useState('')
+  const [results, setResults] = useState(null)
+  const [loading, setLoading] = useState(false)
+
+  async function search() {
+    if (!name.trim()) return
+    setLoading(true)
+    const { data: myMembers } = await supabase
+      .from('members').select('room_id').eq('name', name.trim())
+
+    if (!myMembers?.length) {
+      setResults([])
+      setLoading(false)
+      return
+    }
+
+    const roomIds = myMembers.map(m => m.room_id)
+    const { data: rooms } = await supabase
+      .from('rooms').select('*').in('id', roomIds)
+
+    setResults(rooms || [])
+    setLoading(false)
+  }
+
+  async function enter(r) {
+    localStorage.setItem('me_' + r.id, name.trim())
+    localStorage.setItem('room_' + r.id, JSON.stringify(r))
+    onEnterRoom(r, name.trim())
+  }
+
+  return (
+    <div className="screen">
+      <TopBar onBack={onBack} title="내 방 찾기" />
+
+      <div style={{ textAlign: 'center', padding: '10px 0 20px' }}>
+        <Face type="bored" size={60} />
+        <p style={{ fontSize: '.85rem', color: 'var(--mid)', marginTop: 10, lineHeight: 1.5 }}>
+          방 만들 때 쓴 이름으로 찾아요
+        </p>
+      </div>
+
+      <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
+        <input className="inp" placeholder="이름 입력" maxLength={10}
+          value={name} onChange={e => setName(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && search()}
+          style={{ flex: 1 }} />
+        <button className="btn btn-blue" onClick={search} disabled={loading}
+          style={{ width: 'auto', padding: '0 18px' }}>
+          {loading ? '...' : '찾기'}
+        </button>
+      </div>
+
+      {results !== null && (
+        results.length === 0
+          ? <div style={{ textAlign: 'center', color: 'var(--mid)', fontSize: '.9rem', marginTop: 20 }}>
+              <Face type="sad" size={48} style={{ margin: '0 auto 10px' }} />
+              참여 중인 방이 없어요
+            </div>
+          : <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {results.map(r => {
+                const [yr, mo] = r.month.split('-')
+                return (
+                  <button key={r.id} onClick={() => enter(r)}
+                    style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', background: '#fff', border: '2px solid rgba(0,0,0,.07)', borderRadius: 14, cursor: 'pointer', textAlign: 'left', boxShadow: '0 2px 8px var(--shadow)' }}>
+                    <Face type="calm" size={36} style={{ flexShrink: 0 }} />
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: 800, fontSize: '.9rem' }}>{r.name}</div>
+                      <div style={{ fontSize: '.75rem', color: 'var(--mid)', marginTop: 2 }}>{yr}년 {parseInt(mo)}월 · {r.id}</div>
+                    </div>
+                    <span style={{ color: 'var(--mid)' }}>→</span>
+                  </button>
+                )
+              })}
+            </div>
+      )}
     </div>
   )
 }
@@ -677,12 +758,20 @@ export default function App() {
           onCreate={() => setScreen('create')}
           onJoin={() => setScreen('join')}
           onEnterRoom={(r, name) => { setRoom(r); setMyName(name); setScreen('cal') }}
+          onFind={() => setScreen('find')}
         />
       )}
       {screen === 'create' && (
         <CreateScreen
           onBack={() => setScreen('home')}
           onCreate={handleCreate}
+        />
+      )}
+      {screen === 'find' && (
+        <FindRoomScreen
+          onBack={() => setScreen('home')}
+          onEnterRoom={(r, name) => { setRoom(r); setMyName(name); setScreen('cal') }}
+          onToast={showToast}
         />
       )}
       {screen === 'join' && (
