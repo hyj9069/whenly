@@ -180,7 +180,23 @@ function ShareModal({ roomId, onClose, onToast }) {
 // ─────────────────────────────────────────────
 // SCREENS
 // ─────────────────────────────────────────────
-function HomeScreen({ onCreate, onJoin }) {
+function HomeScreen({ onCreate, onJoin, onEnterRoom }) {
+  const myRooms = []
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i)
+    if (key?.startsWith('me_')) {
+      const roomId = key.slice(3)
+      const roomData = localStorage.getItem('room_' + roomId)
+      const myName = localStorage.getItem(key)
+      if (roomData) {
+        try {
+          const r = JSON.parse(roomData)
+          myRooms.push({ ...r, myName })
+        } catch {}
+      }
+    }
+  }
+
   return (
     <div className="screen">
       <div style={{ marginTop: 36 }}>
@@ -195,6 +211,28 @@ function HomeScreen({ onCreate, onJoin }) {
           <Face key={t} type={t} size={56} className="face-icon" />
         ))}
       </div>
+
+      {myRooms.length > 0 && (
+        <div style={{ marginBottom: 20 }}>
+          <div style={{ fontSize: '.8rem', fontWeight: 700, color: 'var(--mid)', marginBottom: 8 }}>참여 중인 방</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {myRooms.map(r => {
+              const [yr, mo] = r.month.split('-')
+              return (
+                <button key={r.id} onClick={() => onEnterRoom(r, r.myName)}
+                  style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', background: '#fff', border: '2px solid rgba(0,0,0,.07)', borderRadius: 14, cursor: 'pointer', textAlign: 'left', boxShadow: '0 2px 8px var(--shadow)' }}>
+                  <Face type="calm" size={36} style={{ flexShrink: 0 }} />
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontWeight: 800, fontSize: '.9rem' }}>{r.name}</div>
+                    <div style={{ fontSize: '.75rem', color: 'var(--mid)', marginTop: 2 }}>{yr}년 {parseInt(mo)}월 · {r.myName}</div>
+                  </div>
+                  <span style={{ fontSize: '1rem', color: 'var(--mid)' }}>→</span>
+                </button>
+              )
+            })}
+          </div>
+        </div>
+      )}
 
       <div className="spacer" />
       <div style={{ display: 'flex', flexDirection: 'column', gap: 11 }}>
@@ -308,7 +346,7 @@ function JoinScreen({ onBack, onJoin, prefillCode = '' }) {
   )
 }
 
-function CalendarScreen({ room, myName, members, onToggleDay, onOpenShare }) {
+function CalendarScreen({ room, myName, members, onToggleDay, onOpenShare, onHome }) {
   const [yr, mo] = room.month.split('-').map(Number)
   const today = new Date()
   const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate())
@@ -339,6 +377,7 @@ function CalendarScreen({ room, myName, members, onToggleDay, onOpenShare }) {
     <div className="screen" style={{ paddingTop: 20 }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 14 }}>
+        <button className="back-btn" onClick={onHome} style={{ marginTop: 2 }}>←</button>
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: '1.15rem', fontWeight: 800, lineHeight: 1.2 }}>{room.name}</div>
           <div style={{ fontSize: '.8rem', color: 'var(--mid)', marginTop: 2 }}>
@@ -612,6 +651,7 @@ export default function App() {
         <HomeScreen
           onCreate={() => setScreen('create')}
           onJoin={() => setScreen('join')}
+          onEnterRoom={(r, name) => { setRoom(r); setMyName(name); setScreen('cal') }}
         />
       )}
       {screen === 'create' && (
@@ -634,6 +674,7 @@ export default function App() {
           members={members}
           onToggleDay={handleToggleDay}
           onOpenShare={() => setShowShare(true)}
+          onHome={() => { setRoom(null); setMyName(''); setScreen('home') }}
         />
       )}
       {showShare && room && (
