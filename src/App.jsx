@@ -428,6 +428,7 @@ function JoinScreen({ onBack, onJoin, prefillCode = '' }) {
 }
 
 function CalendarScreen({ room, myName, members, onToggleDay, onOpenShare, onHome, onLeave }) {
+  const [selectedDay, setSelectedDay] = useState(null)
   const [yr, mo] = room.month.split('-').map(Number)
   const today = new Date()
   const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate())
@@ -527,7 +528,7 @@ function CalendarScreen({ room, myName, members, onToggleDay, onOpenShare, onHom
               return (
                 <div key={d}
                   className={`day-cell${past ? ' past' : ''}${stClass ? ` ${stClass}` : ''}`}
-                  onClick={() => !past && onToggleDay(d)}
+                  onClick={() => { if (!past) { onToggleDay(d); setSelectedDay(d) } }}
                 >
                   <div className={`day-num${isToday ? ' today' : dow===0 ? ' sun' : dow===6 ? ' sat' : ''}`}>{d}</div>
                   {!past && <Face type={faceType} size={20} className="day-face" />}
@@ -542,6 +543,37 @@ function CalendarScreen({ room, myName, members, onToggleDay, onOpenShare, onHom
             })}
           </div>
         </div>
+
+        {/* Day detail panel */}
+        {selectedDay && (() => {
+          const unavailNames = umap[selectedDay] ? [...umap[selectedDay]] : []
+          const availNames = members.map(m => m.name).filter(n => !umap[selectedDay]?.has(n))
+          return (
+            <div className="card" style={{ marginBottom: 12, borderLeft: `4px solid ${unavailNames.length === 0 ? 'var(--excited)' : 'var(--upset)'}` }}>
+              <div style={{ fontWeight: 800, fontSize: '.95rem', marginBottom: 8 }}>{mo}월 {selectedDay}일</div>
+              {unavailNames.length === 0 ? (
+                <div style={{ fontSize: '.85rem', color: 'var(--excited)', fontWeight: 700 }}>모두 가능한 날 🎉</div>
+              ) : (
+                <>
+                  <div style={{ fontSize: '.78rem', color: 'var(--mid)', marginBottom: 4 }}>안되는 사람</div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: availNames.length ? 10 : 0 }}>
+                    {unavailNames.map(n => (
+                      <span key={n} style={{ padding: '3px 10px', background: 'rgba(196,100,104,.12)', color: 'var(--upset)', borderRadius: 20, fontSize: '.8rem', fontWeight: 700 }}>{n}</span>
+                    ))}
+                  </div>
+                  {availNames.length > 0 && <>
+                    <div style={{ fontSize: '.78rem', color: 'var(--mid)', marginBottom: 4 }}>가능한 사람</div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                      {availNames.map(n => (
+                        <span key={n} style={{ padding: '3px 10px', background: 'rgba(90,136,104,.12)', color: 'var(--excited)', borderRadius: 20, fontSize: '.8rem', fontWeight: 700 }}>{n}</span>
+                      ))}
+                    </div>
+                  </>}
+                </>
+              )}
+            </div>
+          )
+        })()}
 
         {/* Legend */}
         <div className="legend">
