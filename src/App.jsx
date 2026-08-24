@@ -346,7 +346,7 @@ function JoinScreen({ onBack, onJoin, prefillCode = '' }) {
   )
 }
 
-function CalendarScreen({ room, myName, members, onToggleDay, onOpenShare, onHome }) {
+function CalendarScreen({ room, myName, members, onToggleDay, onOpenShare, onHome, onLeave }) {
   const [yr, mo] = room.month.split('-').map(Number)
   const today = new Date()
   const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate())
@@ -505,6 +505,11 @@ function CalendarScreen({ room, myName, members, onToggleDay, onOpenShare, onHom
         <div style={{ textAlign: 'center', fontSize: '.75rem', color: 'var(--mid)', paddingBottom: 8 }}>
           변경사항은 실시간으로 반영돼요 ✨
         </div>
+
+        <button onClick={onLeave}
+          style={{ width: '100%', padding: '12px', background: 'none', border: '1.5px solid rgba(196,100,104,.3)', borderRadius: 13, color: 'var(--upset)', fontSize: '.85rem', fontWeight: 700, cursor: 'pointer', marginBottom: 16 }}>
+          방 나가기
+        </button>
       </div>
     </div>
   )
@@ -616,6 +621,26 @@ export default function App() {
     setScreen('cal')
   }
 
+  // Leave room
+  async function handleLeave() {
+    const isHost = members[0]?.name === myName
+    const label = isHost ? '방을 삭제하면 모든 참여자 데이터가 사라져요.\n정말 나갈까요?' : '방에서 나갈까요?'
+    if (!window.confirm(label)) return
+
+    if (isHost) {
+      await supabase.from('rooms').delete().eq('id', room.id)
+    } else {
+      await supabase.from('members').delete().eq('room_id', room.id).eq('name', myName)
+    }
+
+    localStorage.removeItem('me_' + room.id)
+    localStorage.removeItem('room_' + room.id)
+    setRoom(null)
+    setMyName('')
+    setMembers([])
+    setScreen('home')
+  }
+
   // Toggle unavailable day
   async function handleToggleDay(day) {
     const me = members.find(m => m.name === myName)
@@ -675,6 +700,7 @@ export default function App() {
           onToggleDay={handleToggleDay}
           onOpenShare={() => setShowShare(true)}
           onHome={() => { setRoom(null); setMyName(''); setScreen('home') }}
+          onLeave={handleLeave}
         />
       )}
       {showShare && room && (
