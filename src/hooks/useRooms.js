@@ -1,0 +1,93 @@
+import { useState, useEffect } from 'react'
+import { supabase } from '../supabase'
+import { genId } from '../utils'
+
+export function useRooms(user, myName) {
+  const [myRooms, setMyRooms] = useState([])
+  const [roomsError, setRoomsError] = useState(null)
+
+  async function loadMyRooms() {
+    if (!user?.id) return
+    setRoomsError(null)
+
+    const { data: memberRows, error: e1 } = await supabase
+      .from('members')
+      .select('room_id')
+      .eq('user_id', user.id)
+
+    if (e1) {
+      setRoomsError(e1.message)
+      return  // 오류 시 현재 목록 유지
+    }
+    if (!memberRows || memberRows.length === 0) {
+      setMyRooms([])
+      return
+    }
+
+    const ids = memberRows.map(m => m.room_id)
+    const { data: roomRows, error: e2 } = await supabase
+      .from('rooms')
+      .select('id, name, month')
+      .in('id', ids)
+
+    if (!e2 && roomRows) setMyRooms(roomRows)
+  }
+
+  useEffect(() => {
+    if (user) loadMyRooms()
+    else setMyRooms([])
+  }, [user]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  async function createRoom(name, month) {
+    let created = null
+    for (let i = 0; i < 5; i++) {
+      const id = genId()
+      const { error } = await supabase.from('rooms').insert({ id, name, month })
+      if (!error) { created = { id, name, month }; break }
+    }
+    if (!created) return null
+
+    const { error: memberErr } = await supabase.from('members').insert({
+      room_id: created.id,
+      user_id: user.id,
+      name: myName,
+      unavailable_days: [],
+    })
+
+    if (memberErr) {
+      console.error('[createRoom] member insert error:', memberErr)
+      await supabase.from('rooms').delete().eq('id', created.id)
+      return { error: memberErr.message }
+    }
+
+    setMyRooms(prev => [...prev.filter(r => r.id !== created.id), created])
+    return created
+  }
+
+  async function joinRoom(code) {
+    const { data: roomData, error } = await supabase
+      .from('rooms').select('*').eq('id', code).single()
+    if (error || !roomData) return null
+
+    const { data: existing } = await supabase
+      .from('members').select('id').eq('room_id', code).eq('user_id', user.id).single()
+
+    if (!existing) {
+      const { error: memberErr } = await supabase.from('members').insert({
+        room_id: code, user_id: user.id, name: myName, unavailable_days: []
+      })
+      if (memberErr) return null
+    }
+
+    setMyRooms(prev => prev.find(r => r.id === code) ? prev : [...prev, roomData])
+    return roomData
+  }
+
+  async function leaveRoom(roomId, isHost) {
+    if (isHost) await supabase.from('rooms').delete().eq('id', roomId)
+    else await supabase.from('members').delete().eq('room_id', roomId).eq('user_id', user.id)
+    setMyRooms(prev => prev.filter(r => r.id !== roomId))
+  }
+
+  return { myRooms, roomsError, loadMyRooms, createRoom, joinRoom, leaveRoom }
+}

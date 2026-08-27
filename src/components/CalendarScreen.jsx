@@ -1,0 +1,261 @@
+import { useState } from 'react'
+import Face from './Face'
+import { getDayFaceType, getMemberColor } from '../utils'
+
+export default function CalendarScreen({ room, myUserId, myName, members, onToggleDay, onOpenShare, onHome, onLeave, onGoCreate }) {
+  const [selectedDay, setSelectedDay] = useState(null)
+  const [editMode, setEditMode]       = useState(false)
+
+  const [yr, mo] = room.month.split('-').map(Number)
+  const today     = new Date()
+  const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate())
+  const firstDay  = new Date(yr, mo - 1, 1).getDay()
+  const totalDays = new Date(yr, mo, 0).getDate()
+  const total     = members.length
+
+  const umap = {}
+  for (const mb of members)
+    for (const d of mb.unavailable_days || []) {
+      if (!umap[d]) umap[d] = []
+      umap[d].push(mb.name)
+    }
+
+  const me    = members.find(m => m.user_id === myUserId)
+  const mySet = new Set(me?.unavailable_days || [])
+
+  const bestDays = []
+  for (let d = 1; d <= totalDays; d++) {
+    const date = new Date(yr, mo - 1, d)
+    if (date >= todayDate && (!umap[d] || umap[d].length === 0)) bestDays.push(d)
+  }
+
+  function enterEdit()  { setEditMode(true);  setSelectedDay(null) }
+  function exitEdit()   { setEditMode(false) }
+
+  function handleCellClick(d, past) {
+    if (past) return
+    if (editMode) {
+      onToggleDay(d)   // 수정 모드: 토글만
+    } else {
+      setSelectedDay(prev => prev === d ? null : d)  // 보기 모드: 상세 패널 토글
+    }
+  }
+
+  return (
+    <div className="screen" style={{ paddingTop: 20, paddingBottom: 88 }}>
+      {/* 헤더 */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+        <button className="back-btn" onClick={onHome}>←</button>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: '1.1rem', fontWeight: 800, lineHeight: 1.2 }}>{room.name}</div>
+          <div style={{ fontSize: '.75rem', color: 'var(--mid)', marginTop: 1 }}>
+            {yr}년 {mo}월 · {total}명 참여
+          </div>
+        </div>
+        <button className="btn btn-ghost btn-sm" onClick={onOpenShare} style={{ whiteSpace: 'nowrap' }}>
+          공유 🔗
+        </button>
+      </div>
+
+      <div className="scroll">
+        {/* 모두 가능한 날 배너 */}
+        {bestDays.length > 0 && total >= 2 && (
+          <div className="best-banner">
+            <Face type="excited" size={40} style={{ flexShrink: 0 }} />
+            <div>
+              <div style={{ fontSize: '.75rem', fontWeight: 800, color: 'var(--excited)' }}>모두 가능한 날 🎉</div>
+              <div style={{ fontSize: '.95rem', fontWeight: 800, marginTop: 2 }}>
+                {bestDays.map(d => `${d}일`).join(', ')}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 내 안되는 날 카드 */}
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 10,
+          background: editMode ? 'rgba(91,141,184,.1)' : 'rgba(91,141,184,.06)',
+          border: `1.5px solid ${editMode ? 'rgba(91,141,184,.45)' : 'transparent'}`,
+          borderRadius: 14, padding: '11px 13px', marginBottom: 12,
+          transition: 'all .2s',
+        }}>
+          <Face type={editMode ? 'worried' : 'happy'} size={26} style={{ flexShrink: 0 }} />
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: '.83rem', fontWeight: 800 }}>{myName}의 안되는 날</div>
+            <div style={{ fontSize: '.72rem', color: 'var(--mid)', marginTop: 2 }}>
+              {editMode
+                ? '날짜를 눌러 선택 · 다시 누르면 취소'
+                : mySet.size === 0 ? '안되는 날 없음 😊' : `${mySet.size}일 표시됨`}
+            </div>
+          </div>
+          {editMode ? (
+            <button onClick={exitEdit} style={{
+              background: 'var(--calm)', border: 'none', borderRadius: 9, padding: '6px 13px',
+              fontSize: '.78rem', fontWeight: 800, cursor: 'pointer', color: '#fff',
+              fontFamily: 'inherit', whiteSpace: 'nowrap',
+            }}>완료</button>
+          ) : (
+            <button onClick={enterEdit} style={{
+              background: 'rgba(0,0,0,.07)', border: 'none', borderRadius: 9, padding: '6px 13px',
+              fontSize: '.78rem', fontWeight: 700, cursor: 'pointer', color: 'var(--mid)',
+              fontFamily: 'inherit', whiteSpace: 'nowrap',
+            }}>{mySet.size === 0 ? '선택하기' : '수정하기'}</button>
+          )}
+        </div>
+
+        {/* 달력 */}
+        <div className="card" style={{ marginBottom: 12 }}>
+          <div className="wday-row">
+            {['일','월','화','수','목','금','토'].map((d, i) => (
+              <div key={d} className={`wday${i===0?' sun':i===6?' sat':''}`}>{d}</div>
+            ))}
+          </div>
+          <div className="cal-grid">
+            {Array.from({ length: firstDay }, (_, i) => (
+              <div key={`e${i}`} className="day-cell empty" />
+            ))}
+            {Array.from({ length: totalDays }, (_, i) => {
+              const d    = i + 1
+              const dow  = (firstDay + d - 1) % 7
+              const date = new Date(yr, mo - 1, d)
+              const past = date < todayDate
+              const isToday    = date.getTime() === todayDate.getTime()
+              const uNames = umap[d] || []
+              const uCnt   = uNames.length
+              const aCnt   = total - uCnt
+              const isMine = mySet.has(d)
+              const faceType   = getDayFaceType(uCnt, total, isMine)
+              const isSelected = !editMode && selectedDay === d
+
+              let stClass = ''
+              if (!past) {
+                if (isMine) stClass = 'st-mine'
+                else if (total >= 2 && uCnt === 0)             stClass = 'st-all'
+                else if (total >= 2 && uCnt > 0 && aCnt > 0)  stClass = 'st-some'
+                else if (total >= 2 && uCnt === total)         stClass = 'st-most'
+              }
+
+              return (
+                <div key={d}
+                  className={`day-cell${past ? ' past' : ''}${stClass ? ` ${stClass}` : ''}`}
+                  style={{
+                    outline: isSelected ? '2px solid var(--calm)' : undefined,
+                    outlineOffset: isSelected ? 1 : undefined,
+                    cursor: past ? 'default' : editMode ? 'pointer' : 'pointer',
+                  }}
+                  onClick={() => handleCellClick(d, past)}
+                >
+                  <div className={`day-num${isToday?' today':dow===0?' sun':dow===6?' sat':''}`}>{d}</div>
+                  {!past && <Face type={faceType} size={19} className="day-face" />}
+                  {!past && total >= 2 && uCnt === 0 && (
+                    <div className="badge badge-green">{total}</div>
+                  )}
+                  {!past && total >= 2 && uCnt > 0 && aCnt > 0 && (
+                    <div className="badge badge-red">{uCnt}</div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* 날짜 상세 — 보기 모드에서만 */}
+        {!editMode && selectedDay && (() => {
+          const unavailNames = umap[selectedDay] || []
+          const availNames   = members.map(m => m.name).filter(n => !unavailNames.includes(n))
+          return (
+            <div className="card" style={{ marginBottom: 12, borderLeft: `3px solid ${unavailNames.length === 0 ? 'var(--excited)' : 'var(--upset)'}` }}>
+              <div style={{ fontWeight: 800, fontSize: '.9rem', marginBottom: 8 }}>{mo}월 {selectedDay}일</div>
+              {unavailNames.length === 0 ? (
+                <div style={{ fontSize: '.83rem', color: 'var(--excited)', fontWeight: 700 }}>모두 가능한 날 🎉</div>
+              ) : (
+                <>
+                  <div style={{ fontSize: '.73rem', color: 'var(--mid)', marginBottom: 5 }}>안되는 사람</div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: availNames.length ? 10 : 0 }}>
+                    {unavailNames.map(n => (
+                      <span key={n} style={{ padding: '3px 10px', background: 'rgba(192,86,90,.1)', color: 'var(--upset)', borderRadius: 20, fontSize: '.77rem', fontWeight: 700 }}>{n}</span>
+                    ))}
+                  </div>
+                  {availNames.length > 0 && <>
+                    <div style={{ fontSize: '.73rem', color: 'var(--mid)', marginBottom: 5 }}>가능한 사람</div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+                      {availNames.map(n => (
+                        <span key={n} style={{ padding: '3px 10px', background: 'rgba(78,128,102,.1)', color: 'var(--excited)', borderRadius: 20, fontSize: '.77rem', fontWeight: 700 }}>{n}</span>
+                      ))}
+                    </div>
+                  </>}
+                </>
+              )}
+            </div>
+          )
+        })()}
+
+        {/* 범례 */}
+        <div className="legend">
+          <div className="leg-item"><div className="leg-dot" style={{ background: 'rgba(78,128,102,.22)', border: '1.5px solid var(--excited)' }} />모두 가능</div>
+          <div className="leg-item"><div className="leg-dot" style={{ background: 'rgba(200,168,60,.25)', border: '1.5px solid #C8A830' }} />일부 불가</div>
+          <div className="leg-item"><div className="leg-dot" style={{ background: 'rgba(192,86,90,.12)', border: '1.5px solid var(--upset)' }} />내가 불가</div>
+        </div>
+
+        {/* 참여자 현황 */}
+        <div className="card" style={{ marginBottom: 12 }}>
+          <div style={{ fontSize: '.85rem', fontWeight: 800, marginBottom: 10 }}>참여자 현황 👥</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+            {members.map(mb => (
+              <div key={mb.id} className="member-item">
+                <Face type="happy" size={32} fill={getMemberColor(mb.user_id, myUserId, mb.name)} style={{ flexShrink: 0 }} />
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontWeight: 700, fontSize: '.85rem', color: mb.user_id === myUserId ? 'var(--calm)' : 'inherit' }}>
+                    {mb.name}{mb.user_id === myUserId ? ' (나)' : ''}
+                  </div>
+                </div>
+                <div style={{ fontSize: '.74rem', color: 'var(--mid)' }}>
+                  {(mb.unavailable_days?.length ?? 0) === 0 ? '없음 🙆' : `${mb.unavailable_days.length}일 안됨`}
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="divider" />
+          <button className="btn btn-ghost" style={{ fontSize: '.82rem', padding: 10 }} onClick={onOpenShare}>
+            링크로 친구 더 초대하기 🔗
+          </button>
+        </div>
+
+        <div style={{ textAlign: 'center', fontSize: '.72rem', color: 'var(--mid)', paddingBottom: 8 }}>
+          변경사항은 실시간으로 반영돼요 ✨
+        </div>
+      </div>
+
+      {/* 새 방 만들기 FAB */}
+      <button onClick={onGoCreate} title="새 방 만들기" style={{
+        position: 'fixed', bottom: 76, right: 'max(20px, calc(50vw - 220px))',
+        width: 50, height: 50, borderRadius: '50%',
+        background: 'var(--calm)', color: '#fff',
+        fontSize: '1.5rem', fontWeight: 300,
+        border: 'none', cursor: 'pointer',
+        boxShadow: '0 3px 14px rgba(91,141,184,.45)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        zIndex: 40,
+      }}>+</button>
+
+      {/* 하단 고정바 */}
+      <div style={{
+        position: 'fixed', bottom: 0, left: 0, right: 0,
+        background: 'var(--surface)',
+        borderTop: '1px solid var(--border)',
+        padding: '10px 18px',
+        paddingBottom: 'calc(10px + env(safe-area-inset-bottom))',
+        zIndex: 40,
+      }}>
+        <button onClick={onLeave} style={{
+          width: '100%', padding: '12px',
+          background: 'rgba(192,86,90,.07)',
+          border: '1.5px solid rgba(192,86,90,.3)',
+          borderRadius: 13, color: 'var(--upset)',
+          fontSize: '.85rem', fontWeight: 800,
+          cursor: 'pointer', fontFamily: 'inherit',
+        }}>방 나가기</button>
+      </div>
+    </div>
+  )
+}
