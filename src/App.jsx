@@ -13,7 +13,7 @@ import ShareModal from './components/ShareModal'
 
 export default function App() {
   const { user, loading, myName, loginWithGoogle, logout, updateName } = useAuth()
-  const { myRooms, roomsError, loadMyRooms, createRoom, joinRoom, leaveRoom } = useRooms(user, myName)
+  const { myRooms, roomsError, loadMyRooms, createRoom, joinRoom, leaveRoom, leaveRoomById } = useRooms(user, myName)
   const [screen, setScreen] = useState('home')
   const [room, setRoom] = useState(null)
   const { members, toggleDay } = useMembers(room)
@@ -101,6 +101,7 @@ export default function App() {
           onEnterRoom={r => { setRoom(r); setScreen('cal') }}
           onLogout={handleLogout}
           onUpdateName={updateName}
+          onLeaveRoom={leaveRoomById}
         />
       )}
 

@@ -89,5 +89,12 @@ export function useRooms(user, myName) {
     setMyRooms(prev => prev.filter(r => r.id !== roomId))
   }
 
-  return { myRooms, roomsError, loadMyRooms, createRoom, joinRoom, leaveRoom }
+  async function leaveRoomById(roomId) {
+    const { data } = await supabase
+      .from('members').select('user_id').eq('room_id', roomId).order('created_at').limit(1)
+    const isHost = data?.[0]?.user_id === user.id
+    await leaveRoom(roomId, isHost)
+  }
+
+  return { myRooms, roomsError, loadMyRooms, createRoom, joinRoom, leaveRoom, leaveRoomById }
 }
