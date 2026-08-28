@@ -153,10 +153,10 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
 
               let stClass = ''
               if (!past) {
-                if (isMine) stClass = 'st-mine'
+                if (total >= 2 && uCnt === total)              stClass = 'st-most'
+                else if (isMine)                               stClass = 'st-mine'
                 else if (total >= 2 && uCnt === 0)             stClass = 'st-all'
                 else if (total >= 2 && uCnt > 0 && aCnt > 0)  stClass = 'st-some'
-                else if (total >= 2 && uCnt === total)         stClass = 'st-most'
               }
 
               return (
@@ -232,6 +232,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
           <div className="leg-item"><div className="leg-dot" style={{ background: 'rgba(78,128,102,.22)', border: '1.5px solid var(--excited)' }} />모두 가능</div>
           <div className="leg-item"><div className="leg-dot" style={{ background: 'rgba(200,168,60,.25)', border: '1.5px solid #C8A830' }} />일부 불가</div>
           <div className="leg-item"><div className="leg-dot" style={{ background: 'rgba(192,86,90,.12)', border: '1.5px solid var(--upset)' }} />내가 불가</div>
+          <div className="leg-item"><div className="leg-dot" style={{ background: 'rgba(80,80,80,.12)', border: '1.5px solid rgba(80,80,80,.5)' }} />모두 불가</div>
         </div>
 
         {/* 참여자 현황 */}
