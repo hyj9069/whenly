@@ -27,7 +27,7 @@ export function useRooms(user, myName) {
     const ids = memberRows.map(m => m.room_id)
     const { data: roomRows, error: e2 } = await supabase
       .from('rooms')
-      .select('id, name, month, confirmed_day')
+      .select('id, name, confirmed_day')
       .in('id', ids)
 
     if (!e2 && roomRows) setMyRooms(roomRows)
@@ -38,12 +38,12 @@ export function useRooms(user, myName) {
     else setMyRooms([])
   }, [user]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  async function createRoom(name, month) {
+  async function createRoom(name) {
     let created = null
     for (let i = 0; i < 5; i++) {
       const id = genId()
-      const { error } = await supabase.from('rooms').insert({ id, name, month })
-      if (!error) { created = { id, name, month }; break }
+      const { error } = await supabase.from('rooms').insert({ id, name })
+      if (!error) { created = { id, name }; break }
     }
     if (!created) return null
 

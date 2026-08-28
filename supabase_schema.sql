@@ -34,6 +34,20 @@ create policy "manage own membership" on members for all
 
 
 -- ══════════════════════════════════════════════
+-- 월 제거 / 날짜 문자열 마이그레이션
+-- (Supabase SQL Editor에서 실행)
+-- ══════════════════════════════════════════════
+
+-- rooms: month 컬럼 제거, confirmed_day를 text로 변경
+alter table rooms drop column if exists month;
+alter table rooms drop column if exists confirmed_day;
+alter table rooms add column confirmed_day text;
+
+-- members: unavailable_days를 text[] 로 변경 (YYYY-MM-DD 문자열 저장)
+alter table members drop column if exists unavailable_days;
+alter table members add column unavailable_days text[] not null default '{}';
+
+-- ══════════════════════════════════════════════
 -- 기존 테이블 마이그레이션 (이미 만들어진 경우)
 -- ══════════════════════════════════════════════
 

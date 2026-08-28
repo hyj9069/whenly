@@ -3,42 +3,62 @@ import Face from './Face'
 import { getDayFaceType, getMemberColor } from '../utils'
 import { getHoliday } from '../holidays'
 
-export default function CalendarScreen({ room, myUserId, myName, members, onToggleDay, onConfirmDay, onRenameRoom, onOpenShare, onHome, onLeave, onGoCreate }) {
-  const [selectedDay, setSelectedDay]       = useState(null)
-  const [editMode, setEditMode]             = useState(false)
-  const [showLeaveModal, setShowLeaveModal] = useState(false)
-  const [showRenameModal, setShowRenameModal] = useState(false)
-  const [renameValue, setRenameValue]       = useState('')
+function toDateStr(y, m, d) {
+  return `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`
+}
 
-  const [yr, mo] = room.month.split('-').map(Number)
+export default function CalendarScreen({ room, myUserId, myName, members, onToggleDay, onConfirmDay, onRenameRoom, onOpenShare, onHome, onLeave }) {
   const today     = new Date()
-  const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate())
+  const todayY    = today.getFullYear()
+  const todayM    = today.getMonth() + 1
+  const todayD    = today.getDate()
+  const todayDate = new Date(todayY, todayM - 1, todayD)
+
+  const [yr, setYr] = useState(todayY)
+  const [mo, setMo] = useState(todayM)
+  const [selectedDay, setSelectedDay]         = useState(null)
+  const [editMode, setEditMode]               = useState(false)
+  const [showLeaveModal, setShowLeaveModal]   = useState(false)
+  const [showRenameModal, setShowRenameModal] = useState(false)
+  const [renameValue, setRenameValue]         = useState('')
+
   const firstDay  = new Date(yr, mo - 1, 1).getDay()
   const totalDays = new Date(yr, mo, 0).getDate()
   const total     = members.length
   const isHost    = members[0]?.user_id === myUserId
 
+  // umap: "YYYY-MM-DD" → [name, ...]
   const umap = {}
   for (const mb of members)
-    for (const d of mb.unavailable_days || []) {
-      if (!umap[d]) umap[d] = []
-      umap[d].push(mb.name)
+    for (const ds of mb.unavailable_days || []) {
+      if (!umap[ds]) umap[ds] = []
+      umap[ds].push(mb.user_id === myUserId ? myName : mb.name)
     }
 
   const me    = members.find(m => m.user_id === myUserId)
   const mySet = new Set(me?.unavailable_days || [])
 
-  function enterEdit()  { setEditMode(true);  setSelectedDay(null) }
-  function exitEdit()   { setEditMode(false) }
+  function prevMonth() {
+    setSelectedDay(null)
+    if (mo === 1) { setYr(y => y - 1); setMo(12) } else setMo(m => m - 1)
+  }
+  function nextMonth() {
+    setSelectedDay(null)
+    if (mo === 12) { setYr(y => y + 1); setMo(1) } else setMo(m => m + 1)
+  }
+
+  function enterEdit() { setEditMode(true); setSelectedDay(null) }
+  function exitEdit()  { setEditMode(false) }
 
   function handleCellClick(d, past) {
     if (past) return
-    if (editMode) {
-      onToggleDay(d)   // 수정 모드: 토글만
-    } else {
-      setSelectedDay(prev => prev === d ? null : d)  // 보기 모드: 상세 패널 토글
-    }
+    const ds = toDateStr(yr, mo, d)
+    if (editMode) onToggleDay(ds)
+    else setSelectedDay(prev => prev === d ? null : d)
   }
+
+  const cdStr    = room.confirmed_day  // "YYYY-MM-DD" or null
+  const cdParsed = cdStr ? cdStr.split('-').map(Number) : null
 
   return (
     <div className="screen" style={{ paddingTop: 20, paddingBottom: 88 }}>
@@ -55,9 +75,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
               }}>✏️</button>
             )}
           </div>
-          <div style={{ fontSize: '.75rem', color: 'var(--mid)', marginTop: 1 }}>
-            {yr}년 {mo}월 · {total}명 참여
-          </div>
+          <div style={{ fontSize: '.75rem', color: 'var(--mid)', marginTop: 1 }}>{total}명 참여</div>
         </div>
         <button className="btn btn-ghost btn-sm" onClick={onOpenShare} style={{ whiteSpace: 'nowrap' }}>
           공유 🔗
@@ -65,18 +83,19 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
       </div>
 
       <div className="scroll">
-        {/* 확정된 날짜 배너 */}
-        {room.confirmed_day && (
+        {/* 확정 배너 */}
+        {cdParsed && (
           <div style={{
             display: 'flex', alignItems: 'center', gap: 10,
-            background: 'rgba(91,141,184,.12)',
-            border: '1.5px solid rgba(91,141,184,.45)',
+            background: 'rgba(91,141,184,.12)', border: '1.5px solid rgba(91,141,184,.45)',
             borderRadius: 14, padding: '13px 15px', marginBottom: 12,
           }}>
             <span style={{ fontSize: '1.3rem' }}>📅</span>
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: '.75rem', fontWeight: 800, color: 'var(--calm)' }}>확정된 날짜</div>
-              <div style={{ fontSize: '.95rem', fontWeight: 800, marginTop: 2 }}>{mo}월 {room.confirmed_day}일</div>
+              <div style={{ fontSize: '.95rem', fontWeight: 800, marginTop: 2 }}>
+                {cdParsed[0]}년 {cdParsed[1]}월 {cdParsed[2]}일
+              </div>
             </div>
             {isHost && (
               <button onClick={() => onConfirmDay(null)} style={{
@@ -93,15 +112,13 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
           display: 'flex', alignItems: 'center', gap: 10,
           background: editMode ? 'rgba(91,141,184,.1)' : 'rgba(91,141,184,.06)',
           border: `1.5px solid ${editMode ? 'rgba(91,141,184,.45)' : 'transparent'}`,
-          borderRadius: 14, padding: '11px 13px', marginBottom: 12,
-          transition: 'all .2s',
+          borderRadius: 14, padding: '11px 13px', marginBottom: 12, transition: 'all .2s',
         }}>
           <Face type={editMode ? 'worried' : 'happy'} size={26} style={{ flexShrink: 0 }} />
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: '.83rem', fontWeight: 800 }}>{myName}의 안되는 날</div>
             <div style={{ fontSize: '.72rem', color: 'var(--mid)', marginTop: 2 }}>
-              {editMode
-                ? '날짜를 눌러 선택 · 다시 누르면 취소'
+              {editMode ? '날짜를 눌러 선택 · 다시 누르면 취소'
                 : mySet.size === 0 ? '안되는 날 없음 😊' : `${mySet.size}일 표시됨`}
             </div>
           </div>
@@ -122,6 +139,11 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
 
         {/* 달력 */}
         <div className="card" style={{ marginBottom: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: 10 }}>
+            <button onClick={prevMonth} style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer', color: 'var(--mid)', padding: '4px 8px', fontFamily: 'inherit' }}>‹</button>
+            <div style={{ flex: 1, textAlign: 'center', fontWeight: 800, fontSize: '.95rem' }}>{yr}년 {mo}월</div>
+            <button onClick={nextMonth} style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer', color: 'var(--mid)', padding: '4px 8px', fontFamily: 'inherit' }}>›</button>
+          </div>
           <div className="wday-row">
             {['일','월','화','수','목','금','토'].map((d, i) => (
               <div key={d} className={`wday${i===0?' sun':i===6?' sat':''}`}>{d}</div>
@@ -132,15 +154,16 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
               <div key={`e${i}`} className="day-cell empty" />
             ))}
             {Array.from({ length: totalDays }, (_, i) => {
-              const d    = i + 1
-              const dow  = (firstDay + d - 1) % 7
+              const d   = i + 1
+              const ds  = toDateStr(yr, mo, d)
+              const dow = (firstDay + d - 1) % 7
               const date = new Date(yr, mo - 1, d)
               const past = date < todayDate
-              const isToday    = date.getTime() === todayDate.getTime()
-              const uNames  = umap[d] || []
+              const isToday    = yr === todayY && mo === todayM && d === todayD
+              const uNames  = umap[ds] || []
               const uCnt    = uNames.length
               const aCnt    = total - uCnt
-              const isMine  = mySet.has(d)
+              const isMine  = mySet.has(ds)
               const holiday = getHoliday(yr, mo, d)
               const faceType   = getDayFaceType(uCnt, total, isMine)
               const isSelected = !editMode && selectedDay === d
@@ -158,7 +181,6 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
                   style={{
                     outline: isSelected ? '2px solid var(--calm)' : undefined,
                     outlineOffset: isSelected ? 1 : undefined,
-                    cursor: past ? 'default' : editMode ? 'pointer' : 'pointer',
                   }}
                   onClick={() => handleCellClick(d, past)}
                 >
@@ -176,10 +198,14 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
           </div>
         </div>
 
-        {/* 날짜 상세 — 보기 모드에서만 */}
+        {/* 날짜 상세 */}
         {!editMode && selectedDay && (() => {
-          const unavailNames = umap[selectedDay] || []
-          const availNames   = members.map(m => m.name).filter(n => !unavailNames.includes(n))
+          const ds = toDateStr(yr, mo, selectedDay)
+          const unavailNames = umap[ds] || []
+          const availNames   = members
+            .map(m => m.user_id === myUserId ? myName : m.name)
+            .filter(n => !unavailNames.includes(n))
+          const isConfirmed = cdStr === ds
           return (
             <div className="card" style={{ marginBottom: 12, borderLeft: `3px solid ${unavailNames.length === 0 ? 'var(--excited)' : 'var(--upset)'}` }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
@@ -212,12 +238,12 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
               )}
               {isHost && (
                 <div style={{ marginTop: 12, paddingTop: 10, borderTop: '1px solid var(--border)' }}>
-                  {room.confirmed_day === selectedDay ? (
+                  {isConfirmed ? (
                     <button className="btn btn-ghost" style={{ fontSize: '.82rem', padding: 10 }} onClick={() => onConfirmDay(null)}>
                       확정 취소하기
                     </button>
                   ) : (
-                    <button className="btn btn-blue" style={{ fontSize: '.82rem', padding: 10 }} onClick={() => onConfirmDay(selectedDay)}>
+                    <button className="btn btn-blue" style={{ fontSize: '.82rem', padding: 10 }} onClick={() => onConfirmDay(ds)}>
                       📅 이 날로 확정하기
                     </button>
                   )}
@@ -241,19 +267,19 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
             {members.map(mb => {
               const displayName = mb.user_id === myUserId ? myName : mb.name
               return (
-              <div key={mb.id} className="member-item">
-                <Face type="happy" size={32} fill={getMemberColor(mb.user_id, myUserId, displayName)} style={{ flexShrink: 0 }} />
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 700, fontSize: '.85rem', color: mb.user_id === myUserId ? 'var(--calm)' : 'inherit' }}>
-                    {displayName}{mb.user_id === myUserId ? ' (나)' : ''}
+                <div key={mb.id} className="member-item">
+                  <Face type="happy" size={32} fill={getMemberColor(mb.user_id, myUserId, displayName)} style={{ flexShrink: 0 }} />
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontWeight: 700, fontSize: '.85rem', color: mb.user_id === myUserId ? 'var(--calm)' : 'inherit' }}>
+                      {displayName}{mb.user_id === myUserId ? ' (나)' : ''}
+                    </div>
+                  </div>
+                  <div style={{ fontSize: '.74rem', color: 'var(--mid)' }}>
+                    {(mb.unavailable_days?.length ?? 0) === 0 ? '없음 🙆' : `${mb.unavailable_days.length}일 안됨`}
                   </div>
                 </div>
-                <div style={{ fontSize: '.74rem', color: 'var(--mid)' }}>
-                  {(mb.unavailable_days?.length ?? 0) === 0 ? '없음 🙆' : `${mb.unavailable_days.length}일 안됨`}
-                </div>
-              </div>
-            )})}
-
+              )
+            })}
           </div>
           <div className="divider" />
           <button className="btn btn-ghost" style={{ fontSize: '.82rem', padding: 10 }} onClick={onOpenShare}>
@@ -269,18 +295,13 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
       {/* 하단 고정바 */}
       <div style={{
         position: 'fixed', bottom: 0, left: 0, right: 0,
-        background: 'var(--surface)',
-        borderTop: '1px solid var(--border)',
-        padding: '10px 18px',
-        paddingBottom: 'calc(10px + env(safe-area-inset-bottom))',
-        zIndex: 40,
+        background: 'var(--surface)', borderTop: '1px solid var(--border)',
+        padding: '10px 18px', paddingBottom: 'calc(10px + env(safe-area-inset-bottom))', zIndex: 40,
       }}>
         <button onClick={() => setShowLeaveModal(true)} style={{
           width: '100%', padding: '12px',
-          background: 'rgba(192,86,90,.07)',
-          border: '1.5px solid rgba(192,86,90,.3)',
-          borderRadius: 13, color: 'var(--upset)',
-          fontSize: '.85rem', fontWeight: 800,
+          background: 'rgba(192,86,90,.07)', border: '1.5px solid rgba(192,86,90,.3)',
+          borderRadius: 13, color: 'var(--upset)', fontSize: '.85rem', fontWeight: 800,
           cursor: 'pointer', fontFamily: 'inherit',
         }}>방 나가기</button>
       </div>
@@ -290,33 +311,20 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
         <div className="overlay" onClick={() => setShowRenameModal(false)}>
           <div className="modal" onClick={e => e.stopPropagation()}>
             <div style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: 16 }}>방 이름 수정</div>
-            <input
-              className="inp"
-              value={renameValue}
-              onChange={e => setRenameValue(e.target.value)}
-              maxLength={30}
-              autoFocus
-              style={{ marginBottom: 16 }}
-              onKeyDown={e => {
-                if (e.key === 'Enter' && renameValue.trim()) {
-                  onRenameRoom(renameValue.trim())
-                  setShowRenameModal(false)
-                }
-              }}
+            <input className="inp" value={renameValue} onChange={e => setRenameValue(e.target.value)}
+              maxLength={30} autoFocus style={{ marginBottom: 16 }}
+              onKeyDown={e => { if (e.key === 'Enter' && renameValue.trim()) { onRenameRoom(renameValue.trim()); setShowRenameModal(false) } }}
             />
             <div style={{ display: 'flex', gap: 10 }}>
               <button className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setShowRenameModal(false)}>취소</button>
-              <button className="btn btn-blue" style={{ flex: 1 }}
-                disabled={!renameValue.trim()}
-                onClick={() => { onRenameRoom(renameValue.trim()); setShowRenameModal(false) }}>
-                저장
-              </button>
+              <button className="btn btn-blue" style={{ flex: 1 }} disabled={!renameValue.trim()}
+                onClick={() => { onRenameRoom(renameValue.trim()); setShowRenameModal(false) }}>저장</button>
             </div>
           </div>
         </div>
       )}
 
-      {/* 방 나가기 확인 모달 */}
+      {/* 방 나가기 모달 */}
       {showLeaveModal && (
         <div className="overlay" onClick={() => setShowLeaveModal(false)}>
           <div className="modal" onClick={e => e.stopPropagation()}>
@@ -324,13 +332,13 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
               {isHost ? '방을 삭제할까요?' : '방을 나갈까요?'}
             </div>
             <div style={{ fontSize: '.85rem', color: 'var(--mid)', marginBottom: 20, lineHeight: 1.6 }}>
-              {isHost
-                ? '방장이 나가면 방이 삭제되고\n모든 데이터가 사라져요.'
+              {isHost ? '방장이 나가면 방이 삭제되고\n모든 데이터가 사라져요.'
                 : '방에서 나가면 다시 초대 링크로만\n참여할 수 있어요.'}
             </div>
             <div style={{ display: 'flex', gap: 10 }}>
               <button className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setShowLeaveModal(false)}>취소</button>
-              <button className="btn" style={{ flex: 1, background: 'var(--upset)', color: '#fff' }} onClick={() => { setShowLeaveModal(false); onLeave() }}>확인</button>
+              <button className="btn" style={{ flex: 1, background: 'var(--upset)', color: '#fff' }}
+                onClick={() => { setShowLeaveModal(false); onLeave() }}>확인</button>
             </div>
           </div>
         </div>

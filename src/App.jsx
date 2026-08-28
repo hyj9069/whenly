@@ -36,8 +36,8 @@ export default function App() {
     handleJoinByCode(code.toUpperCase())
   }, [user, loading]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  async function handleCreate(name, month) {
-    const created = await createRoom(name, month)
+  async function handleCreate(name) {
+    const created = await createRoom(name)
     if (!created) { showToast('오류가 발생했어요 😢'); return }
     if (created.error) {
       showToast(`멤버 등록 실패: ${created.error} — Supabase 마이그레이션을 실행해주세요`)

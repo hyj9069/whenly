@@ -1,26 +1,15 @@
 import { useState } from 'react'
 import Face from './Face'
 import TopBar from './TopBar'
-import { formatMonth, monthStr } from '../utils'
 
 export default function CreateScreen({ onBack, onCreate, defaultName }) {
-  const now = new Date()
-  const [y, setY] = useState(now.getFullYear())
-  const [m, setM] = useState(now.getMonth() + 1)
   const [roomName, setRoomName] = useState('')
-  const [loading, setLoading] = useState(false)
-
-  function changeMonth(delta) {
-    let nm = m + delta, ny = y
-    if (nm > 12) { nm = 1; ny++ }
-    if (nm < 1)  { nm = 12; ny-- }
-    setM(nm); setY(ny)
-  }
+  const [loading, setLoading]   = useState(false)
 
   async function handleCreate() {
     if (!roomName.trim()) return
     setLoading(true)
-    await onCreate(roomName.trim(), monthStr(y, m))
+    await onCreate(roomName.trim())
     setLoading(false)
   }
 
@@ -38,19 +27,9 @@ export default function CreateScreen({ onBack, onCreate, defaultName }) {
 
       <div className="form-group">
         <label className="form-label">모임 이름</label>
-        <input className="inp" placeholder="예: 7월 번개 모임 🌻" maxLength={25}
-          value={roomName} onChange={e => setRoomName(e.target.value)} />
-      </div>
-
-      <div className="form-group">
-        <label className="form-label">어느 달에 만날까요?</label>
-        <div className="month-picker">
-          <button className="month-nav" onClick={() => changeMonth(-1)}>◀</button>
-          <span style={{ fontWeight: 800, fontSize: '1.05rem', minWidth: 110, textAlign: 'center' }}>
-            {formatMonth(y, m)}
-          </span>
-          <button className="month-nav" onClick={() => changeMonth(1)}>▶</button>
-        </div>
+        <input className="inp" placeholder="예: 여름 번개 모임 🌻" maxLength={25}
+          value={roomName} onChange={e => setRoomName(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && roomName.trim() && handleCreate()} />
       </div>
 
       <div className="spacer" />

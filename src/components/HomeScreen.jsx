@@ -2,18 +2,11 @@ import { useState, useEffect, useRef } from 'react'
 import Face from './Face'
 import { getHoliday } from '../holidays'
 
-// ── 헬퍼 ────────────────────────────────────────
-function monthKey(year, month) {
-  return `${year}-${String(month).padStart(2, '0')}`
-}
-function dayMonthKey(date) {
-  return monthKey(date.getFullYear(), date.getMonth() + 1)
-}
 // ── 방 아이템 (공통) ─────────────────────────────
 function RoomItem({ room, onEnterRoom, selectionMode, selected, onSelect, onLongPress }) {
   const pressTimer = useRef(null)
   const didLongPress = useRef(false)
-  const [yr, mo] = room.month.split('-')
+  const cdParsed = room.confirmed_day ? room.confirmed_day.split('-').map(Number) : null
 
   function startPress() {
     didLongPress.current = false
@@ -58,16 +51,20 @@ function RoomItem({ room, onEnterRoom, selectionMode, selected, onSelect, onLong
       )}
       <div style={{ flex: 1 }}>
         <div style={{ fontWeight: 800, fontSize: '.93rem' }}>{room.name}</div>
-        <div style={{ fontSize: '.72rem', color: 'var(--mid)', marginTop: 2 }}>{yr}년 {parseInt(mo)}월 · {room.id}</div>
-        {room.confirmed_day && (
+        <div style={{ fontSize: '.72rem', color: 'var(--mid)', marginTop: 2 }}>{room.id}</div>
+        {cdParsed && (
           <div style={{ fontSize: '.72rem', color: 'var(--calm)', marginTop: 3, fontWeight: 700 }}>
-            📅 {parseInt(mo)}월 {room.confirmed_day}일 확정
+            📅 {cdParsed[1]}월 {cdParsed[2]}일 확정
           </div>
         )}
       </div>
       {!selectionMode && <span style={{ color: 'var(--mid)' }}>→</span>}
     </button>
   )
+}
+
+function toDateStr(y, m, d) {
+  return `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`
 }
 
 // ── 홈+캘린더 탭 (통합) ─────────────────────────
@@ -77,15 +74,15 @@ function HomeCalendarTab({ myName, myRooms, onEnterRoom }) {
   const [vm, setVm] = useState(today.getMonth() + 1)
   const [selDay, setSelDay] = useState(null)
 
-  const curKey         = monthKey(vy, vm)
-  const roomsThisMonth = myRooms.filter(r => r.month === curKey)
-  const confirmedRooms = roomsThisMonth.filter(r => r.confirmed_day)
+  const monthPrefix    = `${vy}-${String(vm).padStart(2,'0')}`
+  const confirmedRooms = myRooms.filter(r => r.confirmed_day?.startsWith(monthPrefix))
   const firstDay       = new Date(vy, vm - 1, 1).getDay()
   const totalDays      = new Date(vy, vm, 0).getDate()
 
-  const displayRooms = selDay
-    ? roomsThisMonth.filter(r => r.confirmed_day === selDay.getDate())
-    : roomsThisMonth
+  const selDateStr   = selDay ? toDateStr(selDay.getFullYear(), selDay.getMonth() + 1, selDay.getDate()) : null
+  const displayRooms = selDateStr
+    ? myRooms.filter(r => r.confirmed_day === selDateStr)
+    : myRooms
 
   function prev() {
     if (vm === 1) { setVy(y => y - 1); setVm(12) } else setVm(m => m - 1)
@@ -135,7 +132,7 @@ function HomeCalendarTab({ myName, myRooms, onEnterRoom }) {
             const holiday      = getHoliday(vy, vm, d)
             const isRed        = dow === 0 || !!holiday
             const textColor    = isRed ? '#D05055' : dow === 6 ? '#5060CC' : 'var(--dark)'
-            const hasConfirmed = roomsThisMonth.some(r => r.confirmed_day === d)
+            const hasConfirmed = myRooms.some(r => r.confirmed_day === toDateStr(vy, vm, d))
             return (
               <div key={d} onClick={() => setSelDay(prev => prev && date.toDateString() === prev.toDateString() ? null : date)}
                 style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, cursor: 'pointer', padding: '2px 0' }}>
@@ -163,13 +160,13 @@ function HomeCalendarTab({ myName, myRooms, onEnterRoom }) {
 
       {/* 방 목록 */}
       <div style={{ fontSize: '.78rem', fontWeight: 800, color: 'var(--mid)', marginBottom: 10 }}>
-        {selDay ? `${selDay.getMonth() + 1}월 ${selDay.getDate()}일 일정` : `${vm}월 모임`}
+        {selDay ? `${selDay.getMonth() + 1}월 ${selDay.getDate()}일 확정 모임` : '전체 모임'}
       </div>
 
       {displayRooms.length === 0 ? (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, padding: '20px 0', color: 'var(--mid)' }}>
           <Face type="bored" size={50} />
-          <div style={{ fontSize: '.84rem' }}>{selDay ? '이 날 확정된 모임이 없어요' : '이 달 예정된 모임이 없어요'}</div>
+          <div style={{ fontSize: '.84rem' }}>{selDay ? '이 날 확정된 모임이 없어요' : '참여 중인 모임이 없어요'}</div>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>

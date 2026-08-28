@@ -23,12 +23,12 @@ export function useMembers(room) {
 
   async function toggleDay(roomId, userId, day) {
     const me = members.find(m => m.user_id === userId)
-    if (!me) return false  // 멤버 레코드 없음 (마이그레이션 필요)
+    if (!me) return false
 
     const days = [...(me.unavailable_days || [])]
     const idx = days.indexOf(day)
     if (idx === -1) days.push(day); else days.splice(idx, 1)
-    days.sort((a, b) => a - b)
+    days.sort()
 
     // 낙관적 업데이트
     setMembers(prev => prev.map(m => m.id === me.id ? { ...m, unavailable_days: days } : m))
