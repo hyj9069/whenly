@@ -152,7 +152,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
                   onClick={() => handleCellClick(d, past)}
                 >
                   <div className={`day-num${isToday?' today':(dow===0||holiday)?' sun':dow===6?' sat':''}`}>{d}</div>
-                  {!past && <Face type={faceType} size={19} className="day-face" fill={stClass === 'st-most' ? '#909090' : undefined} />}
+                  {!past && <Face type={faceType} size={19} className="day-face" fill={stClass === 'st-most' ? '#909090' : stClass === 'st-some' ? '#C46468' : undefined} />}
                   {!past && isMine && (
                     <div className="badge badge-red" style={{ top: 'auto', bottom: -3, right: 'auto', left: -3 }}>나</div>
                   )}
