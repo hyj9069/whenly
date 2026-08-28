@@ -1,19 +1,13 @@
-const KAKAO_JS_KEY = '9791554988f51a9c4ecc86dabe5f4393'
-
-function shareKakao(url, onFail) {
-  if (!window.Kakao) { onFail('카카오 SDK가 로드되지 않았어요'); return }
-  try {
-    if (!window.Kakao.isInitialized()) window.Kakao.init(KAKAO_JS_KEY)
-    window.Kakao.Share.sendDefault({
-      objectType: 'text',
-      text: '모여모여에 초대합니다! 🎉\n아래 링크로 참여해주세요 :)',
-      link: { mobileWebUrl: url, webUrl: url },
-      buttons: [{ title: '참여하기', link: { mobileWebUrl: url, webUrl: url } }],
-    })
-  } catch (e) {
-    console.error('[Kakao Share]', e)
-    onFail('카카오 공유 실패 — 링크를 직접 복사해서 공유해주세요')
+async function nativeShare(url, onFail) {
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: '모여모여', text: '모임에 참여해주세요! 🎉', url })
+      return
+    } catch (e) {
+      if (e.name === 'AbortError') return  // 사용자가 취소
+    }
   }
+  onFail('공유를 지원하지 않는 환경이에요 — 링크를 복사해서 공유해주세요')
 }
 
 export default function ShareModal({ roomId, onClose, onToast }) {
@@ -53,7 +47,7 @@ export default function ShareModal({ roomId, onClose, onToast }) {
             width: '100%', padding: 13, background: '#FEE500', border: 'none', borderRadius: 14,
             fontSize: '.95rem', fontWeight: 800, cursor: 'pointer', color: '#3A1D1D',
             boxShadow: '0 2px 0 rgba(0,0,0,.1)',
-          }} onClick={() => shareKakao(url, msg => { onToast(msg); onClose() })}>
+          }} onClick={() => nativeShare(url, msg => { onToast(msg); onClose() })}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="#3A1D1D">
               <path d="M12 3C6.477 3 2 6.477 2 10.5c0 2.634 1.617 4.95 4.07 6.306L5 21l5.19-2.763A11.5 11.5 0 0012 18.5c5.523 0 10-3.358 10-7.5S17.523 3 12 3z"/>
             </svg>
