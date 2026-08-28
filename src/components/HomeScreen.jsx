@@ -64,6 +64,11 @@ function RoomItem({ room, onEnterRoom, selectionMode, selected, onSelect, onLong
       <div style={{ flex: 1 }}>
         <div style={{ fontWeight: 800, fontSize: '.93rem' }}>{room.name}</div>
         <div style={{ fontSize: '.72rem', color: 'var(--mid)', marginTop: 2 }}>{yr}년 {parseInt(mo)}월 · {room.id}</div>
+        {room.confirmed_day && (
+          <div style={{ fontSize: '.72rem', color: 'var(--calm)', marginTop: 3, fontWeight: 700 }}>
+            📅 {parseInt(mo)}월 {room.confirmed_day}일 확정
+          </div>
+        )}
       </div>
       {!selectionMode && <span style={{ color: 'var(--mid)' }}>→</span>}
     </button>
@@ -158,13 +163,15 @@ function CalendarTab({ myRooms, onEnterRoom }) {
   const [vm, setVm] = useState(today.getMonth() + 1)
   const [selDay, setSelDay] = useState(null)
 
-  const curKey    = monthKey(vy, vm)
+  const curKey         = monthKey(vy, vm)
   const roomsThisMonth = myRooms.filter(r => r.month === curKey)
-  const hasRooms  = roomsThisMonth.length > 0
-  const firstDay  = new Date(vy, vm - 1, 1).getDay() // 0=Sun
-  const totalDays = new Date(vy, vm, 0).getDate()
+  const confirmedRooms = roomsThisMonth.filter(r => r.confirmed_day)
+  const firstDay       = new Date(vy, vm - 1, 1).getDay()
+  const totalDays      = new Date(vy, vm, 0).getDate()
 
-  const selRooms  = selDay ? myRooms.filter(r => r.month === dayMonthKey(selDay)) : []
+  const selRooms = selDay
+    ? myRooms.filter(r => r.month === dayMonthKey(selDay) && r.confirmed_day === selDay.getDate())
+    : []
 
   function prev() {
     if (vm === 1) { setVy(y => y - 1); setVm(12) } else setVm(m => m - 1)
@@ -192,11 +199,11 @@ function CalendarTab({ myRooms, onEnterRoom }) {
         </button>
       </div>
 
-      {hasRooms && (
+      {confirmedRooms.length > 0 && (
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10, padding: '8px 12px', background: 'rgba(112,152,192,.1)', borderRadius: 12 }}>
           <Face type="excited" size={22} />
           <span style={{ fontSize: '.8rem', fontWeight: 700, color: 'var(--calm)' }}>
-            이번 달 모임 {roomsThisMonth.length}개
+            이번 달 확정 모임 {confirmedRooms.length}개
           </span>
         </div>
       )}
@@ -266,10 +273,10 @@ function CalendarTab({ myRooms, onEnterRoom }) {
         </div>
       )}
 
-      {!hasRooms && !selDay && (
+      {confirmedRooms.length === 0 && !selDay && (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, padding: '20px 0', color: 'var(--mid)' }}>
           <Face type="bored" size={50} />
-          <div style={{ fontSize: '.84rem' }}>이 달 예정된 모임이 없어요</div>
+          <div style={{ fontSize: '.84rem' }}>이 달 확정된 모임이 없어요</div>
         </div>
       )}
     </>
