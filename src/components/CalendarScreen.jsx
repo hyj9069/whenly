@@ -219,7 +219,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
         {/* 범례 */}
         <div className="legend">
           <div className="leg-item"><div className="leg-dot" style={{ background: 'rgba(78,128,102,.22)', border: '1.5px solid var(--excited)' }} />모두 가능</div>
-          <div className="leg-item"><div className="leg-dot" style={{ background: 'rgba(200,168,60,.25)', border: '1.5px solid #C8A830' }} />일부 불가</div>
+          <div className="leg-item"><div className="leg-dot" style={{ background: 'rgba(192,86,90,.18)', border: '1.5px solid var(--upset)' }} />일부 불가</div>
           <div className="leg-item"><div className="leg-dot" style={{ background: 'rgba(80,80,80,.12)', border: '1.5px solid rgba(80,80,80,.5)' }} />모두 불가</div>
         </div>
 

@@ -137,7 +137,7 @@ body {
 .day-cell.past:hover { transform: none; }
 
 .day-cell.st-all  { background: rgba(78,128,102,.1);   border-color: rgba(78,128,102,.5); }
-.day-cell.st-some { background: rgba(200,168,60,.12);  border-color: rgba(200,168,60,.55); }
+.day-cell.st-some { background: rgba(192,86,90,.10);   border-color: rgba(192,86,90,.45); }
 .day-cell.st-most { background: rgba(80,80,80,.09);    border-color: rgba(80,80,80,.4); }
 .day-cell.st-mine { background: rgba(192,86,90,.07);   border-color: rgba(192,86,90,.35); }
 
