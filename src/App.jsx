@@ -13,7 +13,7 @@ import ShareModal from './components/ShareModal'
 
 export default function App() {
   const { user, loading, myName, loginWithGoogle, logout, updateName } = useAuth()
-  const { myRooms, roomsError, loadMyRooms, createRoom, joinRoom, leaveRoom, leaveRoomById, confirmDay } = useRooms(user, myName)
+  const { myRooms, roomsError, loadMyRooms, createRoom, joinRoom, leaveRoom, leaveRoomById, confirmDay, renameRoom } = useRooms(user, myName)
   const [screen, setScreen] = useState('home')
   const [room, setRoom] = useState(null)
   const { members, toggleDay } = useMembers(room)
@@ -119,6 +119,10 @@ export default function App() {
           onConfirmDay={async day => {
             const ok = await confirmDay(room.id, day)
             if (ok) setRoom(prev => ({ ...prev, confirmed_day: day }))
+          }}
+          onRenameRoom={async name => {
+            const ok = await renameRoom(room.id, name)
+            if (ok) setRoom(prev => ({ ...prev, name }))
           }}
           onOpenShare={() => setShowShare(true)}
           onHome={() => goHome('rooms')}

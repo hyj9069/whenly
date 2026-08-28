@@ -3,10 +3,12 @@ import Face from './Face'
 import { getDayFaceType, getMemberColor } from '../utils'
 import { getHoliday } from '../holidays'
 
-export default function CalendarScreen({ room, myUserId, myName, members, onToggleDay, onConfirmDay, onOpenShare, onHome, onLeave, onGoCreate }) {
-  const [selectedDay, setSelectedDay]   = useState(null)
-  const [editMode, setEditMode]         = useState(false)
+export default function CalendarScreen({ room, myUserId, myName, members, onToggleDay, onConfirmDay, onRenameRoom, onOpenShare, onHome, onLeave, onGoCreate }) {
+  const [selectedDay, setSelectedDay]       = useState(null)
+  const [editMode, setEditMode]             = useState(false)
   const [showLeaveModal, setShowLeaveModal] = useState(false)
+  const [showRenameModal, setShowRenameModal] = useState(false)
+  const [renameValue, setRenameValue]       = useState('')
 
   const [yr, mo] = room.month.split('-').map(Number)
   const today     = new Date()
@@ -44,7 +46,15 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
         <button className="back-btn" onClick={onHome}>←</button>
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: '1.1rem', fontWeight: 800, lineHeight: 1.2 }}>{room.name}</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div style={{ fontSize: '1.1rem', fontWeight: 800, lineHeight: 1.2 }}>{room.name}</div>
+            {isHost && (
+              <button onClick={() => { setRenameValue(room.name); setShowRenameModal(true) }} style={{
+                background: 'none', border: 'none', cursor: 'pointer', padding: '2px 4px',
+                fontSize: '.8rem', color: 'var(--mid)', lineHeight: 1,
+              }}>✏️</button>
+            )}
+          </div>
           <div style={{ fontSize: '.75rem', color: 'var(--mid)', marginTop: 1 }}>
             {yr}년 {mo}월 · {total}명 참여
           </div>
@@ -274,6 +284,37 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
           cursor: 'pointer', fontFamily: 'inherit',
         }}>방 나가기</button>
       </div>
+
+      {/* 방 이름 수정 모달 */}
+      {showRenameModal && (
+        <div className="overlay" onClick={() => setShowRenameModal(false)}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <div style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: 16 }}>방 이름 수정</div>
+            <input
+              className="inp"
+              value={renameValue}
+              onChange={e => setRenameValue(e.target.value)}
+              maxLength={30}
+              autoFocus
+              style={{ marginBottom: 16 }}
+              onKeyDown={e => {
+                if (e.key === 'Enter' && renameValue.trim()) {
+                  onRenameRoom(renameValue.trim())
+                  setShowRenameModal(false)
+                }
+              }}
+            />
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setShowRenameModal(false)}>취소</button>
+              <button className="btn btn-blue" style={{ flex: 1 }}
+                disabled={!renameValue.trim()}
+                onClick={() => { onRenameRoom(renameValue.trim()); setShowRenameModal(false) }}>
+                저장
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 방 나가기 확인 모달 */}
       {showLeaveModal && (

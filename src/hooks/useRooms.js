@@ -95,6 +95,12 @@ export function useRooms(user, myName) {
     return !error
   }
 
+  async function renameRoom(roomId, name) {
+    const { error } = await supabase.from('rooms').update({ name }).eq('id', roomId)
+    if (!error) setMyRooms(prev => prev.map(r => r.id === roomId ? { ...r, name } : r))
+    return !error
+  }
+
   async function leaveRoomById(roomId) {
     const { data } = await supabase
       .from('members').select('user_id').eq('room_id', roomId).order('created_at').limit(1)
@@ -102,5 +108,5 @@ export function useRooms(user, myName) {
     await leaveRoom(roomId, isHost)
   }
 
-  return { myRooms, roomsError, loadMyRooms, createRoom, joinRoom, leaveRoom, leaveRoomById, confirmDay }
+  return { myRooms, roomsError, loadMyRooms, createRoom, joinRoom, leaveRoom, leaveRoomById, confirmDay, renameRoom }
 }
