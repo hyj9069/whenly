@@ -150,7 +150,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
                   {!past && total >= 2 && uCnt === 0 && (
                     <div className="badge badge-green">{total}</div>
                   )}
-                  {!past && total >= 2 && uCnt > 0 && aCnt > 0 && (
+                  {!past && total >= 2 && uCnt > 0 && (
                     <div className="badge badge-red">{uCnt}</div>
                   )}
                 </div>
