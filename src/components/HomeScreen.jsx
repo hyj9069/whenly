@@ -8,12 +8,6 @@ function monthKey(year, month) {
 function dayMonthKey(date) {
   return monthKey(date.getFullYear(), date.getMonth() + 1)
 }
-function getRoomsForDate(myRooms, date) {
-  const key = dayMonthKey(date)
-  const d   = date.getDate()
-  return myRooms.filter(r => r.month === key && r.confirmed_day === d)
-}
-
 // ── 방 아이템 (공통) ─────────────────────────────
 function RoomItem({ room, onEnterRoom, selectionMode, selected, onSelect, onLongPress }) {
   const pressTimer = useRef(null)
@@ -75,55 +69,11 @@ function RoomItem({ room, onEnterRoom, selectionMode, selected, onSelect, onLong
   )
 }
 
-// ── 주간 달력 (인터랙티브) ───────────────────────
-function WeekCalendar({ selected, onSelect }) {
-  const today = new Date()
-  const dow = today.getDay()
-  const offset = dow === 0 ? -6 : 1 - dow
-  const week = Array.from({ length: 7 }, (_, i) => {
-    const d = new Date(today)
-    d.setDate(today.getDate() + offset + i)
-    return d
-  })
-  const LABELS = ['월','화','수','목','금','토','일']
-
-  return (
-    <div className="card" style={{ marginBottom: 16 }}>
-      <div style={{ fontSize: '.75rem', fontWeight: 700, color: 'var(--mid)', marginBottom: 12 }}>
-        {today.getFullYear()}년 {today.getMonth() + 1}월
-      </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 2 }}>
-        {week.map((d, i) => {
-          const isToday    = d.toDateString() === today.toDateString()
-          const isSelected = d.toDateString() === selected.toDateString()
-          const labelColor = i === 6 ? '#D05055' : i === 5 ? '#5060CC' : 'var(--mid)'
-          const numColor   = i === 6 ? '#D05055' : i === 5 ? '#5060CC' : 'var(--dark)'
-          return (
-            <div key={i} onClick={() => onSelect(d)}
-              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5, cursor: 'pointer' }}>
-              <span style={{ fontSize: '.62rem', fontWeight: 700, color: labelColor }}>{LABELS[i]}</span>
-              <div style={{
-                width: 33, height: 33, borderRadius: '50%',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                background: isSelected ? 'var(--calm)' : isToday ? 'rgba(112,152,192,.12)' : 'transparent',
-                border: isToday && !isSelected ? '1.5px solid var(--calm)' : '1.5px solid transparent',
-                color: isSelected ? '#fff' : numColor,
-                fontSize: '.85rem', fontWeight: 800, transition: 'all .15s',
-              }}>
-                {d.getDate()}
-              </div>
-            </div>
-          )
-        })}
-      </div>
-    </div>
-  )
-}
-
 // ── 홈 탭 ───────────────────────────────────────
 function HomeTab({ myName, myRooms, onEnterRoom }) {
-  const [selected, setSelected] = useState(new Date())
-  const rooms = getRoomsForDate(myRooms, selected)
+  const today  = new Date()
+  const curKey = monthKey(today.getFullYear(), today.getMonth() + 1)
+  const rooms  = myRooms.filter(r => r.month === curKey)
 
   return (
     <>
@@ -131,13 +81,8 @@ function HomeTab({ myName, myRooms, onEnterRoom }) {
         안녕하세요, {myName}님 👋
       </div>
 
-      <WeekCalendar selected={selected} onSelect={setSelected} />
-
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 10 }}>
-        <span style={{ fontSize: '.78rem', fontWeight: 800, color: 'var(--mid)' }}>일정</span>
-        <span style={{ fontSize: '.72rem', color: 'var(--mid)' }}>
-          {selected.getMonth() + 1}월 {selected.getDate()}일
-        </span>
+      <div style={{ fontSize: '.78rem', fontWeight: 800, color: 'var(--mid)', marginBottom: 10 }}>
+        {today.getFullYear()}년 {today.getMonth() + 1}월 모임
       </div>
 
       {rooms.length === 0 ? (
