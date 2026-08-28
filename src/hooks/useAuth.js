@@ -30,6 +30,7 @@ export function useAuth() {
 
   async function updateName(name) {
     await supabase.auth.updateUser({ data: { full_name: name } })
+    if (user) await supabase.from('members').update({ name }).eq('user_id', user.id)
   }
 
   return { user, loading, myName: getUserName(user), loginWithGoogle, logout, updateName }

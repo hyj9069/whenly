@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Face from './Face'
 import { getDayFaceType, getMemberColor } from '../utils'
+import { getHoliday } from '../holidays'
 
 export default function CalendarScreen({ room, myUserId, myName, members, onToggleDay, onConfirmDay, onOpenShare, onHome, onLeave, onGoCreate }) {
   const [selectedDay, setSelectedDay] = useState(null)
@@ -23,12 +24,6 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
 
   const me    = members.find(m => m.user_id === myUserId)
   const mySet = new Set(me?.unavailable_days || [])
-
-  const bestDays = []
-  for (let d = 1; d <= totalDays; d++) {
-    const date = new Date(yr, mo - 1, d)
-    if (date >= todayDate && (!umap[d] || umap[d].length === 0)) bestDays.push(d)
-  }
 
   function enterEdit()  { setEditMode(true);  setSelectedDay(null) }
   function exitEdit()   { setEditMode(false) }
@@ -82,19 +77,6 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
           </div>
         )}
 
-        {/* 모두 가능한 날 배너 */}
-        {bestDays.length > 0 && total >= 2 && (
-          <div className="best-banner">
-            <Face type="excited" size={40} style={{ flexShrink: 0 }} />
-            <div>
-              <div style={{ fontSize: '.75rem', fontWeight: 800, color: 'var(--excited)' }}>모두 가능한 날 🎉</div>
-              <div style={{ fontSize: '.95rem', fontWeight: 800, marginTop: 2 }}>
-                {bestDays.map(d => `${d}일`).join(', ')}
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* 내 안되는 날 카드 */}
         <div style={{
           display: 'flex', alignItems: 'center', gap: 10,
@@ -144,10 +126,11 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
               const date = new Date(yr, mo - 1, d)
               const past = date < todayDate
               const isToday    = date.getTime() === todayDate.getTime()
-              const uNames = umap[d] || []
-              const uCnt   = uNames.length
-              const aCnt   = total - uCnt
-              const isMine = mySet.has(d)
+              const uNames  = umap[d] || []
+              const uCnt    = uNames.length
+              const aCnt    = total - uCnt
+              const isMine  = mySet.has(d)
+              const holiday = getHoliday(yr, mo, d)
               const faceType   = getDayFaceType(uCnt, total, isMine)
               const isSelected = !editMode && selectedDay === d
 
@@ -169,7 +152,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
                   }}
                   onClick={() => handleCellClick(d, past)}
                 >
-                  <div className={`day-num${isToday?' today':dow===0?' sun':dow===6?' sat':''}`}>{d}</div>
+                  <div className={`day-num${isToday?' today':(dow===0||holiday)?' sun':dow===6?' sat':''}`}>{d}</div>
                   {!past && <Face type={faceType} size={19} className="day-face" />}
                   {!past && isMine && (
                     <div className="badge badge-red" style={{ top: 'auto', bottom: -3, right: 'auto', left: -3 }}>나</div>
@@ -189,7 +172,14 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
           const availNames   = members.map(m => m.name).filter(n => !unavailNames.includes(n))
           return (
             <div className="card" style={{ marginBottom: 12, borderLeft: `3px solid ${unavailNames.length === 0 ? 'var(--excited)' : 'var(--upset)'}` }}>
-              <div style={{ fontWeight: 800, fontSize: '.9rem', marginBottom: 8 }}>{mo}월 {selectedDay}일</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                <div style={{ fontWeight: 800, fontSize: '.9rem' }}>{mo}월 {selectedDay}일</div>
+                {getHoliday(yr, mo, selectedDay) && (
+                  <span style={{ fontSize: '.72rem', fontWeight: 700, color: '#C85050', background: 'rgba(200,85,85,.1)', borderRadius: 8, padding: '2px 8px' }}>
+                    {getHoliday(yr, mo, selectedDay)}
+                  </span>
+                )}
+              </div>
               {unavailNames.length === 0 ? (
                 <div style={{ fontSize: '.83rem', color: 'var(--excited)', fontWeight: 700 }}>모두 가능한 날 🎉</div>
               ) : (
