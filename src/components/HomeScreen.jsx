@@ -82,7 +82,7 @@ function HomeCalendarTab({ myName, myRooms, onEnterRoom }) {
   const selDateStr   = selDay ? toDateStr(selDay.getFullYear(), selDay.getMonth() + 1, selDay.getDate()) : null
   const displayRooms = selDateStr
     ? myRooms.filter(r => r.confirmed_day === selDateStr)
-    : myRooms
+    : myRooms.filter(r => r.confirmed_day?.startsWith(monthPrefix))
 
   function prev() {
     if (vm === 1) { setVy(y => y - 1); setVm(12) } else setVm(m => m - 1)
@@ -160,13 +160,13 @@ function HomeCalendarTab({ myName, myRooms, onEnterRoom }) {
 
       {/* 방 목록 */}
       <div style={{ fontSize: '.78rem', fontWeight: 800, color: 'var(--mid)', marginBottom: 10 }}>
-        {selDay ? `${selDay.getMonth() + 1}월 ${selDay.getDate()}일 확정 모임` : '전체 모임'}
+        {selDay ? `${selDay.getMonth() + 1}월 ${selDay.getDate()}일 확정 모임` : `${vm}월 확정 모임`}
       </div>
 
       {displayRooms.length === 0 ? (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, padding: '20px 0', color: 'var(--mid)' }}>
           <Face type="bored" size={50} />
-          <div style={{ fontSize: '.84rem' }}>{selDay ? '이 날 확정된 모임이 없어요' : '참여 중인 모임이 없어요'}</div>
+          <div style={{ fontSize: '.84rem' }}>이 달 확정된 모임이 없어요</div>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
