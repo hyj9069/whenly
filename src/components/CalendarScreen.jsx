@@ -4,8 +4,9 @@ import { getDayFaceType, getMemberColor } from '../utils'
 import { getHoliday } from '../holidays'
 
 export default function CalendarScreen({ room, myUserId, myName, members, onToggleDay, onConfirmDay, onOpenShare, onHome, onLeave, onGoCreate }) {
-  const [selectedDay, setSelectedDay] = useState(null)
-  const [editMode, setEditMode]       = useState(false)
+  const [selectedDay, setSelectedDay]   = useState(null)
+  const [editMode, setEditMode]         = useState(false)
+  const [showLeaveModal, setShowLeaveModal] = useState(false)
 
   const [yr, mo] = room.month.split('-').map(Number)
   const today     = new Date()
@@ -264,7 +265,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
         paddingBottom: 'calc(10px + env(safe-area-inset-bottom))',
         zIndex: 40,
       }}>
-        <button onClick={onLeave} style={{
+        <button onClick={() => setShowLeaveModal(true)} style={{
           width: '100%', padding: '12px',
           background: 'rgba(192,86,90,.07)',
           border: '1.5px solid rgba(192,86,90,.3)',
@@ -273,6 +274,26 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
           cursor: 'pointer', fontFamily: 'inherit',
         }}>방 나가기</button>
       </div>
+
+      {/* 방 나가기 확인 모달 */}
+      {showLeaveModal && (
+        <div className="overlay" onClick={() => setShowLeaveModal(false)}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <div style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: 8 }}>
+              {isHost ? '방을 삭제할까요?' : '방을 나갈까요?'}
+            </div>
+            <div style={{ fontSize: '.85rem', color: 'var(--mid)', marginBottom: 20, lineHeight: 1.6 }}>
+              {isHost
+                ? '방장이 나가면 방이 삭제되고\n모든 데이터가 사라져요.'
+                : '방에서 나가면 다시 초대 링크로만\n참여할 수 있어요.'}
+            </div>
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setShowLeaveModal(false)}>취소</button>
+              <button className="btn" style={{ flex: 1, background: 'var(--upset)', color: '#fff' }} onClick={() => { setShowLeaveModal(false); onLeave() }}>확인</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

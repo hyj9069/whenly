@@ -57,10 +57,6 @@ export default function App() {
 
   async function handleLeave() {
     const isHost = members[0]?.user_id === user.id
-    const msg = isHost
-      ? '방을 삭제하면 모든 데이터가 사라져요.\n정말 삭제할까요?'
-      : '방에서 나갈까요?'
-    if (!window.confirm(msg)) return
     await leaveRoom(room.id, isHost)
     setRoom(null)
     setScreen('home')
