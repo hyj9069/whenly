@@ -264,18 +264,6 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
         </div>
       </div>
 
-      {/* 새 방 만들기 FAB */}
-      <button onClick={onGoCreate} title="새 방 만들기" style={{
-        position: 'fixed', bottom: 76, right: 'max(20px, calc(50vw - 220px))',
-        width: 50, height: 50, borderRadius: '50%',
-        background: 'var(--calm)', color: '#fff',
-        fontSize: '1.5rem', fontWeight: 300,
-        border: 'none', cursor: 'pointer',
-        boxShadow: '0 3px 14px rgba(91,141,184,.45)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        zIndex: 40,
-      }}>+</button>
-
       {/* 하단 고정바 */}
       <div style={{
         position: 'fixed', bottom: 0, left: 0, right: 0,

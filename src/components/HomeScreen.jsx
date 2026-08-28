@@ -69,40 +69,8 @@ function RoomItem({ room, onEnterRoom, selectionMode, selected, onSelect, onLong
   )
 }
 
-// ── 홈 탭 ───────────────────────────────────────
-function HomeTab({ myName, myRooms, onEnterRoom }) {
-  const today  = new Date()
-  const curKey = monthKey(today.getFullYear(), today.getMonth() + 1)
-  const rooms  = myRooms.filter(r => r.month === curKey)
-
-  return (
-    <>
-      <div style={{ fontWeight: 800, fontSize: '1.05rem', marginBottom: 16 }}>
-        안녕하세요, {myName}님 👋
-      </div>
-
-      <div style={{ fontSize: '.78rem', fontWeight: 800, color: 'var(--mid)', marginBottom: 10 }}>
-        {today.getFullYear()}년 {today.getMonth() + 1}월 모임
-      </div>
-
-      {rooms.length === 0 ? (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, padding: '22px 0', color: 'var(--mid)' }}>
-          <Face type="bored" size={50} />
-          <div style={{ fontSize: '.84rem', textAlign: 'center', lineHeight: 1.6 }}>
-            이 달 예정된 모임이 없어요
-          </div>
-        </div>
-      ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {rooms.map(r => <RoomItem key={r.id} room={r} onEnterRoom={onEnterRoom} />)}
-        </div>
-      )}
-    </>
-  )
-}
-
-// ── 캘린더 탭 ────────────────────────────────────
-function CalendarTab({ myRooms, onEnterRoom }) {
+// ── 홈+캘린더 탭 (통합) ─────────────────────────
+function HomeCalendarTab({ myName, myRooms, onEnterRoom }) {
   const today = new Date()
   const [vy, setVy] = useState(today.getFullYear())
   const [vm, setVm] = useState(today.getMonth() + 1)
@@ -114,9 +82,9 @@ function CalendarTab({ myRooms, onEnterRoom }) {
   const firstDay       = new Date(vy, vm - 1, 1).getDay()
   const totalDays      = new Date(vy, vm, 0).getDate()
 
-  const selRooms = selDay
-    ? myRooms.filter(r => r.month === dayMonthKey(selDay) && r.confirmed_day === selDay.getDate())
-    : []
+  const displayRooms = selDay
+    ? roomsThisMonth.filter(r => r.confirmed_day === selDay.getDate())
+    : roomsThisMonth
 
   function prev() {
     if (vm === 1) { setVy(y => y - 1); setVm(12) } else setVm(m => m - 1)
@@ -129,56 +97,45 @@ function CalendarTab({ myRooms, onEnterRoom }) {
 
   return (
     <>
-      {/* 월 탐색 헤더 */}
+      {/* 인사말 */}
+      <div style={{ fontWeight: 800, fontSize: '1.05rem', marginBottom: 16 }}>
+        안녕하세요, {myName}님 👋
+      </div>
+
+      {/* 월 탐색 */}
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: 12 }}>
-        <button onClick={prev}
-          style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer', color: 'var(--mid)', padding: '4px 8px', fontFamily: 'inherit' }}>
-          ‹
-        </button>
-        <div style={{ flex: 1, textAlign: 'center', fontWeight: 800, fontSize: '1rem' }}>
-          {vy}년 {vm}월
-        </div>
-        <button onClick={next}
-          style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer', color: 'var(--mid)', padding: '4px 8px', fontFamily: 'inherit' }}>
-          ›
-        </button>
+        <button onClick={prev} style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer', color: 'var(--mid)', padding: '4px 8px', fontFamily: 'inherit' }}>‹</button>
+        <div style={{ flex: 1, textAlign: 'center', fontWeight: 800, fontSize: '1rem' }}>{vy}년 {vm}월</div>
+        <button onClick={next} style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer', color: 'var(--mid)', padding: '4px 8px', fontFamily: 'inherit' }}>›</button>
       </div>
 
       {confirmedRooms.length > 0 && (
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10, padding: '8px 12px', background: 'rgba(112,152,192,.1)', borderRadius: 12 }}>
           <Face type="excited" size={22} />
-          <span style={{ fontSize: '.8rem', fontWeight: 700, color: 'var(--calm)' }}>
-            이번 달 확정 모임 {confirmedRooms.length}개
-          </span>
+          <span style={{ fontSize: '.8rem', fontWeight: 700, color: 'var(--calm)' }}>이번 달 확정 모임 {confirmedRooms.length}개</span>
         </div>
       )}
 
       {/* 달력 그리드 */}
-      <div className="card" style={{ marginBottom: 12 }}>
-        {/* 요일 헤더 */}
+      <div className="card" style={{ marginBottom: 16 }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', marginBottom: 6 }}>
           {['일','월','화','수','목','금','토'].map((d, i) => (
             <div key={d} style={{ textAlign: 'center', fontSize: '.65rem', fontWeight: 800, color: i === 0 ? '#D05055' : i === 6 ? '#5060CC' : 'var(--mid)', padding: '4px 0' }}>{d}</div>
           ))}
         </div>
-
-        {/* 날짜 셀 */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px 0' }}>
-          {Array.from({ length: firstDay }, (_, i) => (
-            <div key={`e${i}`} />
-          ))}
+          {Array.from({ length: firstDay }, (_, i) => <div key={`e${i}`} />)}
           {Array.from({ length: totalDays }, (_, i) => {
-            const d  = i + 1
-            const dow = (firstDay + d - 1) % 7
-            const date = new Date(vy, vm - 1, d)
+            const d            = i + 1
+            const dow          = (firstDay + d - 1) % 7
+            const date         = new Date(vy, vm - 1, d)
             const isToday      = date.toDateString() === today.toDateString()
             const isSelected   = selDay && date.toDateString() === selDay.toDateString()
             const textColor    = dow === 0 ? '#D05055' : dow === 6 ? '#5060CC' : 'var(--dark)'
             const hasConfirmed = roomsThisMonth.some(r => r.confirmed_day === d)
-
             return (
-              <div key={d} onClick={() => setSelDay(date)}
-                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, cursor: hasConfirmed ? 'pointer' : 'default', padding: '2px 0' }}>
+              <div key={d} onClick={() => setSelDay(prev => prev && date.toDateString() === prev.toDateString() ? null : date)}
+                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, cursor: 'pointer', padding: '2px 0' }}>
                 <div style={{
                   width: 32, height: 32, borderRadius: '50%',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -186,13 +143,9 @@ function CalendarTab({ myRooms, onEnterRoom }) {
                   border: isToday && !isSelected ? '1.5px solid var(--calm)' : '1.5px solid transparent',
                   color: isSelected ? '#fff' : textColor,
                   fontSize: '.84rem', fontWeight: 800, transition: 'all .15s',
-                }}>
-                  {d}
-                </div>
+                }}>{d}</div>
                 <div style={{ height: 5, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  {hasConfirmed && (
-                    <div style={{ width: 5, height: 5, borderRadius: '50%', background: isSelected ? 'var(--mid)' : 'var(--calm)', opacity: isSelected ? 0.5 : 0.7 }} />
-                  )}
+                  {hasConfirmed && <div style={{ width: 5, height: 5, borderRadius: '50%', background: isSelected ? 'var(--mid)' : 'var(--calm)', opacity: isSelected ? 0.5 : 0.7 }} />}
                 </div>
               </div>
             )
@@ -200,28 +153,19 @@ function CalendarTab({ myRooms, onEnterRoom }) {
         </div>
       </div>
 
-      {/* 선택 날짜의 모임 목록 */}
-      {selDay && (
-        <div>
-          <div style={{ fontSize: '.75rem', fontWeight: 700, color: 'var(--mid)', marginBottom: 8 }}>
-            {selDay.getMonth() + 1}월 {selDay.getDate()}일 일정
-          </div>
-          {selRooms.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '16px 0', color: 'var(--mid)', fontSize: '.84rem' }}>
-              이 달 모임 없음
-            </div>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {selRooms.map(r => <RoomItem key={r.id} room={r} onEnterRoom={onEnterRoom} />)}
-            </div>
-          )}
-        </div>
-      )}
+      {/* 방 목록 */}
+      <div style={{ fontSize: '.78rem', fontWeight: 800, color: 'var(--mid)', marginBottom: 10 }}>
+        {selDay ? `${selDay.getMonth() + 1}월 ${selDay.getDate()}일 일정` : `${vm}월 모임`}
+      </div>
 
-      {confirmedRooms.length === 0 && !selDay && (
+      {displayRooms.length === 0 ? (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, padding: '20px 0', color: 'var(--mid)' }}>
           <Face type="bored" size={50} />
-          <div style={{ fontSize: '.84rem' }}>이 달 확정된 모임이 없어요</div>
+          <div style={{ fontSize: '.84rem' }}>{selDay ? '이 날 확정된 모임이 없어요' : '이 달 예정된 모임이 없어요'}</div>
+        </div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {displayRooms.map(r => <RoomItem key={r.id} room={r} onEnterRoom={onEnterRoom} />)}
         </div>
       )}
     </>
@@ -431,18 +375,16 @@ function ProfileIcon({ active }) {
 // ── 메인 ────────────────────────────────────────
 const TABS = [
   { key: 'home',    label: '홈',      Icon: HomeIcon },
-  { key: 'cal',     label: '캘린더',  Icon: CalIcon },
   { key: 'rooms',   label: '모임',    Icon: RoomsIcon },
   { key: 'profile', label: '내 정보', Icon: ProfileIcon },
 ]
 
 export default function HomeScreen({ user, myName, myRooms, initialTab = 'home', onCreate, onJoinCode, onEnterRoom, onLogout, onUpdateName, onLeaveRoom }) {
-  const [tab, setTab] = useState(initialTab)
+  const [tab, setTab] = useState(initialTab === 'cal' ? 'home' : initialTab)
 
   return (
     <div className="screen" style={{ paddingTop: 24, paddingBottom: 86 }}>
-      {tab === 'home'    && <HomeTab    myName={myName} myRooms={myRooms} onEnterRoom={onEnterRoom} />}
-      {tab === 'cal'     && <CalendarTab myRooms={myRooms} onEnterRoom={onEnterRoom} />}
+      {tab === 'home'    && <HomeCalendarTab myName={myName} myRooms={myRooms} onEnterRoom={onEnterRoom} />}
       {tab === 'rooms'   && <RoomsTab   myRooms={myRooms} onCreate={onCreate} onJoinCode={onJoinCode} onEnterRoom={onEnterRoom} onLeaveRoom={onLeaveRoom} />}
       {tab === 'profile' && <ProfileTab user={user} myName={myName} onLogout={onLogout} onUpdateName={onUpdateName} />}
 
@@ -451,7 +393,7 @@ export default function HomeScreen({ user, myName, myRooms, initialTab = 'home',
         left: '50%', transform: 'translateX(-50%)',
         width: '100%', maxWidth: 480,
         background: '#fff', borderTop: '1px solid rgba(0,0,0,.08)',
-        display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)',
+        display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
         paddingBottom: 'env(safe-area-inset-bottom)',
         zIndex: 50, boxShadow: '0 -2px 16px rgba(0,0,0,.06)',
       }}>

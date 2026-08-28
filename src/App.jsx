@@ -127,7 +127,6 @@ export default function App() {
           onOpenShare={() => setShowShare(true)}
           onHome={() => goHome('rooms')}
           onLeave={handleLeave}
-          onGoCreate={() => { setRoom(null); setScreen('create') }}
         />
       )}
 
