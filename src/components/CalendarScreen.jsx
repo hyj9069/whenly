@@ -137,7 +137,6 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
               let stClass = ''
               if (!past) {
                 if (total >= 2 && uCnt === total)              stClass = 'st-most'
-                else if (isMine)                               stClass = 'st-mine'
                 else if (total >= 2 && uCnt === 0)             stClass = 'st-all'
                 else if (total >= 2 && uCnt > 0 && aCnt > 0)  stClass = 'st-some'
               }
@@ -153,7 +152,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
                   onClick={() => handleCellClick(d, past)}
                 >
                   <div className={`day-num${isToday?' today':(dow===0||holiday)?' sun':dow===6?' sat':''}`}>{d}</div>
-                  {!past && <Face type={faceType} size={19} className="day-face" />}
+                  {!past && <Face type={faceType} size={19} className="day-face" fill={stClass === 'st-most' ? '#909090' : undefined} />}
                   {!past && isMine && (
                     <div className="badge badge-red" style={{ top: 'auto', bottom: -3, right: 'auto', left: -3 }}>나</div>
                   )}
@@ -221,7 +220,6 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
         <div className="legend">
           <div className="leg-item"><div className="leg-dot" style={{ background: 'rgba(78,128,102,.22)', border: '1.5px solid var(--excited)' }} />모두 가능</div>
           <div className="leg-item"><div className="leg-dot" style={{ background: 'rgba(200,168,60,.25)', border: '1.5px solid #C8A830' }} />일부 불가</div>
-          <div className="leg-item"><div className="leg-dot" style={{ background: 'rgba(192,86,90,.12)', border: '1.5px solid var(--upset)' }} />내가 불가</div>
           <div className="leg-item"><div className="leg-dot" style={{ background: 'rgba(80,80,80,.12)', border: '1.5px solid rgba(80,80,80,.5)' }} />모두 불가</div>
         </div>
 
@@ -229,19 +227,22 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
         <div className="card" style={{ marginBottom: 12 }}>
           <div style={{ fontSize: '.85rem', fontWeight: 800, marginBottom: 10 }}>참여자 현황 👥</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
-            {members.map(mb => (
+            {members.map(mb => {
+              const displayName = mb.user_id === myUserId ? myName : mb.name
+              return (
               <div key={mb.id} className="member-item">
-                <Face type="happy" size={32} fill={getMemberColor(mb.user_id, myUserId, mb.name)} style={{ flexShrink: 0 }} />
+                <Face type="happy" size={32} fill={getMemberColor(mb.user_id, myUserId, displayName)} style={{ flexShrink: 0 }} />
                 <div style={{ flex: 1 }}>
                   <div style={{ fontWeight: 700, fontSize: '.85rem', color: mb.user_id === myUserId ? 'var(--calm)' : 'inherit' }}>
-                    {mb.name}{mb.user_id === myUserId ? ' (나)' : ''}
+                    {displayName}{mb.user_id === myUserId ? ' (나)' : ''}
                   </div>
                 </div>
                 <div style={{ fontSize: '.74rem', color: 'var(--mid)' }}>
                   {(mb.unavailable_days?.length ?? 0) === 0 ? '없음 🙆' : `${mb.unavailable_days.length}일 안됨`}
                 </div>
               </div>
-            ))}
+            )})}
+
           </div>
           <div className="divider" />
           <button className="btn btn-ghost" style={{ fontSize: '.82rem', padding: 10 }} onClick={onOpenShare}>
