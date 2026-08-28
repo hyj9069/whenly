@@ -13,7 +13,7 @@ import ShareModal from './components/ShareModal'
 
 export default function App() {
   const { user, loading, myName, loginWithGoogle, logout, updateName } = useAuth()
-  const { myRooms, roomsError, loadMyRooms, createRoom, joinRoom, leaveRoom, leaveRoomById } = useRooms(user, myName)
+  const { myRooms, roomsError, loadMyRooms, createRoom, joinRoom, leaveRoom, leaveRoomById, confirmDay } = useRooms(user, myName)
   const [screen, setScreen] = useState('home')
   const [room, setRoom] = useState(null)
   const { members, toggleDay } = useMembers(room)
@@ -119,6 +119,10 @@ export default function App() {
           onToggleDay={async day => {
             const ok = await toggleDay(room.id, user.id, day)
             if (ok === false) showToast('저장 실패 — Supabase 마이그레이션을 먼저 실행해주세요')
+          }}
+          onConfirmDay={async day => {
+            const ok = await confirmDay(room.id, day)
+            if (ok) setRoom(prev => ({ ...prev, confirmed_day: day }))
           }}
           onOpenShare={() => setShowShare(true)}
           onHome={() => goHome('rooms')}

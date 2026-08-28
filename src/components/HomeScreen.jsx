@@ -10,7 +10,8 @@ function dayMonthKey(date) {
 }
 function getRoomsForDate(myRooms, date) {
   const key = dayMonthKey(date)
-  return myRooms.filter(r => r.month === key)
+  const d   = date.getDate()
+  return myRooms.filter(r => r.month === key && r.confirmed_day === d)
 }
 
 // ── 방 아이템 (공통) ─────────────────────────────
@@ -45,6 +46,7 @@ function RoomItem({ room, onEnterRoom, selectionMode, selected, onSelect, onLong
         borderRadius: 16, cursor: 'pointer', textAlign: 'left',
         boxShadow: '0 2px 8px var(--shadow)', fontFamily: 'inherit', width: '100%',
         transition: 'background .15s, border-color .15s',
+        userSelect: 'none', WebkitUserSelect: 'none',
       }}>
       {selectionMode ? (
         <div style={{
@@ -217,13 +219,14 @@ function CalendarTab({ myRooms, onEnterRoom }) {
             const d  = i + 1
             const dow = (firstDay + d - 1) % 7
             const date = new Date(vy, vm - 1, d)
-            const isToday    = date.toDateString() === today.toDateString()
-            const isSelected = selDay && date.toDateString() === selDay.toDateString()
-            const textColor  = dow === 0 ? '#D05055' : dow === 6 ? '#5060CC' : 'var(--dark)'
+            const isToday      = date.toDateString() === today.toDateString()
+            const isSelected   = selDay && date.toDateString() === selDay.toDateString()
+            const textColor    = dow === 0 ? '#D05055' : dow === 6 ? '#5060CC' : 'var(--dark)'
+            const hasConfirmed = roomsThisMonth.some(r => r.confirmed_day === d)
 
             return (
               <div key={d} onClick={() => setSelDay(date)}
-                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, cursor: hasRooms ? 'pointer' : 'default', padding: '2px 0' }}>
+                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, cursor: hasConfirmed ? 'pointer' : 'default', padding: '2px 0' }}>
                 <div style={{
                   width: 32, height: 32, borderRadius: '50%',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -234,9 +237,8 @@ function CalendarTab({ myRooms, onEnterRoom }) {
                 }}>
                   {d}
                 </div>
-                {/* 모임 도트 */}
                 <div style={{ height: 5, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  {hasRooms && (
+                  {hasConfirmed && (
                     <div style={{ width: 5, height: 5, borderRadius: '50%', background: isSelected ? 'var(--mid)' : 'var(--calm)', opacity: isSelected ? 0.5 : 0.7 }} />
                   )}
                 </div>

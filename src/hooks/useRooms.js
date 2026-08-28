@@ -27,7 +27,7 @@ export function useRooms(user, myName) {
     const ids = memberRows.map(m => m.room_id)
     const { data: roomRows, error: e2 } = await supabase
       .from('rooms')
-      .select('id, name, month')
+      .select('id, name, month, confirmed_day')
       .in('id', ids)
 
     if (!e2 && roomRows) setMyRooms(roomRows)
@@ -89,6 +89,12 @@ export function useRooms(user, myName) {
     setMyRooms(prev => prev.filter(r => r.id !== roomId))
   }
 
+  async function confirmDay(roomId, day) {
+    const { error } = await supabase.from('rooms').update({ confirmed_day: day }).eq('id', roomId)
+    if (!error) setMyRooms(prev => prev.map(r => r.id === roomId ? { ...r, confirmed_day: day } : r))
+    return !error
+  }
+
   async function leaveRoomById(roomId) {
     const { data } = await supabase
       .from('members').select('user_id').eq('room_id', roomId).order('created_at').limit(1)
@@ -96,5 +102,5 @@ export function useRooms(user, myName) {
     await leaveRoom(roomId, isHost)
   }
 
-  return { myRooms, roomsError, loadMyRooms, createRoom, joinRoom, leaveRoom, leaveRoomById }
+  return { myRooms, roomsError, loadMyRooms, createRoom, joinRoom, leaveRoom, leaveRoomById, confirmDay }
 }

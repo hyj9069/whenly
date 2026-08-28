@@ -2,7 +2,7 @@ import { useState } from 'react'
 import Face from './Face'
 import { getDayFaceType, getMemberColor } from '../utils'
 
-export default function CalendarScreen({ room, myUserId, myName, members, onToggleDay, onOpenShare, onHome, onLeave, onGoCreate }) {
+export default function CalendarScreen({ room, myUserId, myName, members, onToggleDay, onConfirmDay, onOpenShare, onHome, onLeave, onGoCreate }) {
   const [selectedDay, setSelectedDay] = useState(null)
   const [editMode, setEditMode]       = useState(false)
 
@@ -12,6 +12,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
   const firstDay  = new Date(yr, mo - 1, 1).getDay()
   const totalDays = new Date(yr, mo, 0).getDate()
   const total     = members.length
+  const isHost    = members[0]?.user_id === myUserId
 
   const umap = {}
   for (const mb of members)
@@ -58,6 +59,29 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
       </div>
 
       <div className="scroll">
+        {/* 확정된 날짜 배너 */}
+        {room.confirmed_day && (
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 10,
+            background: 'rgba(91,141,184,.12)',
+            border: '1.5px solid rgba(91,141,184,.45)',
+            borderRadius: 14, padding: '13px 15px', marginBottom: 12,
+          }}>
+            <span style={{ fontSize: '1.3rem' }}>📅</span>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: '.75rem', fontWeight: 800, color: 'var(--calm)' }}>확정된 날짜</div>
+              <div style={{ fontSize: '.95rem', fontWeight: 800, marginTop: 2 }}>{mo}월 {room.confirmed_day}일</div>
+            </div>
+            {isHost && (
+              <button onClick={() => onConfirmDay(null)} style={{
+                background: 'none', border: '1px solid rgba(91,141,184,.4)', borderRadius: 8,
+                padding: '4px 10px', fontSize: '.72rem', fontWeight: 700,
+                cursor: 'pointer', color: 'var(--calm)', fontFamily: 'inherit',
+              }}>취소</button>
+            )}
+          </div>
+        )}
+
         {/* 모두 가능한 날 배너 */}
         {bestDays.length > 0 && total >= 2 && (
           <div className="best-banner">
@@ -185,6 +209,19 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
                     </div>
                   </>}
                 </>
+              )}
+              {isHost && (
+                <div style={{ marginTop: 12, paddingTop: 10, borderTop: '1px solid var(--border)' }}>
+                  {room.confirmed_day === selectedDay ? (
+                    <button className="btn btn-ghost" style={{ fontSize: '.82rem', padding: 10 }} onClick={() => onConfirmDay(null)}>
+                      확정 취소하기
+                    </button>
+                  ) : (
+                    <button className="btn btn-blue" style={{ fontSize: '.82rem', padding: 10 }} onClick={() => onConfirmDay(selectedDay)}>
+                      📅 이 날로 확정하기
+                    </button>
+                  )}
+                </div>
               )}
             </div>
           )
