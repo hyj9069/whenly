@@ -171,8 +171,8 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
                 >
                   <div className={`day-num${isToday?' today':dow===0?' sun':dow===6?' sat':''}`}>{d}</div>
                   {!past && <Face type={faceType} size={19} className="day-face" />}
-                  {!past && total >= 2 && uCnt === 0 && (
-                    <div className="badge badge-green">{total}</div>
+                  {!past && isMine && (
+                    <div className="badge badge-red" style={{ top: 'auto', bottom: -3, right: 'auto', left: -3 }}>나</div>
                   )}
                   {!past && total >= 2 && uCnt > 0 && (
                     <div className="badge badge-red">{uCnt}</div>
