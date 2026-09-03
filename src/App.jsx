@@ -113,6 +113,7 @@ export default function App() {
   }
 
   const [homeInitialTab, setHomeInitialTab] = useState('home')
+  const [createFromTab,  setCreateFromTab]  = useState('home')
 
   async function goHome(tab = 'home') {
     setHomeInitialTab(tab)
@@ -147,7 +148,7 @@ export default function App() {
         <HomeScreen
           user={user} myName={myName} myRooms={myRooms}
           initialTab={homeInitialTab}
-          onCreate={() => setScreen('create')}
+          onCreate={(fromTab = 'rooms') => { setCreateFromTab(fromTab); setScreen('create') }}
           onJoinCode={() => setScreen('join')}
           onEnterRoom={r => { setRoom(r); setScreen('cal') }}
           onLogout={handleLogout}
@@ -157,7 +158,7 @@ export default function App() {
       )}
 
       {user && screen === 'create' && (
-        <CreateScreen onBack={() => goHome('rooms')} onCreate={handleCreate} defaultName={myName} />
+        <CreateScreen onBack={() => goHome(createFromTab)} onCreate={handleCreate} defaultName={myName} />
       )}
 
       {user && screen === 'join' && (

@@ -64,6 +64,94 @@ function RoomItem({ room, onEnterRoom, selectionMode, selected, onSelect, onLong
   )
 }
 
+// ── 날짜 바텀시트 ────────────────────────────────
+function DaySheet({ selDay, holiday, rooms, onClose, onEnterRoom }) {
+  const [sheetTab, setSheetTab] = useState('일정')
+
+  if (!selDay) return null
+
+  const dow   = ['일','월','화','수','목','금','토'][selDay.getDay()]
+  const isRed = selDay.getDay() === 0 || !!holiday
+
+  return (
+    <>
+      <div onClick={onClose} style={{
+        position: 'fixed', inset: 0,
+        background: 'rgba(0,0,0,0.18)',
+        backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)',
+        zIndex: 60,
+      }} />
+      <div style={{
+        position: 'fixed', bottom: 0, left: 0, right: 0, margin: '0 auto',
+        width: '100%', maxWidth: 480,
+        height: '88dvh',
+        background: 'rgba(245,247,250,0.88)',
+        backdropFilter: 'blur(32px)', WebkitBackdropFilter: 'blur(32px)',
+        borderRadius: '24px 24px 0 0',
+        border: '1.5px solid rgba(255,255,255,0.72)',
+        boxShadow: '0 -4px 48px rgba(0,0,0,0.13)',
+        zIndex: 61,
+        display: 'flex', flexDirection: 'column',
+        overflow: 'hidden',
+        animation: 'slideUp .32s cubic-bezier(.32,.72,0,1)',
+      }}>
+        {/* 드래그 핸들 */}
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '14px 0 6px' }}>
+          <div style={{ width: 40, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.12)' }} />
+        </div>
+
+        {/* 날짜 헤더 */}
+        <div style={{ padding: '8px 24px 4px' }}>
+          <div style={{ fontSize: '1.45rem', fontWeight: 800, color: isRed ? '#D05055' : 'var(--dark)', display: 'flex', alignItems: 'baseline', gap: 10 }}>
+            {selDay.getMonth() + 1}월 {selDay.getDate()}일 ({dow})
+            {holiday && <span style={{ fontSize: '.95rem', fontWeight: 700 }}>{holiday}</span>}
+          </div>
+        </div>
+
+        {/* 탭 */}
+        <div style={{ display: 'flex', gap: 8, padding: '14px 24px 10px' }}>
+          {['일정', '모임'].map(t => (
+            <button key={t} onClick={() => setSheetTab(t)} style={{
+              padding: '8px 22px', borderRadius: 20, fontFamily: 'inherit',
+              background: sheetTab === t ? 'rgba(255,255,255,0.92)' : 'rgba(0,0,0,0.055)',
+              border: sheetTab === t ? '1.5px solid rgba(91,141,184,0.32)' : '1.5px solid transparent',
+              color: sheetTab === t ? 'var(--calm)' : 'var(--mid)',
+              fontWeight: 800, fontSize: '.88rem', cursor: 'pointer',
+              boxShadow: sheetTab === t ? '0 2px 10px rgba(0,0,0,0.07)' : 'none',
+              transition: 'all .15s',
+            }}>{t}</button>
+          ))}
+        </div>
+
+        {/* 구분선 */}
+        <div style={{ height: 1, background: 'rgba(0,0,0,0.06)', margin: '0 24px' }} />
+
+        {/* 콘텐츠 */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: '16px 24px 32px' }}>
+          {sheetTab === '일정' && (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, padding: '48px 0', color: 'var(--mid)' }}>
+              <Face type="bored" size={52} />
+              <div style={{ fontSize: '.85rem' }}>일정 기능은 준비 중이에요</div>
+            </div>
+          )}
+          {sheetTab === '모임' && (
+            rooms.length === 0 ? (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, padding: '48px 0', color: 'var(--mid)' }}>
+                <Face type="bored" size={52} />
+                <div style={{ fontSize: '.85rem' }}>이 날 확정된 모임이 없어요</div>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {rooms.map(r => <RoomItem key={r.id} room={r} onEnterRoom={onEnterRoom} />)}
+              </div>
+            )
+          )}
+        </div>
+      </div>
+    </>
+  )
+}
+
 // ── 홈+캘린더 탭 (통합) ─────────────────────────
 function HomeCalendarTab({ myName, myRooms, onEnterRoom }) {
   const today = new Date()
@@ -147,32 +235,19 @@ function HomeCalendarTab({ myName, myRooms, onEnterRoom }) {
                     <div style={{ fontSize: '.42rem', fontWeight: 800, color: isSelected ? 'rgba(255,255,255,.7)' : 'var(--calm)', lineHeight: 1 }}>{confirmedCnt}</div>
                   )}
                 </div>
-                {holiday && (
-                  <div style={{ fontSize: '.4rem', fontWeight: 800, color: isSelected ? 'var(--calm)' : '#C85050', whiteSpace: 'nowrap', lineHeight: 1.4, maxWidth: '100%', textAlign: 'center' }}>
-                    {holiday}
-                  </div>
-                )}
               </div>
             )
           })}
         </div>
       </div>
 
-      {/* 날짜 클릭 시 해당 날 모임 */}
-      {selDay && (
-        <>
-          <div style={{ fontSize: '.78rem', fontWeight: 800, color: 'var(--mid)', marginBottom: 10 }}>
-            {selDay.getMonth() + 1}월 {selDay.getDate()}일 확정 모임
-          </div>
-          {displayRooms.length === 0 ? (
-            <div style={{ fontSize: '.84rem', color: 'var(--mid)', padding: '12px 4px' }}>이 날 확정된 모임이 없어요</div>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {displayRooms.map(r => <RoomItem key={r.id} room={r} onEnterRoom={onEnterRoom} />)}
-            </div>
-          )}
-        </>
-      )}
+      <DaySheet
+        selDay={selDay}
+        holiday={selDay ? getHoliday(selDay.getDate()) : null}
+        rooms={displayRooms}
+        onClose={() => setSelDay(null)}
+        onEnterRoom={onEnterRoom}
+      />
     </>
   )
 }
@@ -394,7 +469,7 @@ export default function HomeScreen({ user, myName, myRooms, initialTab = 'home',
       {tab === 'profile' && <ProfileTab user={user} myName={myName} onLogout={onLogout} onUpdateName={onUpdateName} />}
 
       {tab === 'home' && (
-        <button onClick={onCreate} style={{
+        <button onClick={() => onCreate('home')} style={{
           position: 'fixed',
           right: 20, bottom: 'calc(72px + env(safe-area-inset-bottom))',
           width: 45, height: 45, borderRadius: '50%',

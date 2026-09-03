@@ -16,6 +16,11 @@
   --shadow-md: rgba(46,41,37,.12);
 }
 
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
