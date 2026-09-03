@@ -72,15 +72,12 @@ function HomeCalendarTab({ myName, myRooms, onEnterRoom }) {
   const [selDay, setSelDay] = useState(null)
   const getHoliday = useHolidays(vy, vm)
 
-  const monthPrefix    = `${vy}-${String(vm).padStart(2,'0')}`
-  const confirmedRooms = myRooms.filter(r => r.confirmed_day?.startsWith(monthPrefix))
-  const firstDay       = new Date(vy, vm - 1, 1).getDay()
-  const totalDays      = new Date(vy, vm, 0).getDate()
+  const allConfirmed = myRooms.filter(r => r.confirmed_day)
+  const firstDay     = new Date(vy, vm - 1, 1).getDay()
+  const totalDays    = new Date(vy, vm, 0).getDate()
 
   const selDateStr   = selDay ? toDateStr(selDay.getFullYear(), selDay.getMonth() + 1, selDay.getDate()) : null
-  const displayRooms = selDateStr
-    ? myRooms.filter(r => r.confirmed_day === selDateStr)
-    : myRooms.filter(r => r.confirmed_day?.startsWith(monthPrefix))
+  const displayRooms = selDateStr ? myRooms.filter(r => r.confirmed_day === selDateStr) : []
 
   function prev() {
     if (vm === 1) { setVy(y => y - 1); setVm(12) } else setVm(m => m - 1)
@@ -105,10 +102,10 @@ function HomeCalendarTab({ myName, myRooms, onEnterRoom }) {
         <button onClick={next} style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer', color: 'var(--mid)', padding: '4px 8px', fontFamily: 'inherit' }}>›</button>
       </div>
 
-      {confirmedRooms.length > 0 && (
+      {allConfirmed.length > 0 && (
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10, padding: '8px 12px', background: 'rgba(112,152,192,.1)', borderRadius: 12 }}>
           <Face type="excited" size={22} />
-          <span style={{ fontSize: '.8rem', fontWeight: 700, color: 'var(--calm)' }}>이번 달 확정 모임 {confirmedRooms.length}개</span>
+          <span style={{ fontSize: '.8rem', fontWeight: 700, color: 'var(--calm)' }}>총 확정 모임 {allConfirmed.length}개</span>
         </div>
       )}
 
@@ -156,20 +153,20 @@ function HomeCalendarTab({ myName, myRooms, onEnterRoom }) {
         </div>
       </div>
 
-      {/* 방 목록 */}
-      <div style={{ fontSize: '.78rem', fontWeight: 800, color: 'var(--mid)', marginBottom: 10 }}>
-        {selDay ? `${selDay.getMonth() + 1}월 ${selDay.getDate()}일 확정 모임` : `${vm}월 확정 모임`}
-      </div>
-
-      {displayRooms.length === 0 ? (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, padding: '20px 0', color: 'var(--mid)' }}>
-          <Face type="bored" size={50} />
-          <div style={{ fontSize: '.84rem' }}>이 달 확정된 모임이 없어요</div>
-        </div>
-      ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {displayRooms.map(r => <RoomItem key={r.id} room={r} onEnterRoom={onEnterRoom} />)}
-        </div>
+      {/* 날짜 클릭 시 해당 날 모임 */}
+      {selDay && (
+        <>
+          <div style={{ fontSize: '.78rem', fontWeight: 800, color: 'var(--mid)', marginBottom: 10 }}>
+            {selDay.getMonth() + 1}월 {selDay.getDate()}일 확정 모임
+          </div>
+          {displayRooms.length === 0 ? (
+            <div style={{ fontSize: '.84rem', color: 'var(--mid)', padding: '12px 4px' }}>이 날 확정된 모임이 없어요</div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {displayRooms.map(r => <RoomItem key={r.id} room={r} onEnterRoom={onEnterRoom} />)}
+            </div>
+          )}
+        </>
       )}
     </>
   )
@@ -390,6 +387,18 @@ export default function HomeScreen({ user, myName, myRooms, initialTab = 'home',
       {tab === 'home'    && <HomeCalendarTab myName={myName} myRooms={myRooms} onEnterRoom={onEnterRoom} />}
       {tab === 'rooms'   && <RoomsTab   myRooms={myRooms} onCreate={onCreate} onJoinCode={onJoinCode} onEnterRoom={onEnterRoom} onLeaveRoom={onLeaveRoom} />}
       {tab === 'profile' && <ProfileTab user={user} myName={myName} onLogout={onLogout} onUpdateName={onUpdateName} />}
+
+      {tab === 'home' && (
+        <button onClick={onCreate} style={{
+          position: 'fixed',
+          right: 20, bottom: 'calc(72px + env(safe-area-inset-bottom))',
+          width: 54, height: 54, borderRadius: '50%',
+          background: 'var(--calm)', border: 'none', color: '#fff',
+          fontSize: '1.7rem', lineHeight: 1, cursor: 'pointer',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          boxShadow: '0 4px 18px rgba(91,141,184,.45)', zIndex: 45,
+        }}>+</button>
+      )}
 
       <nav style={{
         position: 'fixed', bottom: 0,
