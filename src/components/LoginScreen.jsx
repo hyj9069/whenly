@@ -7,7 +7,7 @@ function translateError(msg) {
   if (msg.includes('Email not confirmed'))       return '이메일 인증을 먼저 완료해주세요.'
   if (msg.includes('already registered'))        return '이미 사용 중인 아이디예요.'
   if (msg.includes('Password should be'))        return '비밀번호는 8자 이상, 영문+숫자 조합이어야 해요.'
-  return '오류가 발생했어요. 다시 시도해주세요.'
+  return `오류: ${msg}`
 }
 
 function validateId(val) {
