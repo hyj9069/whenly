@@ -59,6 +59,12 @@ export function useAuth() {
       options: { data: { full_name: nickname || id, username: id } },
     })
     if (error) return error
+    if (!data.user) return { message: 'Signup failed - please try again' }
+
+    const { error: profileErr } = await supabase
+      .from('profiles')
+      .insert({ username: id, email, user_id: data.user.id })
+    if (profileErr) return profileErr
 
     return null
   }
