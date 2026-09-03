@@ -61,8 +61,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
     <div className="screen" style={{ paddingTop: 20, paddingBottom: 88 }}>
       {/* 헤더 */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-        <button className="back-btn" onClick={onHome}>←</button>
-        <div style={{ flex: 1 }}>
+<div style={{ flex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <div style={{ fontSize: '1.1rem', fontWeight: 800, lineHeight: 1.2 }}>{room.name}</div>
             {isHost && (
