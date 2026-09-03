@@ -127,7 +127,7 @@ function HomeCalendarTab({ myName, myRooms, onEnterRoom }) {
             const holiday      = getHoliday(vy, vm, d)
             const isRed        = dow === 0 || !!holiday
             const textColor    = isRed ? '#D05055' : dow === 6 ? '#5060CC' : 'var(--dark)'
-            const hasConfirmed = myRooms.some(r => r.confirmed_day === toDateStr(vy, vm, d))
+            const confirmedCnt = myRooms.filter(r => r.confirmed_day === toDateStr(vy, vm, d)).length
             return (
               <div key={d} onClick={() => setSelDay(prev => prev && date.toDateString() === prev.toDateString() ? null : date)}
                 style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, cursor: 'pointer', padding: '2px 0' }}>
@@ -140,7 +140,12 @@ function HomeCalendarTab({ myName, myRooms, onEnterRoom }) {
                   fontSize: '.84rem', fontWeight: 800, transition: 'all .15s',
                 }}>{d}</div>
                 <div style={{ height: 5, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  {hasConfirmed && <div style={{ width: 5, height: 5, borderRadius: '50%', background: isSelected ? 'var(--mid)' : 'var(--calm)', opacity: isSelected ? 0.5 : 0.7 }} />}
+                  {confirmedCnt === 1 && (
+                    <div style={{ width: 5, height: 5, borderRadius: '50%', background: isSelected ? 'var(--mid)' : 'var(--calm)', opacity: isSelected ? 0.5 : 0.9 }} />
+                  )}
+                  {confirmedCnt > 1 && (
+                    <div style={{ fontSize: '.42rem', fontWeight: 800, color: isSelected ? 'rgba(255,255,255,.7)' : 'var(--calm)', lineHeight: 1 }}>{confirmedCnt}</div>
+                  )}
                 </div>
                 {holiday && (
                   <div style={{ fontSize: '.4rem', fontWeight: 800, color: isSelected ? 'var(--calm)' : '#C85050', whiteSpace: 'nowrap', lineHeight: 1.4, maxWidth: '100%', textAlign: 'center' }}>
