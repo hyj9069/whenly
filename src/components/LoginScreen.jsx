@@ -83,14 +83,6 @@ export default function LoginScreen({ onGoogle, onKakao, onEmailLogin, onEmailSi
 
       <div style={{ width: '100%', maxWidth: 340, display: 'flex', flexDirection: 'column', gap: 10 }}>
 
-        {/* 카카오 */}
-        <button style={btnStyle('#FEE500', '#3A1D1D', '0 2px 0 rgba(0,0,0,.1)')} onClick={onKakao}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="#3A1D1D">
-            <path d="M12 3C6.477 3 2 6.477 2 10.5c0 2.634 1.617 4.95 4.07 6.306L5 21l5.19-2.763A11.5 11.5 0 0012 18.5c5.523 0 10-3.358 10-7.5S17.523 3 12 3z"/>
-          </svg>
-          카카오로 시작하기
-        </button>
-
         {/* 구글 */}
         <button style={{ ...btnStyle('#fff', '#3D3530', '0 2px 0 rgba(0,0,0,.09)'), border: '1.5px solid rgba(0,0,0,.13)' }}
           onClick={onGoogle}

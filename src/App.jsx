@@ -89,7 +89,6 @@ export default function App() {
       {!user && (
         <LoginScreen
           onGoogle={loginWithGoogle}
-          onKakao={loginWithKakao}
           onEmailLogin={signInWithEmail}
           onEmailSignup={signUpWithEmail}
         />
