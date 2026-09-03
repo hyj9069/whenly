@@ -6,7 +6,7 @@ function translateError(msg) {
   if (msg.includes('Invalid login credentials')) return '아이디 또는 비밀번호가 틀렸어요.'
   if (msg.includes('Email not confirmed'))       return '이메일 인증을 먼저 완료해주세요.'
   if (msg.includes('already registered'))        return '이미 사용 중인 아이디예요.'
-  if (msg.includes('Password should be'))        return '비밀번호는 6자 이상이어야 해요.'
+  if (msg.includes('Password should be'))        return '비밀번호는 8자 이상, 영문+숫자 조합이어야 해요.'
   return '오류가 발생했어요. 다시 시도해주세요.'
 }
 
@@ -14,7 +14,15 @@ function validateId(val) {
   if (!val) return '아이디를 입력해주세요'
   if (val.length < 4) return '4자 이상 입력해주세요'
   if (val.length > 20) return '20자 이하로 입력해주세요'
-  if (!/^[a-z0-9_]+$/.test(val)) return '영문 소문자·숫자·_만 사용 가능해요'
+  if (!/^[a-zA-Z0-9]+$/.test(val)) return '영문·숫자만 사용 가능해요'
+  return ''
+}
+
+function validatePassword(val) {
+  if (!val) return '비밀번호를 입력해주세요'
+  if (val.length < 8) return '8자 이상 입력해주세요'
+  if (!/[a-zA-Z]/.test(val)) return '영문을 포함해야 해요'
+  if (!/[0-9]/.test(val)) return '숫자를 포함해야 해요'
   return ''
 }
 
@@ -75,8 +83,9 @@ export default function LoginScreen({ onGoogle, onIdLogin, onIdSignup }) {
   const idErr       = validateId(id)
   const nicknameErr = validateNickname(nickname)
   const emailErr    = validateEmail(email)
+  const passwordErr = validatePassword(password)
 
-  const signupValid = idErr === '' && nicknameErr === '' && emailErr === '' && password.length >= 6
+  const signupValid = idErr === '' && nicknameErr === '' && emailErr === '' && passwordErr === ''
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -180,12 +189,13 @@ export default function LoginScreen({ onGoogle, onIdLogin, onIdSignup }) {
 
           {/* 비밀번호 */}
           <input
-            style={inputStyle(false, '')} type="password"
-            placeholder="비밀번호 (6자 이상)"
+            style={inputStyle(touched.password, mode === 'signup' ? passwordErr : '')} type="password"
+            placeholder={mode === 'signup' ? '비밀번호 (영문+숫자 조합 8자 이상)' : '비밀번호'}
             autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
             value={password}
-            onChange={e => setPassword(e.target.value)}
+            onChange={e => { setPassword(e.target.value); touch('password') }}
           />
+          {mode === 'signup' && <FieldHint touched={touched.password} error={passwordErr} />}
 
           {error && (
             <div style={{ fontSize: '.83rem', color: '#C85050', fontWeight: 600, paddingLeft: 4 }}>
