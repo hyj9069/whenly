@@ -172,7 +172,7 @@ export default function App() {
             if (ok) setRoom(prev => ({ ...prev, name }))
           }}
           onOpenShare={() => setShowShare(true)}
-          onHome={() => goHome('rooms')}
+          onHome={(tab) => goHome(tab ?? 'rooms')}
           onLeave={handleLeave}
         />
       )}

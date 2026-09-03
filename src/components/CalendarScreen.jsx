@@ -74,8 +74,9 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
           </div>
           <div style={{ fontSize: '.75rem', color: 'var(--mid)', marginTop: 1 }}>{total}명 참여</div>
         </div>
-        <button className="btn btn-ghost btn-sm" onClick={onOpenShare} style={{ whiteSpace: 'nowrap' }}>
-          공유 🔗
+        <button className="btn btn-ghost btn-sm" onClick={() => setShowLeaveModal(true)}
+          style={{ whiteSpace: 'nowrap', color: 'var(--upset)', borderColor: 'rgba(192,86,90,.3)' }}>
+          나가기
         </button>
       </div>
 
@@ -290,19 +291,31 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
         </div>
       </div>
 
-      {/* 하단 고정바 */}
-      <div style={{
-        position: 'fixed', bottom: 0, left: 0, right: 0,
-        background: 'var(--surface)', borderTop: '1px solid var(--border)',
-        padding: '10px 18px', paddingBottom: 'calc(10px + env(safe-area-inset-bottom))', zIndex: 40,
+      {/* 하단 네비게이션 */}
+      <nav style={{
+        position: 'fixed', bottom: 0,
+        left: '50%', transform: 'translateX(-50%)',
+        width: '100%', maxWidth: 480,
+        background: '#fff', borderTop: '1px solid rgba(0,0,0,.08)',
+        display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
+        paddingBottom: 'env(safe-area-inset-bottom)',
+        zIndex: 50, boxShadow: '0 -2px 16px rgba(0,0,0,.06)',
       }}>
-        <button onClick={() => setShowLeaveModal(true)} style={{
-          width: '100%', padding: '12px',
-          background: 'rgba(192,86,90,.07)', border: '1.5px solid rgba(192,86,90,.3)',
-          borderRadius: 13, color: 'var(--upset)', fontSize: '.85rem', fontWeight: 800,
-          cursor: 'pointer', fontFamily: 'inherit',
-        }}>방 나가기</button>
-      </div>
+        {[
+          { key: 'home',    label: '홈',     active: false,
+            icon: (a) => <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke={a?'var(--calm)':'var(--mid)'} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg> },
+          { key: 'rooms',   label: '모임',   active: true,
+            icon: (a) => <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke={a?'var(--calm)':'var(--mid)'} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="7" r="4"/><circle cx="17" cy="9" r="3"/><path d="M1 21v-1a7 7 0 0114 0v1"/><path d="M21 21v-1a5 5 0 00-4-4.9"/></svg> },
+          { key: 'profile', label: '내 정보', active: false,
+            icon: (a) => <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke={a?'var(--calm)':'var(--mid)'} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20a8 8 0 0116 0"/></svg> },
+        ].map(({ key, label, active, icon }) => (
+          <button key={key} onClick={() => onHome(key)}
+            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '10px 0', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}>
+            {icon(active)}
+            <span style={{ fontSize: '.6rem', fontWeight: 700, color: active ? 'var(--calm)' : 'var(--mid)' }}>{label}</span>
+          </button>
+        ))}
+      </nav>
 
       {/* 방 이름 수정 모달 */}
       {showRenameModal && (
