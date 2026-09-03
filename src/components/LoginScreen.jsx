@@ -3,20 +3,51 @@ import Face from './Face'
 
 function translateError(msg) {
   if (!msg) return '오류가 발생했어요. 다시 시도해주세요.'
-  if (msg.includes('Invalid login credentials')) return '이메일 또는 비밀번호가 틀렸어요.'
+  if (msg.includes('Invalid login credentials')) return '아이디 또는 비밀번호가 틀렸어요.'
   if (msg.includes('Email not confirmed'))       return '이메일 인증을 먼저 완료해주세요.'
-  if (msg.includes('already registered'))        return '이미 가입된 이메일이에요.'
+  if (msg.includes('already registered'))        return '이미 사용 중인 아이디예요.'
   if (msg.includes('Password should be'))        return '비밀번호는 6자 이상이어야 해요.'
-  if (msg.includes('Unable to validate'))        return '이메일 형식이 올바르지 않아요.'
   return '오류가 발생했어요. 다시 시도해주세요.'
 }
 
-const inputStyle = {
-  width: '100%', padding: '13px 14px', borderRadius: 12,
-  border: '1.5px solid rgba(0,0,0,.13)', fontSize: '.95rem',
-  fontFamily: 'inherit', outline: 'none', background: '#fff',
-  boxSizing: 'border-box', color: '#3D3530',
+function validateId(val) {
+  if (!val) return '아이디를 입력해주세요'
+  if (val.length < 4) return '4자 이상 입력해주세요'
+  if (val.length > 20) return '20자 이하로 입력해주세요'
+  if (!/^[a-z0-9_]+$/.test(val)) return '영문 소문자·숫자·_만 사용 가능해요'
+  return ''
 }
+
+function validateNickname(val) {
+  if (!val) return '닉네임을 입력해주세요'
+  if (val.length < 2) return '2자 이상 입력해주세요'
+  if (val.length > 10) return '10자 이하로 입력해주세요'
+  return ''
+}
+
+function validateEmail(val) {
+  if (!val) return ''
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) return '이메일 형식이 아니에요'
+  return ''
+}
+
+function FieldHint({ touched, error }) {
+  if (!touched) return null
+  const ok = error === ''
+  return (
+    <div style={{ fontSize: '.78rem', fontWeight: 700, paddingLeft: 4, marginTop: -4, color: ok ? '#4CAF7D' : '#C85050' }}>
+      {ok ? '✓ 사용 가능' : `✗ ${error}`}
+    </div>
+  )
+}
+
+const inputStyle = (touched, error) => ({
+  width: '100%', padding: '13px 14px', borderRadius: 12,
+  border: `1.5px solid ${!touched ? 'rgba(0,0,0,.13)' : error === '' ? '#4CAF7D' : '#C85050'}`,
+  fontSize: '.95rem', fontFamily: 'inherit', outline: 'none',
+  background: '#fff', boxSizing: 'border-box', color: '#3D3530',
+  transition: 'border-color .15s',
+})
 
 const btnStyle = (bg, color, shadow) => ({
   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
@@ -28,22 +59,32 @@ const btnStyle = (bg, color, shadow) => ({
 })
 
 export default function LoginScreen({ onGoogle, onIdLogin, onIdSignup }) {
-  const [mode, setMode]         = useState('login')   // 'login' | 'signup'
+  const [mode, setMode]         = useState('login')
   const [id, setId]             = useState('')
   const [nickname, setNickname] = useState('')
   const [email, setEmail]       = useState('')
   const [password, setPassword] = useState('')
+  const [touched, setTouched]   = useState({})
   const [error, setError]       = useState('')
   const [loading, setLoading]   = useState(false)
   const [done, setDone]         = useState(false)
 
-  function switchMode(m) { setMode(m); setError('') }
+  function touch(field) { setTouched(t => ({ ...t, [field]: true })) }
+  function switchMode(m) { setMode(m); setError(''); setTouched({}) }
+
+  const idErr       = validateId(id)
+  const nicknameErr = validateNickname(nickname)
+  const emailErr    = validateEmail(email)
+
+  const signupValid = idErr === '' && nicknameErr === '' && emailErr === '' && password.length >= 6
 
   async function handleSubmit(e) {
     e.preventDefault()
     setError('')
-    if (!id.trim()) { setError('아이디를 입력해주세요.'); return }
-    if (mode === 'signup' && !nickname.trim()) { setError('닉네임을 입력해주세요.'); return }
+    if (mode === 'signup') {
+      setTouched({ id: true, nickname: true, email: !!email, password: true })
+      if (!signupValid) return
+    }
     setLoading(true)
     const err = mode === 'signup'
       ? await onIdSignup({ id: id.trim(), nickname: nickname.trim(), email: email.trim(), password })
@@ -86,7 +127,8 @@ export default function LoginScreen({ onGoogle, onIdLogin, onIdSignup }) {
       <div style={{ width: '100%', maxWidth: 340, display: 'flex', flexDirection: 'column', gap: 10 }}>
 
         {/* 구글 */}
-        <button style={{ ...btnStyle('#fff', '#3D3530', '0 2px 0 rgba(0,0,0,.09)'), border: '1.5px solid rgba(0,0,0,.13)' }}
+        <button
+          style={{ ...btnStyle('#fff', '#3D3530', '0 2px 0 rgba(0,0,0,.09)'), border: '1.5px solid rgba(0,0,0,.13)' }}
           onClick={onGoogle}
         >
           <svg width="20" height="20" viewBox="0 0 24 24">
@@ -105,27 +147,44 @@ export default function LoginScreen({ onGoogle, onIdLogin, onIdSignup }) {
           <div style={{ flex: 1, height: 1, background: 'rgba(0,0,0,.1)' }} />
         </div>
 
-        {/* 아이디 폼 */}
+        {/* 폼 */}
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+
+          {/* 아이디 */}
           <input
-            style={inputStyle} placeholder="아이디" required autoComplete="username"
-            value={id} onChange={e => setId(e.target.value)}
+            style={inputStyle(touched.id, idErr)} placeholder="아이디" autoComplete="username"
+            value={id}
+            onChange={e => { setId(e.target.value); touch('id') }}
           />
-          {mode === 'signup' && (
+          {mode === 'signup' && <FieldHint touched={touched.id} error={idErr} />}
+
+          {/* 닉네임 - 회원가입만 */}
+          {mode === 'signup' && (<>
             <input
-              style={inputStyle} placeholder="닉네임 (앱에서 표시되는 이름)" required
-              value={nickname} onChange={e => setNickname(e.target.value)}
+              style={inputStyle(touched.nickname, nicknameErr)} placeholder="닉네임 (앱에서 표시되는 이름)"
+              value={nickname}
+              onChange={e => { setNickname(e.target.value); touch('nickname') }}
             />
-          )}
-          {mode === 'signup' && (
+            <FieldHint touched={touched.nickname} error={nicknameErr} />
+          </>)}
+
+          {/* 이메일 - 회원가입만 (선택) */}
+          {mode === 'signup' && (<>
             <input
-              style={inputStyle} type="email" placeholder="이메일 (비밀번호 찾기용)"
-              value={email} onChange={e => setEmail(e.target.value)}
+              style={inputStyle(touched.email, emailErr)} type="email" placeholder="이메일 (선택, 비밀번호 찾기용)"
+              value={email}
+              onChange={e => { setEmail(e.target.value); touch('email') }}
             />
-          )}
+            {touched.email && email && <FieldHint touched={touched.email} error={emailErr} />}
+          </>)}
+
+          {/* 비밀번호 */}
           <input
-            style={inputStyle} type="password" placeholder="비밀번호 (6자 이상)" required autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
-            value={password} onChange={e => setPassword(e.target.value)}
+            style={inputStyle(false, '')} type="password"
+            placeholder="비밀번호 (6자 이상)"
+            autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
+            value={password}
+            onChange={e => setPassword(e.target.value)}
           />
 
           {error && (
