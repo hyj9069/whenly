@@ -82,6 +82,10 @@ body {
 }
 
 /* ── TOP BAR ─────────────────────────────── */
+.top-bar {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 20px;
+}
 .back-btn {
   background: rgba(0,0,0,.055); border: none;
   width: 36px; height: 36px; border-radius: 50%;
@@ -90,19 +94,6 @@ body {
   flex-shrink: 0; transition: background .15s;
 }
 .back-btn:hover { background: rgba(0,0,0,.1); }
-
-/* ── MONTH PICKER ────────────────────────── */
-.month-picker {
-  display: flex; align-items: center; gap: 12px; justify-content: center;
-  padding: 12px 16px; background: var(--surface);
-  border: 1.5px solid var(--border); border-radius: 12px;
-}
-.month-nav {
-  background: none; border: none; font-size: 1.2rem;
-  cursor: pointer; padding: 4px 10px; border-radius: 8px;
-  color: var(--dark); transition: background .15s;
-}
-.month-nav:hover { background: rgba(0,0,0,.06); }
 
 /* ── CALENDAR ────────────────────────────── */
 .wday-row {
@@ -139,7 +130,6 @@ body {
 .day-cell.st-all  { background: rgba(78,128,102,.1);   border-color: rgba(78,128,102,.5); }
 .day-cell.st-some { background: rgba(192,86,90,.10);   border-color: rgba(192,86,90,.45); }
 .day-cell.st-most { background: rgba(80,80,80,.09);    border-color: rgba(80,80,80,.4); }
-.day-cell.st-mine { background: rgba(192,86,90,.07);   border-color: rgba(192,86,90,.35); }
 
 .day-num { font-size: .7rem; font-weight: 800; line-height: 1; }
 .day-num.sun { color: #C85050; }
@@ -162,14 +152,6 @@ body {
 }
 .badge-green { background: var(--excited); }
 .badge-red   { background: var(--upset); }
-
-/* ── BEST BANNER ─────────────────────────── */
-.best-banner {
-  display: flex; align-items: center; gap: 12px;
-  background: linear-gradient(135deg, rgba(78,128,102,.09), rgba(91,141,184,.09));
-  border: 1.5px solid rgba(78,128,102,.4); border-radius: 14px;
-  padding: 13px 15px; margin-bottom: 12px;
-}
 
 /* ── MEMBER ITEM ─────────────────────────── */
 .member-item {

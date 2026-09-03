@@ -4,21 +4,16 @@ import { genId } from '../utils'
 
 export function useRooms(user, myName) {
   const [myRooms, setMyRooms] = useState([])
-  const [roomsError, setRoomsError] = useState(null)
 
   async function loadMyRooms() {
     if (!user?.id) return
-    setRoomsError(null)
 
     const { data: memberRows, error: e1 } = await supabase
       .from('members')
       .select('room_id')
       .eq('user_id', user.id)
 
-    if (e1) {
-      setRoomsError(e1.message)
-      return  // 오류 시 현재 목록 유지
-    }
+    if (e1) return
     if (!memberRows || memberRows.length === 0) {
       setMyRooms([])
       return
@@ -108,5 +103,5 @@ export function useRooms(user, myName) {
     await leaveRoom(roomId, isHost)
   }
 
-  return { myRooms, roomsError, loadMyRooms, createRoom, joinRoom, leaveRoom, leaveRoomById, confirmDay, renameRoom }
+  return { myRooms, loadMyRooms, createRoom, joinRoom, leaveRoom, leaveRoomById, confirmDay, renameRoom }
 }

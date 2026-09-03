@@ -30,17 +30,14 @@ export function useMembers(room) {
     if (idx === -1) days.push(day); else days.splice(idx, 1)
     days.sort()
 
-    // 낙관적 업데이트
     setMembers(prev => prev.map(m => m.id === me.id ? { ...m, unavailable_days: days } : m))
 
-    // DB 업데이트 — 기본키(id)로 정확히 지정
     const { error } = await supabase
       .from('members')
       .update({ unavailable_days: days })
       .eq('id', me.id)
 
     if (error) {
-      // 실패 시 롤백
       fetchMembers(roomId)
       return false
     }
