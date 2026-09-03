@@ -397,7 +397,7 @@ export default function HomeScreen({ user, myName, myRooms, initialTab = 'home',
         <button onClick={onCreate} style={{
           position: 'fixed',
           right: 20, bottom: 'calc(72px + env(safe-area-inset-bottom))',
-          width: 54, height: 54, borderRadius: '50%',
+          width: 45, height: 45, borderRadius: '50%',
           background: 'var(--calm)', border: 'none', color: '#fff',
           fontSize: '1.7rem', lineHeight: 1, cursor: 'pointer',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
