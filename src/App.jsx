@@ -11,8 +11,44 @@ import JoinCodeScreen from './components/JoinCodeScreen'
 import CalendarScreen from './components/CalendarScreen'
 import ShareModal from './components/ShareModal'
 
+function PasswordResetScreen({ onSubmit }) {
+  const [password, setPassword] = useState('')
+  const [confirm, setConfirm]   = useState('')
+  const [error, setError]       = useState('')
+  const [loading, setLoading]   = useState(false)
+
+  async function handleSubmit(e) {
+    e.preventDefault()
+    if (password.length < 8) { setError('8자 이상 입력해주세요.'); return }
+    if (!/[a-zA-Z]/.test(password) || !/[0-9]/.test(password)) { setError('영문+숫자 조합으로 입력해주세요.'); return }
+    if (password !== confirm) { setError('비밀번호가 일치하지 않아요.'); return }
+    setLoading(true)
+    const err = await onSubmit(password)
+    setLoading(false)
+    if (err) setError('오류가 발생했어요. 다시 시도해주세요.')
+  }
+
+  const inputSt = { width: '100%', padding: '13px 14px', borderRadius: 12, border: '1.5px solid rgba(0,0,0,.13)', fontSize: '.95rem', fontFamily: 'inherit', outline: 'none', background: '#fff', boxSizing: 'border-box' }
+
+  return (
+    <div className="screen" style={{ justifyContent: 'center', alignItems: 'center', padding: '0 28px' }}>
+      <div style={{ width: '100%', maxWidth: 340 }}>
+        <h2 style={{ fontWeight: 800, fontSize: '1.2rem', marginBottom: 20 }}>새 비밀번호 설정</h2>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <input style={inputSt} type="password" placeholder="새 비밀번호 (영문+숫자 조합 8자 이상)" value={password} onChange={e => setPassword(e.target.value)} />
+          <input style={inputSt} type="password" placeholder="비밀번호 확인" value={confirm} onChange={e => setConfirm(e.target.value)} />
+          {error && <div style={{ fontSize: '.83rem', color: '#C85050', fontWeight: 600 }}>{error}</div>}
+          <button type="submit" disabled={loading} style={{ padding: '14px', borderRadius: 14, border: 'none', background: '#7098C0', color: '#fff', fontWeight: 800, fontSize: '.97rem', cursor: 'pointer', fontFamily: 'inherit', opacity: loading ? 0.7 : 1 }}>
+            {loading ? '잠시만요...' : '비밀번호 변경'}
+          </button>
+        </form>
+      </div>
+    </div>
+  )
+}
+
 export default function App() {
-  const { user, loading, myName, loginWithGoogle, signInWithId, signUpWithId, logout, updateName } = useAuth()
+  const { user, loading, recovering, myName, loginWithGoogle, signInWithId, signUpWithId, resetPassword, updatePassword, logout, updateName } = useAuth()
   const { myRooms, loadMyRooms, createRoom, joinRoom, leaveRoom, leaveRoomById, confirmDay, renameRoom } = useRooms(user, myName)
   const [screen, setScreen] = useState('home')
   const [room, setRoom] = useState(null)
@@ -86,12 +122,17 @@ export default function App() {
 
   return (
     <>
-      {!user && (
+      {!user && !recovering && (
         <LoginScreen
           onGoogle={loginWithGoogle}
           onIdLogin={signInWithId}
           onIdSignup={signUpWithId}
+          onResetPassword={resetPassword}
         />
+      )}
+
+      {recovering && (
+        <PasswordResetScreen onSubmit={updatePassword} />
       )}
 
       {user && screen === 'home' && (
