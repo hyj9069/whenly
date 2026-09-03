@@ -1,11 +1,7 @@
 import { useState } from 'react'
 import Face from './Face'
-import { getDayFaceType, getMemberColor } from '../utils'
-import { getHoliday } from '../holidays'
-
-function toDateStr(y, m, d) {
-  return `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`
-}
+import { toDateStr, getDayFaceType, getMemberColor } from '../utils'
+import { useHolidays } from '../hooks/useHolidays'
 
 export default function CalendarScreen({ room, myUserId, myName, members, onToggleDay, onConfirmDay, onRenameRoom, onOpenShare, onHome, onLeave }) {
   const today     = new Date()
@@ -16,6 +12,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
 
   const [yr, setYr] = useState(todayY)
   const [mo, setMo] = useState(todayM)
+  const getHoliday  = useHolidays(yr, mo)
   const [selectedDay, setSelectedDay]         = useState(null)
   const [editMode, setEditMode]               = useState(false)
   const [showLeaveModal, setShowLeaveModal]   = useState(false)
@@ -206,13 +203,14 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
             .map(m => m.user_id === myUserId ? myName : m.name)
             .filter(n => !unavailNames.includes(n))
           const isConfirmed = cdStr === ds
+          const holiday = getHoliday(yr, mo, selectedDay)
           return (
             <div className="card" style={{ marginBottom: 12, borderLeft: `3px solid ${unavailNames.length === 0 ? 'var(--excited)' : 'var(--upset)'}` }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                 <div style={{ fontWeight: 800, fontSize: '.9rem' }}>{mo}월 {selectedDay}일</div>
-                {getHoliday(yr, mo, selectedDay) && (
+                {holiday && (
                   <span style={{ fontSize: '.72rem', fontWeight: 700, color: '#C85050', background: 'rgba(200,85,85,.1)', borderRadius: 8, padding: '2px 8px' }}>
-                    {getHoliday(yr, mo, selectedDay)}
+                    {holiday}
                   </span>
                 )}
               </div>

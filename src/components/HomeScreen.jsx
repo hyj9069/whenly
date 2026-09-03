@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Face from './Face'
-import { getHoliday } from '../holidays'
+import { toDateStr } from '../utils'
+import { useHolidays } from '../hooks/useHolidays'
 
 // ── 방 아이템 (공통) ─────────────────────────────
 function RoomItem({ room, onEnterRoom, selectionMode, selected, onSelect, onLongPress }) {
@@ -63,16 +64,13 @@ function RoomItem({ room, onEnterRoom, selectionMode, selected, onSelect, onLong
   )
 }
 
-function toDateStr(y, m, d) {
-  return `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`
-}
-
 // ── 홈+캘린더 탭 (통합) ─────────────────────────
 function HomeCalendarTab({ myName, myRooms, onEnterRoom }) {
   const today = new Date()
   const [vy, setVy] = useState(today.getFullYear())
   const [vm, setVm] = useState(today.getMonth() + 1)
   const [selDay, setSelDay] = useState(null)
+  const getHoliday = useHolidays(vy, vm)
 
   const monthPrefix    = `${vy}-${String(vm).padStart(2,'0')}`
   const confirmedRooms = myRooms.filter(r => r.confirmed_day?.startsWith(monthPrefix))

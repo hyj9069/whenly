@@ -12,8 +12,8 @@ import CalendarScreen from './components/CalendarScreen'
 import ShareModal from './components/ShareModal'
 
 export default function App() {
-  const { user, loading, myName, loginWithGoogle, logout, updateName } = useAuth()
-  const { myRooms, roomsError, loadMyRooms, createRoom, joinRoom, leaveRoom, leaveRoomById, confirmDay, renameRoom } = useRooms(user, myName)
+  const { user, loading, myName, loginWithGoogle, loginWithKakao, signInWithEmail, signUpWithEmail, logout, updateName } = useAuth()
+  const { myRooms, loadMyRooms, createRoom, joinRoom, leaveRoom, leaveRoomById, confirmDay, renameRoom } = useRooms(user, myName)
   const [screen, setScreen] = useState('home')
   const [room, setRoom] = useState(null)
   const { members, toggleDay } = useMembers(room)
@@ -86,7 +86,14 @@ export default function App() {
 
   return (
     <>
-      {!user && <LoginScreen onLogin={loginWithGoogle} />}
+      {!user && (
+        <LoginScreen
+          onGoogle={loginWithGoogle}
+          onKakao={loginWithKakao}
+          onEmailLogin={signInWithEmail}
+          onEmailSignup={signUpWithEmail}
+        />
+      )}
 
       {user && screen === 'home' && (
         <HomeScreen

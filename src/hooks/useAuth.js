@@ -17,11 +17,32 @@ export function useAuth() {
     return () => subscription.unsubscribe()
   }, [])
 
-  async function loginWithGoogle() {
+  function getRedirectTo() {
     const params = new URLSearchParams(window.location.search)
     const code = params.get('room')
-    const redirectTo = window.location.origin + window.location.pathname + (code ? `?room=${code}` : '')
-    await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo } })
+    return window.location.origin + window.location.pathname + (code ? `?room=${code}` : '')
+  }
+
+  async function loginWithGoogle() {
+    await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: getRedirectTo() } })
+  }
+
+  async function loginWithKakao() {
+    await supabase.auth.signInWithOAuth({ provider: 'kakao', options: { redirectTo: getRedirectTo() } })
+  }
+
+  async function signInWithEmail(email, password) {
+    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    return error ?? null
+  }
+
+  async function signUpWithEmail(email, password, nickname) {
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { full_name: nickname } },
+    })
+    return error ?? null
   }
 
   async function logout() {
@@ -33,5 +54,5 @@ export function useAuth() {
     if (user) await supabase.from('members').update({ name }).eq('user_id', user.id)
   }
 
-  return { user, loading, myName: getUserName(user), loginWithGoogle, logout, updateName }
+  return { user, loading, myName: getUserName(user), loginWithGoogle, loginWithKakao, signInWithEmail, signUpWithEmail, logout, updateName }
 }
