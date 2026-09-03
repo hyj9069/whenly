@@ -31,16 +31,25 @@ export function useAuth() {
     await supabase.auth.signInWithOAuth({ provider: 'kakao', options: { redirectTo: getRedirectTo() } })
   }
 
-  async function signInWithEmail(email, password) {
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
+  async function signInWithId(id, password) {
+    const { error } = await supabase.auth.signInWithPassword({
+      email: `${id}@moyeo.app`,
+      password,
+    })
     return error ?? null
   }
 
-  async function signUpWithEmail(email, password, nickname) {
+  async function signUpWithId({ id, nickname, email, password }) {
     const { error } = await supabase.auth.signUp({
-      email,
+      email: `${id}@moyeo.app`,
       password,
-      options: { data: { full_name: nickname } },
+      options: {
+        data: {
+          full_name: nickname || id,
+          username: id,
+          recovery_email: email,
+        },
+      },
     })
     return error ?? null
   }
@@ -54,5 +63,5 @@ export function useAuth() {
     if (user) await supabase.from('members').update({ name }).eq('user_id', user.id)
   }
 
-  return { user, loading, myName: getUserName(user), loginWithGoogle, loginWithKakao, signInWithEmail, signUpWithEmail, logout, updateName }
+  return { user, loading, myName: getUserName(user), loginWithGoogle, signInWithId, signUpWithId, logout, updateName }
 }

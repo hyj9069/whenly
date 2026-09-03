@@ -27,39 +27,41 @@ const btnStyle = (bg, color, shadow) => ({
   fontFamily: 'inherit', transition: 'opacity .12s',
 })
 
-export default function LoginScreen({ onGoogle, onKakao, onEmailLogin, onEmailSignup }) {
+export default function LoginScreen({ onGoogle, onIdLogin, onIdSignup }) {
   const [mode, setMode]         = useState('login')   // 'login' | 'signup'
+  const [id, setId]             = useState('')
+  const [nickname, setNickname] = useState('')
   const [email, setEmail]       = useState('')
   const [password, setPassword] = useState('')
-  const [nickname, setNickname] = useState('')
   const [error, setError]       = useState('')
   const [loading, setLoading]   = useState(false)
-  const [emailSent, setEmailSent] = useState(false)
+  const [done, setDone]         = useState(false)
 
   function switchMode(m) { setMode(m); setError('') }
 
   async function handleSubmit(e) {
     e.preventDefault()
     setError('')
+    if (!id.trim()) { setError('아이디를 입력해주세요.'); return }
     if (mode === 'signup' && !nickname.trim()) { setError('닉네임을 입력해주세요.'); return }
     setLoading(true)
     const err = mode === 'signup'
-      ? await onEmailSignup(email, password, nickname.trim())
-      : await onEmailLogin(email, password)
+      ? await onIdSignup({ id: id.trim(), nickname: nickname.trim(), email: email.trim(), password })
+      : await onIdLogin(id.trim(), password)
     setLoading(false)
     if (err) { setError(translateError(err.message)); return }
-    if (mode === 'signup') setEmailSent(true)
+    if (mode === 'signup') setDone(true)
   }
 
-  if (emailSent) return (
+  if (done) return (
     <div className="screen" style={{ justifyContent: 'center', alignItems: 'center', textAlign: 'center', padding: '0 28px' }}>
       <Face type="excited" size={60} />
-      <h2 style={{ marginTop: 20, fontWeight: 800, fontSize: '1.3rem' }}>이메일을 확인해주세요!</h2>
+      <h2 style={{ marginTop: 20, fontWeight: 800, fontSize: '1.3rem' }}>가입 완료!</h2>
       <p style={{ color: 'var(--mid)', marginTop: 10, fontSize: '.9rem', lineHeight: 1.7 }}>
-        <b>{email}</b>로 인증 링크를 보냈어요.<br />인증 후 아래에서 로그인해주세요.
+        아이디 <b>{id}</b>로 가입됐어요.<br />로그인해주세요.
       </p>
       <button
-        onClick={() => { setEmailSent(false); switchMode('login') }}
+        onClick={() => { setDone(false); switchMode('login') }}
         style={{ ...btnStyle('#7098C0', '#fff'), marginTop: 24, maxWidth: 320 }}
       >로그인하러 가기</button>
     </div>
@@ -103,18 +105,24 @@ export default function LoginScreen({ onGoogle, onKakao, onEmailLogin, onEmailSi
           <div style={{ flex: 1, height: 1, background: 'rgba(0,0,0,.1)' }} />
         </div>
 
-        {/* 이메일 폼 */}
+        {/* 아이디 폼 */}
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <input
+            style={inputStyle} placeholder="아이디" required autoComplete="username"
+            value={id} onChange={e => setId(e.target.value)}
+          />
           {mode === 'signup' && (
             <input
-              style={inputStyle} placeholder="닉네임" required
+              style={inputStyle} placeholder="닉네임 (앱에서 표시되는 이름)" required
               value={nickname} onChange={e => setNickname(e.target.value)}
             />
           )}
-          <input
-            style={inputStyle} type="email" placeholder="이메일" required autoComplete="email"
-            value={email} onChange={e => setEmail(e.target.value)}
-          />
+          {mode === 'signup' && (
+            <input
+              style={inputStyle} type="email" placeholder="이메일 (비밀번호 찾기용)"
+              value={email} onChange={e => setEmail(e.target.value)}
+            />
+          )}
           <input
             style={inputStyle} type="password" placeholder="비밀번호 (6자 이상)" required autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
             value={password} onChange={e => setPassword(e.target.value)}
@@ -130,7 +138,7 @@ export default function LoginScreen({ onGoogle, onKakao, onEmailLogin, onEmailSi
             type="submit" disabled={loading}
             style={{ ...btnStyle('#7098C0', '#fff'), marginTop: 2, opacity: loading ? 0.7 : 1 }}
           >
-            {loading ? '잠시만요...' : mode === 'login' ? '이메일로 로그인' : '회원가입'}
+            {loading ? '잠시만요...' : mode === 'login' ? '로그인' : '회원가입'}
           </button>
         </form>
 
