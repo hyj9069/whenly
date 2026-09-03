@@ -124,7 +124,7 @@ function HomeCalendarTab({ myName, myRooms, onEnterRoom }) {
             const date         = new Date(vy, vm - 1, d)
             const isToday      = date.toDateString() === today.toDateString()
             const isSelected   = selDay && date.toDateString() === selDay.toDateString()
-            const holiday      = getHoliday(vy, vm, d)
+            const holiday      = getHoliday(d)
             const isRed        = dow === 0 || !!holiday
             const textColor    = isRed ? '#D05055' : dow === 6 ? '#5060CC' : 'var(--dark)'
             const confirmedCnt = myRooms.filter(r => r.confirmed_day === toDateStr(vy, vm, d)).length

@@ -161,7 +161,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
               const uCnt    = uNames.length
               const aCnt    = total - uCnt
               const isMine  = mySet.has(ds)
-              const holiday = getHoliday(yr, mo, d)
+              const holiday = getHoliday(d)
               const faceType   = getDayFaceType(uCnt, total, isMine)
               const isSelected = !editMode && selectedDay === d
 
