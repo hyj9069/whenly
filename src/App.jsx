@@ -64,6 +64,12 @@ export default function App() {
   }
 
   useEffect(() => {
+    function handlePop() { if (screen === 'cal') goHome('rooms') }
+    window.addEventListener('popstate', handlePop)
+    return () => window.removeEventListener('popstate', handlePop)
+  }, [screen]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
     if (loading || !user) return
     const params = new URLSearchParams(window.location.search)
     const code = params.get('room')
@@ -81,6 +87,7 @@ export default function App() {
     }
     setRoom(created)
     setScreen('cal')
+    history.pushState({ room: true }, '')
     setTimeout(() => setShowShare(true), 500)
   }
 
@@ -89,6 +96,7 @@ export default function App() {
     if (!roomData) { showToast('방을 찾을 수 없어요 😢'); return }
     setRoom(roomData)
     setScreen('cal')
+    history.pushState({ room: true }, '')
   }
 
   async function handleLeave() {
