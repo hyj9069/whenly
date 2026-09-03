@@ -33,7 +33,10 @@ export function useHolidays(year, month) {
     if (!API_KEY) return
 
     fetchHolidays(year, month)
-      .then(map => { cache.set(key, map); setDayMap(map) })
+      .then(map => {
+        const result = map.size > 0 ? map : null
+        cache.set(key, result); setDayMap(result)
+      })
       .catch(() => { cache.set(key, null) })
   }, [key, year, month])
 
