@@ -86,8 +86,14 @@ export function useAuth() {
 
   async function updatePassword(newPassword) {
     const { error } = await supabase.auth.updateUser({ password: newPassword })
-    if (!error) setRecovering(false)
-    return error ?? null
+    if (error) {
+      if (error.code === 'same_password') {
+        return { message: '이전 비밀번호와 동일해요. 다른 비밀번호를 입력해주세요.' }
+      }
+      return error
+    }
+    setRecovering(false)
+    return null
   }
 
   async function logout() {

@@ -25,7 +25,7 @@ function PasswordResetScreen({ onSubmit }) {
     setLoading(true)
     const err = await onSubmit(password)
     setLoading(false)
-    if (err) setError('오류가 발생했어요. 다시 시도해주세요.')
+    if (err) setError(err.message || '오류가 발생했어요. 다시 시도해주세요.')
   }
 
   const inputSt = { width: '100%', padding: '13px 14px', borderRadius: 12, border: '1.5px solid rgba(0,0,0,.13)', fontSize: '.95rem', fontFamily: 'inherit', outline: 'none', background: '#fff', boxSizing: 'border-box' }
