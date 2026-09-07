@@ -228,8 +228,8 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
                 >
                   <div className={`day-num${isToday?' today':(dow===0||holiday)?' sun':dow===6?' sat':''}`}>{d}</div>
                   {!past && (statusIcon
-                    ? <img src={statusIcon} className="day-face" style={{ width: 19, height: 19 }} alt="" />
-                    : <Face type={faceType} size={19} className="day-face" />
+                    ? <img src={statusIcon} className="day-face" alt="" />
+                    : <Face type={faceType} size={30} className="day-face" />
                   )}
                   {isConfirmed && (
                     <Heart size={10} fill="#E05070" color="#E05070" style={{ position: 'absolute', top: -3, right: -3 }} />

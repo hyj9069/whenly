@@ -130,6 +130,7 @@ body {
   background: rgba(0,0,0,.02);
   user-select: none; overflow: visible;
   transition: transform .1s, background .15s;
+  padding: 3px;
 }
 .day-cell:hover { transform: scale(1.05); }
 .day-cell.empty { background: transparent; cursor: default; pointer-events: none; }
@@ -146,7 +147,7 @@ body {
   display: flex; align-items: center; justify-content: center;
 }
 
-.day-face { width: 19px; height: 19px; margin-top: 1px; }
+.day-face { height: 30px; margin-top: 1px; }
 
 .badge {
   position: absolute; top: -4px; right: -4px;
