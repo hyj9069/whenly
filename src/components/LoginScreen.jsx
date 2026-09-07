@@ -65,7 +65,7 @@ const inputStyle = (touched, error) => ({
 const btnStyle = (bg, color, shadow) => ({
   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
   width: '100%', padding: '14px 20px', borderRadius: 14,
-  border: 'none', fontSize: '.97rem', fontWeight: 800,
+  border: 'none', fontSize: '.97rem', fontWeight: 700,
   cursor: 'pointer', background: bg, color,
   boxShadow: shadow || '0 2px 0 rgba(0,0,0,.08)',
   fontFamily: 'inherit', transition: 'opacity .12s',
@@ -73,7 +73,7 @@ const btnStyle = (bg, color, shadow) => ({
 
 const linkBtn = {
   background: 'none', border: 'none', cursor: 'pointer',
-  fontWeight: 800, color: '#7098C0', fontFamily: 'inherit', fontSize: 'inherit', padding: 0,
+  fontWeight: 700, color: '#7098C0', fontFamily: 'inherit', fontSize: 'inherit', padding: 0,
 }
 
 export default function LoginScreen({ onGoogle, onIdLogin, onIdSignup, onResetPassword }) {
@@ -128,7 +128,7 @@ export default function LoginScreen({ onGoogle, onIdLogin, onIdSignup, onResetPa
   if (done) return (
     <div className="screen" style={{ justifyContent: 'center', alignItems: 'center', textAlign: 'center', padding: '0 28px' }}>
       <img src={icon4} alt="" style={{ height: 60 }} />
-      <h2 style={{ marginTop: 20, fontWeight: 800, fontSize: '1.3rem' }}>가입 완료!</h2>
+      <h2 style={{ marginTop: 20, fontWeight: 700, fontSize: '1.3rem' }}>가입 완료!</h2>
       <p style={{ color: 'var(--mid)', marginTop: 10, fontSize: '.9rem', lineHeight: 1.7 }}>
         아이디 <b>{id}</b>로 가입됐어요.<br />로그인해주세요.
       </p>
@@ -149,7 +149,7 @@ export default function LoginScreen({ onGoogle, onIdLogin, onIdSignup, onResetPa
             <img key={i} src={src} alt="" style={{height: 80 }} />
           ))}
         </div>
-        <h1 style={{ fontSize: '2rem', fontWeight: 800 }}>모여모여</h1>
+        <h1 style={{ fontSize: '2rem', fontWeight: 700 }}>모여모여</h1>
         <p style={{ color: 'var(--mid)', marginTop: 6, fontSize: '.88rem', lineHeight: 1.6 }}>
           친구들이랑 만날 수 있는 날<br />같이 찾아봐요!
         </p>
@@ -160,7 +160,7 @@ export default function LoginScreen({ onGoogle, onIdLogin, onIdSignup, onResetPa
         {/* 비밀번호 찾기 모드 */}
         {mode === 'reset' && (
           <>
-            <div style={{ fontWeight: 800, fontSize: '1rem', marginBottom: 4 }}>비밀번호 찾기</div>
+            <div style={{ fontWeight: 700, fontSize: '1rem', marginBottom: 4 }}>비밀번호 찾기</div>
             {resetSent ? (
               <div style={{ fontSize: '.9rem', lineHeight: 1.7, color: 'var(--mid)' }}>
                 <Check size={14} color="#4CAF7D" style={{ verticalAlign: 'middle', marginRight: 4 }} />

@@ -100,7 +100,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
 <div style={{ flex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <div style={{ fontSize: '1.1rem', fontWeight: 800, lineHeight: 1.2 }}>{room.name}</div>
+            <div style={{ fontSize: '1.1rem', fontWeight: 700, lineHeight: 1.2 }}>{room.name}</div>
             {isHost && (
               <button onClick={() => { setRenameValue(room.name); setShowRenameModal(true) }} style={{
                 background: 'none', border: 'none', cursor: 'pointer', padding: '2px 4px',
@@ -126,8 +126,8 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
           }}>
             <CalendarDays size={22} color="var(--calm)" style={{ flexShrink: 0 }} />
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: '.75rem', fontWeight: 800, color: 'var(--calm)' }}>확정된 날짜</div>
-              <div style={{ fontSize: '.95rem', fontWeight: 800, marginTop: 2 }}>
+              <div style={{ fontSize: '.75rem', fontWeight: 700, color: 'var(--calm)' }}>확정된 날짜</div>
+              <div style={{ fontSize: '.95rem', fontWeight: 700, marginTop: 2 }}>
                 {cdParsed[0]}년 {cdParsed[1]}월 {cdParsed[2]}일
               </div>
             </div>
@@ -150,7 +150,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
         }}>
           <Face type={editMode ? 'worried' : 'happy'} size={26} style={{ flexShrink: 0 }} />
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: '.83rem', fontWeight: 800 }}>{myName}의 안되는 날</div>
+            <div style={{ fontSize: '.83rem', fontWeight: 700 }}>{myName}의 안되는 날</div>
             <div style={{ fontSize: '.72rem', color: 'var(--mid)', marginTop: 2 }}>
               {editMode ? '날짜를 눌러 선택 · 다시 누르면 취소'
                 : mySet.size === 0 ? <><Smile size={13} style={{ verticalAlign: 'middle', marginRight: 3 }} />안되는 날 없음</> : `${mySet.size}일 표시됨`}
@@ -166,7 +166,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
           {editMode ? (
             <button onClick={exitEdit} style={{
               background: 'var(--calm)', border: 'none', borderRadius: 9, padding: '6px 13px',
-              fontSize: '.78rem', fontWeight: 800, cursor: 'pointer', color: '#fff',
+              fontSize: '.78rem', fontWeight: 700, cursor: 'pointer', color: '#fff',
               fontFamily: 'inherit', whiteSpace: 'nowrap',
             }}>완료</button>
           ) : (
@@ -182,7 +182,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
         <div className="card" style={{ marginBottom: 12 }}>
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: 10 }}>
             <button onClick={prevMonth} style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer', color: 'var(--mid)', padding: '4px 8px', fontFamily: 'inherit' }}>‹</button>
-            <div style={{ flex: 1, textAlign: 'center', fontWeight: 800, fontSize: '.95rem' }}>{yr}년 {mo}월</div>
+            <div style={{ flex: 1, textAlign: 'center', fontWeight: 700, fontSize: '.95rem' }}>{yr}년 {mo}월</div>
             <button onClick={nextMonth} style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer', color: 'var(--mid)', padding: '4px 8px', fontFamily: 'inherit' }}>›</button>
           </div>
           <div className="wday-row">
@@ -258,7 +258,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
           return (
             <div className="card" style={{ marginBottom: 12, borderLeft: `3px solid ${unavailNames.length === 0 ? 'var(--excited)' : 'var(--upset)'}` }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                <div style={{ fontWeight: 800, fontSize: '.9rem' }}>{mo}월 {selectedDay}일</div>
+                <div style={{ fontWeight: 700, fontSize: '.9rem' }}>{mo}월 {selectedDay}일</div>
                 {holiday && (
                   <span style={{ fontSize: '.72rem', fontWeight: 700, color: '#C85050', background: 'rgba(200,85,85,.1)', borderRadius: 8, padding: '2px 8px' }}>
                     {holiday}
@@ -311,7 +311,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
 
         {/* 참여자 현황 */}
         <div className="card" style={{ marginBottom: 12 }}>
-          <div style={{ fontSize: '.85rem', fontWeight: 800, marginBottom: 10, display: 'flex', alignItems: 'center', gap: 5 }}>참여자 현황 <Users size={15} /></div>
+          <div style={{ fontSize: '.85rem', fontWeight: 700, marginBottom: 10, display: 'flex', alignItems: 'center', gap: 5 }}>참여자 현황 <Users size={15} /></div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
             {members.map(mb => {
               const displayName = mb.user_id === myUserId ? myName : mb.name
@@ -398,7 +398,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
                   fontSize: '1rem', color: 'var(--mid)', lineHeight: 1, fontFamily: 'inherit',
                 }}>‹</button>
               )}
-              <div style={{ fontSize: '1.05rem', fontWeight: 800 }}>
+              <div style={{ fontSize: '1.05rem', fontWeight: 700 }}>
                 {importRoomSel ? importRoomSel.roomName : '다른 방 일정 불러오기'}
               </div>
             </div>
@@ -422,7 +422,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
                       borderRadius: 12, padding: '11px 14px', cursor: 'pointer', textAlign: 'left',
                       fontFamily: 'inherit', width: '100%',
                     }}>
-                      <div style={{ fontWeight: 800, fontSize: '.88rem' }}>{opt.roomName}</div>
+                      <div style={{ fontWeight: 700, fontSize: '.88rem' }}>{opt.roomName}</div>
                       <div style={{ fontSize: '.72rem', color: 'var(--mid)', marginTop: 3 }}>
                         안되는 날 {opt.days.length}일
                       </div>
@@ -445,7 +445,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
                           borderRadius: 12, padding: '11px 14px', cursor: 'pointer', textAlign: 'left',
                           fontFamily: 'inherit', width: '100%',
                         }}>
-                          <div style={{ fontWeight: 800, fontSize: '.88rem' }}>{y}년 {+m}월</div>
+                          <div style={{ fontWeight: 700, fontSize: '.88rem' }}>{y}년 {+m}월</div>
                           <div style={{ fontSize: '.72rem', color: 'var(--mid)', marginTop: 3 }}>
                             {filtered.length}일 선택됨
                           </div>
@@ -457,7 +457,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
                       borderRadius: 12, padding: '11px 14px', cursor: 'pointer', textAlign: 'left',
                       fontFamily: 'inherit', width: '100%',
                     }}>
-                      <div style={{ fontWeight: 800, fontSize: '.88rem', color: '#555' }}>전체 가져오기</div>
+                      <div style={{ fontWeight: 700, fontSize: '.88rem', color: '#555' }}>전체 가져오기</div>
                       <div style={{ fontSize: '.72rem', color: '#888', marginTop: 3 }}>
                         {importRoomSel.days.length}일 전체
                       </div>
@@ -477,7 +477,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
       {showRenameModal && (
         <div className="overlay" onClick={() => setShowRenameModal(false)}>
           <div className="modal" onClick={e => e.stopPropagation()}>
-            <div style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: 16 }}>방 이름 수정</div>
+            <div style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: 16 }}>방 이름 수정</div>
             <input className="inp" value={renameValue} onChange={e => setRenameValue(e.target.value)}
               maxLength={30} autoFocus style={{ marginBottom: 16 }}
               onKeyDown={e => { if (e.key === 'Enter' && renameValue.trim()) { onRenameRoom(renameValue.trim()); setShowRenameModal(false) } }}
@@ -495,7 +495,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
       {showLeaveModal && (
         <div className="overlay" onClick={() => setShowLeaveModal(false)}>
           <div className="modal" onClick={e => e.stopPropagation()}>
-            <div style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: 8 }}>
+            <div style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: 8 }}>
               {isHost ? '방을 삭제할까요?' : '방을 나갈까요?'}
             </div>
             <div style={{ fontSize: '.85rem', color: 'var(--mid)', marginBottom: 20, lineHeight: 1.6 }}>

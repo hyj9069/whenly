@@ -57,7 +57,7 @@ function RoomItem({ room, onEnterRoom, selectionMode, selected, onSelect, onLong
           <img src={icon4} alt="" style={{ height: 36, flexShrink: 0 }} />
         )}
         <div style={{ flex: 1 }}>
-          <div style={{ fontWeight: 800, fontSize: '.93rem' }}>{room.name}</div>
+          <div style={{ fontWeight: 700, fontSize: '.93rem' }}>{room.name}</div>
           <div style={{ fontSize: '.72rem', color: 'var(--mid)', marginTop: 2 }}>{room.id}</div>
           {cdParsed && (
             <div style={{ fontSize: '.72rem', color: 'var(--calm)', marginTop: 3, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 3 }}>
@@ -73,7 +73,7 @@ function RoomItem({ room, onEnterRoom, selectionMode, selected, onSelect, onLong
             width: 35, height: 35, flexShrink: 0,
             background: 'rgba(0,0,0,.06)', border: 'none', borderRadius: '50%',
             cursor: 'pointer', color: 'var(--mid)',
-            fontSize: '.85rem', fontWeight: 800, lineHeight: 1,
+            fontSize: '.85rem', fontWeight: 700, lineHeight: 1,
             fontFamily: 'inherit', display: 'flex', justifyContent: 'center', alignItems: 'center',
           }}
         >···</button>
@@ -120,7 +120,7 @@ function DaySheet({ selDay, holiday, rooms, onClose, onEnterRoom }) {
 
         {/* 날짜 헤더 */}
         <div style={{ padding: '8px 24px 4px' }}>
-          <div style={{ fontSize: '1.45rem', fontWeight: 800, color: isRed ? '#D05055' : 'var(--dark)', display: 'flex', alignItems: 'baseline', gap: 10 }}>
+          <div style={{ fontSize: '1.45rem', fontWeight: 700, color: isRed ? '#D05055' : 'var(--dark)', display: 'flex', alignItems: 'baseline', gap: 10 }}>
             {selDay.getMonth() + 1}월 {selDay.getDate()}일 ({dow})
             {holiday && <span style={{ fontSize: '.95rem', fontWeight: 700 }}>{holiday}</span>}
           </div>
@@ -134,7 +134,7 @@ function DaySheet({ selDay, holiday, rooms, onClose, onEnterRoom }) {
               background: sheetTab === t ? 'rgba(255,255,255,0.92)' : 'rgba(0,0,0,0.055)',
               border: sheetTab === t ? '1.5px solid rgba(91,141,184,0.32)' : '1.5px solid transparent',
               color: sheetTab === t ? 'var(--calm)' : 'var(--mid)',
-              fontWeight: 800, fontSize: '.88rem', cursor: 'pointer',
+              fontWeight: 700, fontSize: '.88rem', cursor: 'pointer',
               boxShadow: sheetTab === t ? '0 2px 10px rgba(0,0,0,0.07)' : 'none',
               transition: 'all .15s',
             }}>{t}</button>
@@ -197,14 +197,14 @@ function HomeCalendarTab({ myName, myRooms, onEnterRoom }) {
   return (
     <>
       {/* 인사말 */}
-      <div style={{ fontWeight: 800, fontSize: '1.05rem', marginBottom: 16 }}>
+      <div style={{ fontWeight: 700, fontSize: '1.05rem', marginBottom: 16 }}>
         안녕하세요, {myName}님 👋
       </div>
 
       {/* 월 탐색 */}
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: 12 }}>
         <button onClick={prev} style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer', color: 'var(--mid)', padding: '4px 8px', fontFamily: 'inherit' }}>‹</button>
-        <div style={{ flex: 1, textAlign: 'center', fontWeight: 800, fontSize: '1rem' }}>{vy}년 {vm}월</div>
+        <div style={{ flex: 1, textAlign: 'center', fontWeight: 700, fontSize: '1rem' }}>{vy}년 {vm}월</div>
         <button onClick={next} style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer', color: 'var(--mid)', padding: '4px 8px', fontFamily: 'inherit' }}>›</button>
       </div>
 
@@ -218,7 +218,7 @@ function HomeCalendarTab({ myName, myRooms, onEnterRoom }) {
       <div className="card" style={{ marginBottom: 16 }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', marginBottom: 6 }}>
           {['일','월','화','수','목','금','토'].map((d, i) => (
-            <div key={d} style={{ textAlign: 'center', fontSize: '.65rem', fontWeight: 800, color: i === 0 ? '#D05055' : i === 6 ? '#5060CC' : 'var(--mid)', padding: '4px 0' }}>{d}</div>
+            <div key={d} style={{ textAlign: 'center', fontSize: '.65rem', fontWeight: 700, color: i === 0 ? '#D05055' : i === 6 ? '#5060CC' : 'var(--mid)', padding: '4px 0' }}>{d}</div>
           ))}
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px 0' }}>
@@ -242,14 +242,14 @@ function HomeCalendarTab({ myName, myRooms, onEnterRoom }) {
                   background: isSelected ? 'var(--calm)' : isToday ? 'rgba(112,152,192,.12)' : 'transparent',
                   border: isToday && !isSelected ? '1.5px solid var(--calm)' : '1.5px solid transparent',
                   color: isSelected ? '#fff' : textColor,
-                  fontSize: '.84rem', fontWeight: 800, transition: 'all .15s',
+                  fontSize: '.84rem', fontWeight: 700, transition: 'all .15s',
                 }}>{d}</div>
                 <div style={{ height: 5, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   {confirmedCnt === 1 && (
                     <div style={{ width: 5, height: 5, borderRadius: '50%', background: isSelected ? 'var(--mid)' : 'var(--calm)', opacity: isSelected ? 0.5 : 0.9 }} />
                   )}
                   {confirmedCnt > 1 && (
-                    <div style={{ fontSize: '.42rem', fontWeight: 800, color: isSelected ? 'rgba(255,255,255,.7)' : 'var(--calm)', lineHeight: 1 }}>{confirmedCnt}</div>
+                    <div style={{ fontSize: '.42rem', fontWeight: 700, color: isSelected ? 'rgba(255,255,255,.7)' : 'var(--calm)', lineHeight: 1 }}>{confirmedCnt}</div>
                   )}
                 </div>
               </div>
@@ -351,7 +351,7 @@ function RoomsTab({ myRooms, onCreate, onJoinCode, onEnterRoom, onLeaveRoom }) {
       {showConfirm && (
         <div className="overlay" onClick={() => setShowConfirm(false)}>
           <div className="modal" onClick={e => e.stopPropagation()}>
-            <div style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: 8 }}>방을 나가겠어요?</div>
+            <div style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: 8 }}>방을 나가겠어요?</div>
             <div style={{ fontSize: '.85rem', color: 'var(--mid)', marginBottom: 20, lineHeight: 1.6 }}>
               선택한 {selectedIds.size}개의 방에서 나갑니다.<br />내가 만든 방은 삭제됩니다.
             </div>
@@ -389,7 +389,7 @@ function ProfileTab({ user, myName, onLogout, onUpdateName }) {
           ? <img src={user.user_metadata.avatar_url} alt="" style={{ width: 72, height: 72, borderRadius: '50%', objectFit: 'cover', border: '3px solid rgba(0,0,0,.08)' }} />
           : <Face type="calm" size={72} />
         }
-        <div style={{ fontWeight: 800, fontSize: '1.1rem' }}>{myName}</div>
+        <div style={{ fontWeight: 700, fontSize: '1.1rem' }}>{myName}</div>
         <div style={{ fontSize: '.75rem', color: 'var(--mid)' }}>{user?.email}</div>
       </div>
 

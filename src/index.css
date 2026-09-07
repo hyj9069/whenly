@@ -56,7 +56,7 @@ body {
   display: flex; align-items: center; justify-content: center; gap: 6px;
   width: 100%; padding: 14px 18px;
   border: none; border-radius: 14px;
-  font-family: inherit; font-size: .95rem; font-weight: 800;
+  font-family: inherit; font-size: .95rem; font-weight: 700;
   cursor: pointer; letter-spacing: -.01em;
   transition: opacity .15s, transform .12s;
 }
@@ -111,7 +111,7 @@ body {
   margin-bottom: 6px;
 }
 .wday {
-  text-align: center; font-size: .66rem; font-weight: 800;
+  text-align: center; font-size: .66rem; font-weight: 700;
   color: var(--mid); padding: 4px 0; letter-spacing: .02em;
 }
 .wday.sun { color: #C85050; }
@@ -139,7 +139,7 @@ body {
 .day-cell.past:hover { transform: none; }
 
 
-.day-num { font-size: .7rem; font-weight: 800; line-height: 1; }
+.day-num { font-size: .7rem; font-weight: 700; line-height: 1; }
 .day-num.sun { color: #C85050; }
 .day-num.sat { color: #5060BB; }
 .day-num.today {
@@ -153,7 +153,7 @@ body {
 .badge {
   position: absolute; top: -4px; right: -4px;
   width: 14px; height: 14px; border-radius: 50%;
-  font-size: .52rem; font-weight: 800;
+  font-size: .52rem; font-weight: 700;
   display: flex; align-items: center; justify-content: center;
   color: #fff; pointer-events: none;
   box-shadow: 0 1px 3px rgba(0,0,0,.18);
@@ -212,7 +212,7 @@ body {
 /* ── FORMS ───────────────────────────────── */
 .form-group { margin-bottom: 16px; }
 .form-label {
-  font-size: .77rem; font-weight: 800; color: var(--mid);
+  font-size: .77rem; font-weight: 700; color: var(--mid);
   display: block; margin-bottom: 6px; letter-spacing: .02em;
 }
 

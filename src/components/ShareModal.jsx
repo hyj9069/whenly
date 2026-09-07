@@ -35,12 +35,12 @@ export default function ShareModal({ roomId, onClose, onToast }) {
   return (
     <div className="overlay" onClick={onClose}>
       <div className="modal" onClick={e => e.stopPropagation()}>
-        <div style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>친구한테 공유하기 <Link size={16} /></div>
+        <div style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>친구한테 공유하기 <Link size={16} /></div>
         <div style={{ fontSize: '.82rem', color: 'var(--mid)', marginBottom: 14 }}>링크 또는 방 코드로 초대해요!</div>
 
         <div style={{ fontSize: '.8rem', fontWeight: 700, color: 'var(--mid)', marginBottom: 5 }}>방 코드</div>
         <div className="code-box">
-          <div style={{ fontSize: '2.1rem', fontWeight: 800, letterSpacing: 8, color: 'var(--calm)' }}>{roomId}</div>
+          <div style={{ fontSize: '2.1rem', fontWeight: 700, letterSpacing: 8, color: 'var(--calm)' }}>{roomId}</div>
           <div style={{ fontSize: '.73rem', color: 'var(--mid)', marginTop: 5 }}>친구에게 이 코드를 알려주세요</div>
         </div>
 
@@ -53,7 +53,7 @@ export default function ShareModal({ roomId, onClose, onToast }) {
           <button style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
             width: '100%', padding: 13, background: '#FEE500', border: 'none', borderRadius: 14,
-            fontSize: '.95rem', fontWeight: 800, cursor: 'pointer', color: '#3A1D1D',
+            fontSize: '.95rem', fontWeight: 700, cursor: 'pointer', color: '#3A1D1D',
             boxShadow: '0 2px 0 rgba(0,0,0,.1)',
           }} onClick={() => shareKakao(url, msg => { onToast(msg); onClose() })}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="#3A1D1D">

@@ -22,7 +22,7 @@ export default function JoinCodeScreen({ onBack, onJoin }) {
       </div>
       <div className="form-group">
         <input className="inp" placeholder="예: AB1C2D" maxLength={6}
-          style={{ textTransform: 'uppercase', letterSpacing: 5, fontSize: '1.5rem', textAlign: 'center', fontWeight: 800 }}
+          style={{ textTransform: 'uppercase', letterSpacing: 5, fontSize: '1.5rem', textAlign: 'center', fontWeight: 700 }}
           value={code} onChange={e => setCode(e.target.value.toUpperCase())} />
       </div>
       <div className="spacer" />
