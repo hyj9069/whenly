@@ -257,7 +257,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
           const isConfirmed = cdStr === ds
           const holiday = getHoliday(yr, mo, selectedDay)
           return (
-            <div className="card" style={{ marginBottom: 12, borderLeft: `3px solid ${unavailNames.length === 0 ? 'var(--excited)' : 'var(--upset)'}` }}>
+            <div className="card" style={{ marginBottom: 12,  }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                 <div style={{ fontWeight: 700, fontSize: '.9rem' }}>{mo}월 {selectedDay}일</div>
                 {holiday && (
