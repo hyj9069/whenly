@@ -87,9 +87,8 @@ body {
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-radius: 20px;
-  padding: 16px;
+  padding: 12px;
   border: 1.5px solid rgba(255,255,255,0.88);
-  box-shadow: 0 4px 24px rgba(46,41,37,.07), 0 1px 3px rgba(46,41,37,.04);
 }
 
 /* ── TOP BAR ─────────────────────────────── */
@@ -218,10 +217,10 @@ body {
 }
 
 /* ── LEGEND ──────────────────────────────── */
-.legend { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
 .leg-item { display: flex; align-items: center; gap: 5px; font-size: .7rem; color: var(--mid); }
 .leg-dot  { width: 10px; height: 10px; border-radius: 3px; }
 
 .divider { border: none; border-top: 1px solid rgba(0,0,0,.06); margin: 12px 0; }
 .spacer  { flex: 1; }
-.scroll  { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 2px 4px; margin: 0 -4px; }
+.scroll  { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;}

@@ -319,7 +319,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
               return (
                 <div key={mb.id} className="member-item">
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: 700, fontSize: '.85rem', color: mb.user_id === myUserId ? 'var(--calm)' : 'inherit' }}>
+                    <div style={{ fontWeight: 700, fontSize: '.8rem', color: mb.user_id === myUserId ? 'var(--calm)' : 'inherit' }}>
                       {displayName}{mb.user_id === myUserId ? ' (나)' : ''}
                     </div>
                   </div>
