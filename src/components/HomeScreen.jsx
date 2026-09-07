@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import Face from './Face'
-import emptyRoomImg from '../assets/empty-room.svg'
+import emptyRoomImg from '../assets/icon.svg'
 import { toDateStr } from '../utils'
 import { useHolidays } from '../hooks/useHolidays'
 
@@ -318,7 +318,7 @@ function RoomsTab({ myRooms, onCreate, onJoinCode, onEnterRoom, onLeaveRoom }) {
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, color: 'var(--mid)', padding: '32px 0' }}>
-          <img src={emptyRoomImg} alt="" style={{ width: 80, height: 80 }} />
+          <img src={emptyRoomImg} alt="" style={{ height: 125 }} />
           <div style={{ fontSize: '.9rem', textAlign: 'center', lineHeight: 1.6 }}>
             아직 참여 중인 방이 없어요<br />방을 만들거나 초대 링크로 참여해봐요!
           </div>
