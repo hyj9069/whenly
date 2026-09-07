@@ -304,9 +304,9 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
 
         {/* 범례 */}
         <div className="legend">
-          <div className="leg-item"><img src={icon1} style={{ height: 23, flexShrink: 0 }} alt="" />모두 가능</div>
-          <div className="leg-item"><img src={icon2} style={{ height: 23, flexShrink: 0 }} alt="" />일부 불가</div>
-          <div className="leg-item"><img src={icon3} style={{ height: 23, flexShrink: 0 }} alt="" />모두 불가</div>
+          <div className="leg-item"><img src={icon1} style={{ height: 20, flexShrink: 0 }} alt="" />모두 가능</div>
+          <div className="leg-item"><img src={icon2} style={{ height: 20, flexShrink: 0 }} alt="" />일부 불가</div>
+          <div className="leg-item"><img src={icon3} style={{ height: 20, flexShrink: 0 }} alt="" />모두 불가</div>
         </div>
 
         {/* 참여자 현황 */}
