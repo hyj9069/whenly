@@ -217,12 +217,15 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
                 else                 statusIcon = icon2
               }
 
+              const allAvail = !past && total >= 2 && uCnt === 0
+
               return (
                 <div key={d}
                   className={`day-cell${past ? ' past' : ''}`}
                   style={{
                     outline: isSelected ? '2px solid var(--calm)' : undefined,
                     outlineOffset: isSelected ? 1 : undefined,
+                    background: isConfirmed ? 'rgba(224,80,112,.12)' : allAvail ? 'rgba(112,192,220,.18)' : undefined,
                   }}
                   onClick={() => handleCellClick(d, past)}
                 >
