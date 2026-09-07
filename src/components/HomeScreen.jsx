@@ -34,8 +34,8 @@ function RoomItem({ room, onEnterRoom, selectionMode, selected, onSelect, onLong
         onTouchStart={startPress} onTouchEnd={cancelPress} onTouchMove={cancelPress}
         style={{
           flex: 1, display: 'flex', alignItems: 'center', gap: 12, padding: '13px 15px',
-          background: selected ? 'rgba(91,141,184,.1)' : '#fff',
-          border: `2px solid ${selected ? 'var(--calm)' : 'rgba(0,0,0,.07)'}`,
+          background: '#fff',
+          border: selected ? '2px solid var(--calm)' : 'none',
           borderRadius: 16, cursor: 'pointer', textAlign: 'left',
           boxShadow: '0 2px 8px var(--shadow)', fontFamily: 'inherit',
           transition: 'background .15s, border-color .15s',
