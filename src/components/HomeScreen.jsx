@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
-import { Home, Users, User, CalendarDays } from 'lucide-react'
+import { Home, Users, User, CalendarDays, Check } from 'lucide-react'
 import Face from './Face'
-import emptyRoomImg from '../assets/empty-room.svg'
+import icon4 from '../assets/icon4.svg'
 import { toDateStr } from '../utils'
 import { useHolidays } from '../hooks/useHolidays'
 
@@ -48,7 +48,7 @@ function RoomItem({ room, onEnterRoom, selectionMode, selected, onSelect, onLong
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             transition: 'background .15s, border-color .15s',
           }}>
-            {selected && <span style={{ color: '#fff', fontSize: '.7rem', fontWeight: 800 }}>✓</span>}
+            {selected && <Check size={13} color="#fff" strokeWidth={3} />}
           </div>
         ) : (
           <Face type="calm" size={36} style={{ flexShrink: 0 }} />
@@ -331,7 +331,7 @@ function RoomsTab({ myRooms, onCreate, onJoinCode, onEnterRoom, onLeaveRoom }) {
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, color: 'var(--mid)', padding: '32px 0' }}>
-          <img src={emptyRoomImg} alt="" style={{ height: 125 }} />
+          <img src={icon4} alt="" style={{ height: 125 }} />
           <div style={{ fontSize: '.9rem', textAlign: 'center', lineHeight: 1.6 }}>
             아직 참여 중인 방이 없어요<br />방을 만들거나 초대 링크로 참여해봐요!
           </div>

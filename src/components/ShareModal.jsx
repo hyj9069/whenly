@@ -1,3 +1,5 @@
+import { Link, Copy } from 'lucide-react'
+
 function shareKakao(url, onFail) {
   if (!window.Kakao?.isInitialized()) {
     onFail('카카오 SDK 로드 실패 — 링크를 복사해서 공유해주세요')
@@ -33,7 +35,7 @@ export default function ShareModal({ roomId, onClose, onToast }) {
   return (
     <div className="overlay" onClick={onClose}>
       <div className="modal" onClick={e => e.stopPropagation()}>
-        <div style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: 4 }}>친구한테 공유하기 🔗</div>
+        <div style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>친구한테 공유하기 <Link size={16} /></div>
         <div style={{ fontSize: '.82rem', color: 'var(--mid)', marginBottom: 14 }}>링크 또는 방 코드로 초대해요!</div>
 
         <div style={{ fontSize: '.8rem', fontWeight: 700, color: 'var(--mid)', marginBottom: 5 }}>방 코드</div>
@@ -60,7 +62,7 @@ export default function ShareModal({ roomId, onClose, onToast }) {
             카카오톡으로 공유하기
           </button>
           <div style={{ display: 'flex', gap: 9 }}>
-            <button className="btn btn-blue" style={{ flex: 1, padding: 12 }} onClick={copy}>링크 복사 📋</button>
+            <button className="btn btn-blue" style={{ flex: 1, padding: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }} onClick={copy}><Copy size={14} />링크 복사</button>
             <button className="btn btn-ghost btn-sm" onClick={onClose}>닫기</button>
           </div>
         </div>

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Sparkles } from 'lucide-react'
 import Face from './Face'
 import TopBar from './TopBar'
 
@@ -35,7 +36,7 @@ export default function CreateScreen({ onBack, onCreate, defaultName }) {
       <div className="spacer" />
       <button className="btn btn-blue" style={{ marginTop: 16 }} onClick={handleCreate}
         disabled={loading || !roomName.trim()}>
-        {loading ? '생성 중...' : '방 만들기 ✨'}
+        {loading ? '생성 중...' : <><Sparkles size={15} style={{ verticalAlign: 'middle', marginRight: 5 }} />방 만들기</>}
       </button>
     </div>
   )

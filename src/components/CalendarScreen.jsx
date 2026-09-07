@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Home, Users, CalendarDays, User, Pencil, Heart } from 'lucide-react'
+import { Home, Users, CalendarDays, User, Pencil, Heart, Sparkles, Link, CheckCheck, Smile, Copy } from 'lucide-react'
 import icon1 from '../assets/icon1.svg'
 import icon2 from '../assets/icon2.svg'
 import icon3 from '../assets/icon3.svg'
@@ -124,7 +124,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
             background: 'rgba(91,141,184,.12)', border: '1.5px solid rgba(91,141,184,.45)',
             borderRadius: 14, padding: '13px 15px', marginBottom: 12,
           }}>
-            <span style={{ fontSize: '1.3rem' }}>📅</span>
+            <CalendarDays size={22} color="var(--calm)" style={{ flexShrink: 0 }} />
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: '.75rem', fontWeight: 800, color: 'var(--calm)' }}>확정된 날짜</div>
               <div style={{ fontSize: '.95rem', fontWeight: 800, marginTop: 2 }}>
@@ -153,7 +153,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
             <div style={{ fontSize: '.83rem', fontWeight: 800 }}>{myName}의 안되는 날</div>
             <div style={{ fontSize: '.72rem', color: 'var(--mid)', marginTop: 2 }}>
               {editMode ? '날짜를 눌러 선택 · 다시 누르면 취소'
-                : mySet.size === 0 ? '안되는 날 없음 😊' : `${mySet.size}일 표시됨`}
+                : mySet.size === 0 ? <><Smile size={13} style={{ verticalAlign: 'middle', marginRight: 3 }} />안되는 날 없음</> : `${mySet.size}일 표시됨`}
             </div>
             {editMode && (
               <button onClick={openImportModal} style={{
@@ -263,7 +263,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
                 )}
               </div>
               {unavailNames.length === 0 ? (
-                <div style={{ fontSize: '.83rem', color: 'var(--excited)', fontWeight: 700 }}>모두 가능한 날 🎉</div>
+                <div style={{ fontSize: '.83rem', color: 'var(--excited)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: 4 }}>모두 가능한 날 <Sparkles size={14} /></div>
               ) : (
                 <>
                   <div style={{ fontSize: '.73rem', color: 'var(--mid)', marginBottom: 5 }}>안되는 사람</div>
@@ -290,7 +290,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
                     </button>
                   ) : (
                     <button className="btn btn-blue" style={{ fontSize: '.82rem', padding: 10 }} onClick={() => onConfirmDay(ds)}>
-                      📅 이 날로 확정하기
+                      <CalendarDays size={15} style={{ verticalAlign: 'middle', marginRight: 4 }} />이 날로 확정하기
                     </button>
                   )}
                 </div>
@@ -308,7 +308,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
 
         {/* 참여자 현황 */}
         <div className="card" style={{ marginBottom: 12 }}>
-          <div style={{ fontSize: '.85rem', fontWeight: 800, marginBottom: 10 }}>참여자 현황 👥</div>
+          <div style={{ fontSize: '.85rem', fontWeight: 800, marginBottom: 10, display: 'flex', alignItems: 'center', gap: 5 }}>참여자 현황 <Users size={15} /></div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
             {members.map(mb => {
               const displayName = mb.user_id === myUserId ? myName : mb.name
@@ -321,7 +321,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
                     </div>
                   </div>
                   <div style={{ fontSize: '.74rem', color: 'var(--mid)' }}>
-                    {(mb.unavailable_days?.length ?? 0) === 0 ? '없음 🙆' : `${mb.unavailable_days.length}일 안됨`}
+                    {(mb.unavailable_days?.length ?? 0) === 0 ? <><CheckCheck size={13} color="var(--excited)" style={{ verticalAlign: 'middle', marginRight: 2 }} />없음</> : `${mb.unavailable_days.length}일 안됨`}
                   </div>
                 </div>
               )
@@ -329,12 +329,12 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
           </div>
           <div className="divider" />
           <button className="btn btn-ghost" style={{ fontSize: '.82rem', padding: 10 }} onClick={onOpenShare}>
-            링크로 친구 더 초대하기 🔗
+            <Link size={14} style={{ verticalAlign: 'middle', marginRight: 5 }} />링크로 친구 더 초대하기
           </button>
         </div>
 
         <div style={{ textAlign: 'center', fontSize: '.72rem', color: 'var(--mid)', paddingBottom: 8 }}>
-          변경사항은 실시간으로 반영돼요 ✨
+          변경사항은 실시간으로 반영돼요 <Sparkles size={12} style={{ verticalAlign: 'middle' }} />
         </div>
       </div>
 

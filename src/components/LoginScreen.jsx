@@ -1,8 +1,10 @@
 import { useState } from 'react'
+import { Check, X } from 'lucide-react'
 import Face from './Face'
 import icon1 from '../assets/icon1.svg'
 import icon2 from '../assets/icon2.svg'
 import icon3 from '../assets/icon3.svg'
+import icon4 from '../assets/icon4.svg'
 
 function translateError(msg) {
   if (!msg) return '오류가 발생했어요. 다시 시도해주세요.'
@@ -49,7 +51,7 @@ function FieldHint({ touched, error }) {
   const ok = error === ''
   return (
     <div style={{ fontSize: '.78rem', fontWeight: 700, paddingLeft: 4, marginTop: -4, color: ok ? '#4CAF7D' : '#C85050' }}>
-      {ok ? '✓ 사용 가능' : `✗ ${error}`}
+      {ok ? <><Check size={13} style={{ verticalAlign: 'middle', marginRight: 2 }} />사용 가능</> : <><X size={13} style={{ verticalAlign: 'middle', marginRight: 2 }} />{error}</>}
     </div>
   )
 }
@@ -145,11 +147,11 @@ export default function LoginScreen({ onGoogle, onIdLogin, onIdSignup, onResetPa
       {/* 헤더 */}
       <div style={{ textAlign: 'center', marginBottom: 32 }}>
         <div style={{ display: 'flex', justifyContent: 'center', gap: 16, marginBottom: 22 }}>
-          {[icon1, icon2, icon3].map((src, i) => (
-            <img key={i} src={src} alt="" style={{ width: 52, height: 52 }} />
+          {[icon1, icon2, icon3, icon4].map((src, i) => (
+            <img key={i} src={src} alt="" style={{ width: 46, height: 46 }} />
           ))}
         </div>
-        <h1 style={{ fontSize: '2rem', fontWeight: 800 }}>모여모여 ✨</h1>
+        <h1 style={{ fontSize: '2rem', fontWeight: 800 }}>모여모여</h1>
         <p style={{ color: 'var(--mid)', marginTop: 6, fontSize: '.88rem', lineHeight: 1.6 }}>
           친구들이랑 만날 수 있는 날<br />같이 찾아봐요!
         </p>
@@ -163,7 +165,7 @@ export default function LoginScreen({ onGoogle, onIdLogin, onIdSignup, onResetPa
             <div style={{ fontWeight: 800, fontSize: '1rem', marginBottom: 4 }}>비밀번호 찾기</div>
             {resetSent ? (
               <div style={{ fontSize: '.9rem', lineHeight: 1.7, color: 'var(--mid)' }}>
-                <span style={{ color: '#4CAF7D', fontWeight: 800 }}>✓ </span>
+                <Check size={14} color="#4CAF7D" style={{ verticalAlign: 'middle', marginRight: 4 }} />
                 <b>{resetSent.replace(/(?<=.{2}).(?=[^@]*@)/g, '*')}</b>으로<br />재설정 링크를 보냈어요.
               </div>
             ) : (
