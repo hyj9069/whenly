@@ -3,7 +3,6 @@ import { Home, Users, CalendarDays, User, Pencil, Heart, Sparkles, Link, CheckCh
 import icon1 from '../assets/icon1.webp'
 import icon2 from '../assets/icon2.webp'
 import icon3 from '../assets/icon3.webp'
-import Face from './Face'
 import { toDateStr, getDayFaceType, getMemberColor } from '../utils'
 import { useHolidays } from '../hooks/useHolidays'
 import { supabase } from '../supabase'
