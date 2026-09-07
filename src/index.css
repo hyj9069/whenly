@@ -139,16 +139,16 @@ body {
 .day-cell.past:hover { transform: none; }
 
 
-.day-num { font-size: .7rem; font-weight: 700; line-height: 1; }
+.day-num { font-size: .6rem; font-weight: 700; line-height: 1; margin-bottom: 17px; }
 .day-num.sun { color: #C85050; }
 .day-num.sat { color: #5060BB; }
 .day-num.today {
   background: var(--calm); color: #fff !important;
-  border-radius: 50%; width: 19px; height: 19px;
+  border-radius: 50%; width: 15px; height: 15px;
   display: flex; align-items: center; justify-content: center;
 }
 
-.day-face { height: 25px; margin-top: 1px; }
+.day-face { height: 20px; position: absolute; bottom: 1px; }
 
 .badge {
   position: absolute; top: -4px; right: -4px;
