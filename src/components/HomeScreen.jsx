@@ -463,42 +463,73 @@ export default function HomeScreen({ user, myName, myRooms, initialTab = 'home',
   const [tab, setTab] = useState(initialTab === 'cal' ? 'home' : initialTab)
 
   return (
-    <div className="screen" style={{ paddingTop: 24, paddingBottom: 86 }}>
+    <div className="screen" style={{ paddingTop: 24, paddingBottom: 94 }}>
       {tab === 'home'    && <HomeCalendarTab myName={myName} myRooms={myRooms} onEnterRoom={onEnterRoom} />}
       {tab === 'rooms'   && <RoomsTab   myRooms={myRooms} onCreate={onCreate} onJoinCode={onJoinCode} onEnterRoom={onEnterRoom} onLeaveRoom={onLeaveRoom} />}
       {tab === 'profile' && <ProfileTab user={user} myName={myName} onLogout={onLogout} onUpdateName={onUpdateName} />}
 
-      {tab === 'home' && (
-        <button onClick={() => onCreate('home')} style={{
-          position: 'fixed',
-          right: 20, bottom: 'calc(72px + env(safe-area-inset-bottom))',
-          width: 45, height: 45, borderRadius: '50%',
-          background: 'var(--calm)', border: 'none', color: '#fff',
-          fontSize: '1.7rem', lineHeight: 1, cursor: 'pointer',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: '0 4px 18px rgba(91,141,184,.45)', zIndex: 45,
-        }}>+</button>
-      )}
-
-      <nav style={{
-        position: 'fixed', bottom: 0,
+      <div style={{
+        position: 'fixed',
+        bottom: 'calc(14px + env(safe-area-inset-bottom))',
         left: '50%', transform: 'translateX(-50%)',
-        width: '100%', maxWidth: 480,
-        background: '#fff', borderTop: '1px solid rgba(0,0,0,.08)',
-        display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
-        paddingBottom: 'env(safe-area-inset-bottom)',
-        zIndex: 50, boxShadow: '0 -2px 16px rgba(0,0,0,.06)',
+        width: 'calc(100% - 32px)', maxWidth: 440,
+        display: 'flex', alignItems: 'center', gap: 10,
+        zIndex: 50,
       }}>
-        {TABS.map(({ key, label, Icon }) => (
-          <button key={key} onClick={() => setTab(key)}
-            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '10px 0', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}>
-            <Icon active={tab === key} />
-            <span style={{ fontSize: '.6rem', fontWeight: 700, color: tab === key ? 'var(--calm)' : 'var(--mid)' }}>
-              {label}
-            </span>
-          </button>
-        ))}
-      </nav>
+        {/* Pill nav */}
+        <div style={{
+          flex: 1, position: 'relative',
+          display: 'flex', alignItems: 'center', padding: '5px',
+          background: 'rgba(255,255,255,0.76)',
+          backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)',
+          borderRadius: 100,
+          border: '1.5px solid rgba(255,255,255,0.94)',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.10), inset 0 1px 0 rgba(255,255,255,0.9)',
+        }}>
+          {/* 슬라이딩 타원 */}
+          <div style={{
+            position: 'absolute',
+            top: 5, bottom: 5, left: 5,
+            width: `calc((100% - 10px) / ${TABS.length})`,
+            borderRadius: 100,
+            background: '#fff',
+            boxShadow: '0 2px 12px rgba(0,0,0,0.09)',
+            transform: `translateX(calc(${TABS.findIndex(t => t.key === tab)} * 100%))`,
+            transition: 'transform .32s cubic-bezier(.32,.72,0,1)',
+            pointerEvents: 'none',
+          }} />
+
+          {TABS.map(({ key, label, Icon }) => {
+            const active = tab === key
+            return (
+              <button key={key} onClick={() => setTab(key)} style={{
+                flex: 1, position: 'relative', zIndex: 1,
+                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3,
+                padding: '8px 0',
+                background: 'transparent', border: 'none', borderRadius: 100,
+                cursor: active ? 'default' : 'pointer',
+                fontFamily: 'inherit',
+              }}>
+                <Icon active={active} />
+                <span style={{ fontSize: '.6rem', fontWeight: 700, color: active ? 'var(--calm)' : 'var(--mid)', transition: 'color .25s' }}>
+                  {label}
+                </span>
+              </button>
+            )
+          })}
+        </div>
+
+        {/* FAB */}
+        <button onClick={() => onCreate('home')} style={{
+          width: 52, height: 52, borderRadius: '50%', flexShrink: 0,
+          background: 'linear-gradient(135deg, #8BBDE8 0%, #5B8DB8 55%, #7C6ED6 100%)',
+          border: 'none', color: '#fff',
+          fontSize: '1.8rem', cursor: 'pointer',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          boxShadow: '0 4px 20px rgba(91,141,184,.50), 0 2px 8px rgba(0,0,0,.12)',
+          transition: 'transform .15s',
+        }}>+</button>
+      </div>
     </div>
   )
 }

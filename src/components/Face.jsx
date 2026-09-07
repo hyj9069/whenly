@@ -1,8 +1,9 @@
 import { FACE_CONFIGS } from '../constants'
 
-export default function Face({ type = 'happy', size = 100, className, style, fill: fillOverride }) {
+export default function Face({ type = 'happy', size = 100, className, style, fill: fillOverride, gradient }) {
   const cfg = FACE_CONFIGS[type] || FACE_CONFIGS.happy
-  const fill = fillOverride || cfg.fill
+  const gradId = gradient ? `fg_${gradient[0].replace('#','')}_${gradient[1].replace('#','')}` : null
+  const fill = gradient ? `url(#${gradId})` : (fillOverride || cfg.fill)
 
   const Eyes = () => {
     switch (cfg.eyes) {
@@ -50,6 +51,14 @@ export default function Face({ type = 'happy', size = 100, className, style, fil
 
   return (
     <svg width={size} height={size} viewBox="0 0 100 100" className={className} style={style}>
+      {gradient && (
+        <defs>
+          <radialGradient id={gradId} cx="38%" cy="32%" r="65%">
+            <stop offset="0%" stopColor={gradient[0]} />
+            <stop offset="100%" stopColor={gradient[1]} />
+          </radialGradient>
+        </defs>
+      )}
       <ellipse cx="50" cy="50" rx="45" ry="46" fill={fill} stroke="#3D3530" strokeWidth="2.5"/>
       <Eyes />
       <Mouth />

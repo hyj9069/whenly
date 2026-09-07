@@ -58,7 +58,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
   const cdParsed = cdStr ? cdStr.split('-').map(Number) : null
 
   return (
-    <div className="screen" style={{ paddingTop: 20, paddingBottom: 88 }}>
+    <div className="screen" style={{ paddingTop: 20, paddingBottom: 94 }}>
       {/* 헤더 */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
 <div style={{ flex: 1 }}>
@@ -165,16 +165,16 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
               const faceType   = getDayFaceType(uCnt, total, isMine)
               const isSelected = !editMode && selectedDay === d
 
-              let stClass = ''
-              if (!past) {
-                if (total >= 2 && uCnt === total)              stClass = 'st-most'
-                else if (total >= 2 && uCnt === 0)             stClass = 'st-all'
-                else if (total >= 2 && uCnt > 0 && aCnt > 0)  stClass = 'st-some'
+              let faceGradient = undefined
+              if (!past && total >= 2) {
+                if (uCnt === total)  faceGradient = ['#FF7A58', '#CC2828']
+                else if (uCnt === 0) faceGradient = ['#C4E040', '#42A82A']
+                else                 faceGradient = ['#D0D0D0', '#909090']
               }
 
               return (
                 <div key={d}
-                  className={`day-cell${past ? ' past' : ''}${stClass ? ` ${stClass}` : ''}`}
+                  className={`day-cell${past ? ' past' : ''}`}
                   style={{
                     outline: isSelected ? '2px solid var(--calm)' : undefined,
                     outlineOffset: isSelected ? 1 : undefined,
@@ -182,12 +182,9 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
                   onClick={() => handleCellClick(d, past)}
                 >
                   <div className={`day-num${isToday?' today':(dow===0||holiday)?' sun':dow===6?' sat':''}`}>{d}</div>
-                  {!past && <Face type={faceType} size={19} className="day-face" fill={stClass === 'st-most' ? '#909090' : stClass === 'st-some' ? '#C46468' : undefined} />}
+                  {!past && <Face type={faceType} size={19} className="day-face" gradient={faceGradient} />}
                   {!past && isMine && (
                     <div className="badge badge-red" style={{ top: 'auto', bottom: -3, right: 'auto', left: -3 }}>나</div>
-                  )}
-                  {!past && total >= 2 && uCnt > 0 && (
-                    <div className="badge badge-red">{uCnt}</div>
                   )}
                 </div>
               )
@@ -253,9 +250,9 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
 
         {/* 범례 */}
         <div className="legend">
-          <div className="leg-item"><div className="leg-dot" style={{ background: 'rgba(78,128,102,.22)', border: '1.5px solid var(--excited)' }} />모두 가능</div>
-          <div className="leg-item"><div className="leg-dot" style={{ background: 'rgba(192,86,90,.18)', border: '1.5px solid var(--upset)' }} />일부 불가</div>
-          <div className="leg-item"><div className="leg-dot" style={{ background: 'rgba(80,80,80,.12)', border: '1.5px solid rgba(80,80,80,.5)' }} />모두 불가</div>
+          <div className="leg-item"><Face type="excited" size={14} gradient={['#C4E040','#42A82A']} style={{ flexShrink: 0 }} />모두 가능</div>
+          <div className="leg-item"><Face type="happy"   size={14} gradient={['#D0D0D0','#909090']} style={{ flexShrink: 0 }} />일부 불가</div>
+          <div className="leg-item"><Face type="upset"   size={14} gradient={['#FF7A58','#CC2828']} style={{ flexShrink: 0 }} />모두 불가</div>
         </div>
 
         {/* 참여자 현황 */}
@@ -292,28 +289,43 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
 
       {/* 하단 네비게이션 */}
       <nav style={{
-        position: 'fixed', bottom: 0,
+        position: 'fixed',
+        bottom: 'calc(14px + env(safe-area-inset-bottom))',
         left: '50%', transform: 'translateX(-50%)',
-        width: '100%', maxWidth: 480,
-        background: '#fff', borderTop: '1px solid rgba(0,0,0,.08)',
-        display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)',
-        paddingBottom: 'env(safe-area-inset-bottom)',
-        zIndex: 50, boxShadow: '0 -2px 16px rgba(0,0,0,.06)',
+        width: 'calc(100% - 32px)', maxWidth: 440,
+        display: 'flex', alignItems: 'center', padding: '5px',
+        background: 'rgba(255,255,255,0.76)',
+        backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)',
+        borderRadius: 100,
+        border: '1.5px solid rgba(255,255,255,0.94)',
+        boxShadow: '0 8px 32px rgba(0,0,0,0.10), inset 0 1px 0 rgba(255,255,255,0.9)',
+        zIndex: 50,
       }}>
         {[
-          { key: 'home',    label: '홈',    active: false,
+          { key: 'home',    label: '홈',      active: false,
             icon: (a) => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={a?'var(--calm)':'var(--mid)'} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg> },
-          { key: 'rooms',   label: '모임',  active: false,
+          { key: 'rooms',   label: '모임',    active: false,
             icon: (a) => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={a?'var(--calm)':'var(--mid)'} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="7" r="4"/><circle cx="17" cy="9" r="3"/><path d="M1 21v-1a7 7 0 0114 0v1"/><path d="M21 21v-1a5 5 0 00-4-4.9"/></svg> },
-          { key: 'cal',     label: '달력',  active: true,
+          { key: 'cal',     label: '달력',    active: true,
             icon: (a) => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={a?'var(--calm)':'var(--mid)'} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> },
           { key: 'profile', label: '내 정보', active: false,
             icon: (a) => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={a?'var(--calm)':'var(--mid)'} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20a8 8 0 0116 0"/></svg> },
         ].map(({ key, label, active, icon }) => (
-          <button key={key} onClick={() => !active && onHome(key)}
-            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '10px 0', background: 'none', border: 'none', cursor: active ? 'default' : 'pointer', fontFamily: 'inherit' }}>
+          <button key={key} onClick={() => !active && onHome(key)} style={{
+            flex: active ? 'none' : 1,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            gap: active ? 6 : 0,
+            padding: active ? '10px 16px' : '10px 0',
+            background: active ? '#fff' : 'transparent',
+            border: 'none', borderRadius: 100,
+            cursor: active ? 'default' : 'pointer',
+            fontFamily: 'inherit',
+            boxShadow: active ? '0 2px 12px rgba(0,0,0,0.09)' : 'none',
+            transition: 'all .25s cubic-bezier(.32,.72,0,1)',
+            whiteSpace: 'nowrap',
+          }}>
             {icon(active)}
-            <span style={{ fontSize: '.6rem', fontWeight: 700, color: active ? 'var(--calm)' : 'var(--mid)' }}>{label}</span>
+            {active && <span style={{ fontSize: '.74rem', fontWeight: 800, color: 'var(--calm)' }}>{label}</span>}
           </button>
         ))}
       </nav>
