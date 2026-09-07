@@ -54,7 +54,7 @@ function RoomItem({ room, onEnterRoom, selectionMode, selected, onSelect, onLong
         ) : cdParsed ? (
           <img src={icon1} alt="" style={{ height: 36, flexShrink: 0 }} />
         ) : (
-          <Face type="calm" size={36} style={{ flexShrink: 0 }} />
+          <img src={icon4} alt="" style={{ height: 36, flexShrink: 0 }} />
         )}
         <div style={{ flex: 1 }}>
           <div style={{ fontWeight: 800, fontSize: '.93rem' }}>{room.name}</div>
