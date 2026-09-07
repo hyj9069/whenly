@@ -2,6 +2,7 @@ import { useState } from 'react'
 import Face from './Face'
 import { toDateStr, getDayFaceType, getMemberColor } from '../utils'
 import { useHolidays } from '../hooks/useHolidays'
+import { supabase } from '../supabase'
 
 export default function CalendarScreen({ room, myUserId, myName, members, onToggleDay, onConfirmDay, onRenameRoom, onOpenShare, onHome, onLeave }) {
   const today     = new Date()
@@ -18,6 +19,9 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
   const [showLeaveModal, setShowLeaveModal]   = useState(false)
   const [showRenameModal, setShowRenameModal] = useState(false)
   const [renameValue, setRenameValue]         = useState('')
+  const [importModal, setImportModal]         = useState(false)
+  const [importOptions, setImportOptions]     = useState([])
+  const [importLoading, setImportLoading]     = useState(false)
 
   const firstDay  = new Date(yr, mo - 1, 1).getDay()
   const totalDays = new Date(yr, mo, 0).getDate()
@@ -46,6 +50,31 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
 
   function enterEdit() { setEditMode(true); setSelectedDay(null) }
   function exitEdit()  { setEditMode(false) }
+
+  async function openImportModal() {
+    setImportModal(true)
+    setImportLoading(true)
+    const { data: memberRows } = await supabase
+      .from('members')
+      .select('room_id, unavailable_days')
+      .eq('user_id', myUserId)
+      .neq('room_id', room.id)
+    if (!memberRows?.length) { setImportOptions([]); setImportLoading(false); return }
+    const { data: roomRows } = await supabase
+      .from('rooms').select('id, name').in('id', memberRows.map(m => m.room_id))
+    const opts = memberRows
+      .filter(m => m.unavailable_days?.length)
+      .map(m => ({ roomName: roomRows?.find(r => r.id === m.room_id)?.name || m.room_id, days: m.unavailable_days }))
+    setImportOptions(opts)
+    setImportLoading(false)
+  }
+
+  async function handleImport(days) {
+    if (!me) return
+    const merged = [...new Set([...mySet, ...days])].sort()
+    await supabase.from('members').update({ unavailable_days: merged }).eq('id', me.id)
+    setImportModal(false)
+  }
 
   function handleCellClick(d, past) {
     if (past) return
@@ -118,6 +147,13 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
               {editMode ? '날짜를 눌러 선택 · 다시 누르면 취소'
                 : mySet.size === 0 ? '안되는 날 없음 😊' : `${mySet.size}일 표시됨`}
             </div>
+            {editMode && (
+              <button onClick={openImportModal} style={{
+                marginTop: 5, background: 'none', border: 'none', padding: 0,
+                fontSize: '.7rem', color: 'var(--calm)', fontWeight: 700,
+                cursor: 'pointer', fontFamily: 'inherit',
+              }}>다른 방 일정 불러오기 →</button>
+            )}
           </div>
           {editMode ? (
             <button onClick={exitEdit} style={{
@@ -301,6 +337,17 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
         boxShadow: '0 8px 32px rgba(0,0,0,0.10), inset 0 1px 0 rgba(255,255,255,0.9)',
         zIndex: 50,
       }}>
+        {/* 슬라이딩 인디케이터 — 달력(index 2) 고정 */}
+        <div style={{
+          position: 'absolute',
+          top: 5, bottom: 5, left: 5,
+          width: 'calc((100% - 10px) / 4)',
+          borderRadius: 100,
+          background: '#fff',
+          boxShadow: '0 2px 12px rgba(0,0,0,0.09)',
+          transform: 'translateX(calc(2 * 100%))',
+          pointerEvents: 'none',
+        }} />
         {[
           { key: 'home',    label: '홈',      active: false,
             icon: (a) => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={a?'var(--calm)':'var(--mid)'} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg> },
@@ -312,23 +359,54 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
             icon: (a) => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={a?'var(--calm)':'var(--mid)'} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20a8 8 0 0116 0"/></svg> },
         ].map(({ key, label, active, icon }) => (
           <button key={key} onClick={() => !active && onHome(key)} style={{
-            flex: active ? 'none' : 1,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            gap: active ? 6 : 0,
-            padding: active ? '10px 16px' : '10px 0',
-            background: active ? '#fff' : 'transparent',
-            border: 'none', borderRadius: 100,
+            flex: 1, position: 'relative', zIndex: 1,
+            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3,
+            padding: '8px 0',
+            background: 'transparent', border: 'none', borderRadius: 100,
             cursor: active ? 'default' : 'pointer',
             fontFamily: 'inherit',
-            boxShadow: active ? '0 2px 12px rgba(0,0,0,0.09)' : 'none',
-            transition: 'all .25s cubic-bezier(.32,.72,0,1)',
-            whiteSpace: 'nowrap',
           }}>
             {icon(active)}
-            {active && <span style={{ fontSize: '.74rem', fontWeight: 800, color: 'var(--calm)' }}>{label}</span>}
+            <span style={{ fontSize: '.6rem', fontWeight: 700, color: active ? 'var(--calm)' : 'var(--mid)', transition: 'color .25s' }}>{label}</span>
           </button>
         ))}
       </nav>
+
+      {/* 일정 불러오기 모달 */}
+      {importModal && (
+        <div className="overlay" onClick={() => setImportModal(false)}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <div style={{ fontSize: '1.05rem', fontWeight: 800, marginBottom: 4 }}>다른 방 일정 불러오기</div>
+            <div style={{ fontSize: '.78rem', color: 'var(--mid)', marginBottom: 14 }}>
+              선택한 방의 일정이 현재 방에 합산됩니다
+            </div>
+            {importLoading ? (
+              <div style={{ textAlign: 'center', padding: '24px 0', color: 'var(--mid)', fontSize: '.85rem' }}>불러오는 중...</div>
+            ) : importOptions.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '24px 0', color: 'var(--mid)', fontSize: '.85rem' }}>
+                다른 방에 입력한 일정이 없어요
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 4 }}>
+                {importOptions.map((opt, i) => (
+                  <button key={i} onClick={() => handleImport(opt.days)} style={{
+                    background: 'rgba(91,141,184,.07)', border: '1.5px solid rgba(91,141,184,.22)',
+                    borderRadius: 12, padding: '11px 14px', cursor: 'pointer', textAlign: 'left',
+                    fontFamily: 'inherit', width: '100%',
+                  }}>
+                    <div style={{ fontWeight: 800, fontSize: '.88rem' }}>{opt.roomName}</div>
+                    <div style={{ fontSize: '.72rem', color: 'var(--mid)', marginTop: 3 }}>
+                      안되는 날 {opt.days.length}일
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+            <button className="btn btn-ghost" style={{ width: '100%', marginTop: 10 }}
+              onClick={() => setImportModal(false)}>닫기</button>
+          </div>
+        </div>
+      )}
 
       {/* 방 이름 수정 모달 */}
       {showRenameModal && (
