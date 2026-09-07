@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Home, Users, User, CalendarDays, Check, ChevronLeft, ChevronRight, Smile } from 'lucide-react'
+import { Home, Users, User, CalendarDays, Check, ChevronLeft, ChevronRight, Smile, Plus } from 'lucide-react'
 import Face from './Face'
 import icon1 from '../assets/icon1.svg'
 import icon2 from '../assets/icon2.svg'
@@ -198,7 +198,7 @@ function HomeCalendarTab({ myName, myRooms, onEnterRoom }) {
   return (
     <>
       {/* 인사말 */}
-      <div style={{ fontWeight: 700, fontSize: '1.05rem', marginBottom: 16 }}>
+      <div style={{ fontWeight: 700, fontSize: '1.05rem', marginBottom: 30 }}>
         안녕하세요, {myName}님 <Smile size={16} style={{ verticalAlign: 'middle' }} />
       </div>
 
@@ -500,11 +500,11 @@ export default function HomeScreen({ user, myName, myRooms, initialTab = 'home',
           width: 52, height: 52, borderRadius: '50%', flexShrink: 0,
           background: 'linear-gradient(135deg, #8BBDE8 0%, #5B8DB8 55%, #7C6ED6 100%)',
           border: 'none', color: '#fff',
-          fontSize: '1.8rem', cursor: 'pointer',
+          cursor: 'pointer',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           boxShadow: '0 4px 20px rgba(91,141,184,.50), 0 2px 8px rgba(0,0,0,.12)',
           transition: 'transform .15s',
-        }}>+</button>
+        }}><Plus size={24} strokeWidth={2.5} /></button>
       </div>
     </div>
   )
