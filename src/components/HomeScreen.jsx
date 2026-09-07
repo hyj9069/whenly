@@ -52,9 +52,9 @@ function RoomItem({ room, onEnterRoom, selectionMode, selected, onSelect, onLong
             {selected && <Check size={13} color="#fff" strokeWidth={3} />}
           </div>
         ) : cdParsed ? (
-          <img src={icon1} alt="" style={{ height: 36, flexShrink: 0 }} />
+          <img src={icon1} alt="" style={{ height: 30, flexShrink: 0 }} />
         ) : (
-          <img src={icon4} alt="" style={{ height: 36, flexShrink: 0 }} />
+          <img src={icon4} alt="" style={{ height: 30, flexShrink: 0 }} />
         )}
         <div style={{ flex: 1 }}>
           <div style={{ fontWeight: 700, fontSize: '.93rem' }}>{room.name}</div>
