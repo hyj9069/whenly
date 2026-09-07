@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import Face from './Face'
+import emptyRoomImg from '../assets/empty-room.svg'
 import { toDateStr } from '../utils'
 import { useHolidays } from '../hooks/useHolidays'
 
@@ -317,7 +318,7 @@ function RoomsTab({ myRooms, onCreate, onJoinCode, onEnterRoom, onLeaveRoom }) {
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, color: 'var(--mid)', padding: '32px 0' }}>
-          <Face type="bored" size={64} />
+          <img src={emptyRoomImg} alt="" style={{ width: 80, height: 80 }} />
           <div style={{ fontSize: '.9rem', textAlign: 'center', lineHeight: 1.6 }}>
             아직 참여 중인 방이 없어요<br />방을 만들거나 초대 링크로 참여해봐요!
           </div>
@@ -326,8 +327,8 @@ function RoomsTab({ myRooms, onCreate, onJoinCode, onEnterRoom, onLeaveRoom }) {
 
       {!selectionMode && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 8 }}>
-          <button className="btn btn-blue" onClick={onCreate}>✨ 새로운 방 만들기</button>
-          <button className="btn btn-ghost" onClick={onJoinCode}>🔢 방 코드로 참여하기</button>
+          <button className="btn btn-blue" onClick={onCreate}>새로운 방 만들기</button>
+          <button className="btn btn-ghost" onClick={onJoinCode}>방 코드로 참여하기</button>
         </div>
       )}
 
