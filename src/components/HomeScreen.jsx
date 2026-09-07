@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Home, Users, User, CalendarDays, Check } from 'lucide-react'
 import Face from './Face'
+import icon1 from '../assets/icon1.svg'
 import icon4 from '../assets/icon4.svg'
 import { toDateStr } from '../utils'
 import { useHolidays } from '../hooks/useHolidays'
@@ -50,6 +51,8 @@ function RoomItem({ room, onEnterRoom, selectionMode, selected, onSelect, onLong
           }}>
             {selected && <Check size={13} color="#fff" strokeWidth={3} />}
           </div>
+        ) : cdParsed ? (
+          <img src={icon1} alt="" style={{ height: 36, flexShrink: 0 }} />
         ) : (
           <Face type="calm" size={36} style={{ flexShrink: 0 }} />
         )}
