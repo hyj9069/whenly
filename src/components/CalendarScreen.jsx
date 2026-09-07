@@ -1,5 +1,8 @@
 import { useState } from 'react'
 import { Home, Users, CalendarDays, User, Pencil, Heart } from 'lucide-react'
+import icon1 from '../assets/icon1.svg'
+import icon2 from '../assets/icon2.svg'
+import icon3 from '../assets/icon3.svg'
 import Face from './Face'
 import { toDateStr, getDayFaceType, getMemberColor } from '../utils'
 import { useHolidays } from '../hooks/useHolidays'
@@ -207,11 +210,11 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
               const isSelected  = !editMode && selectedDay === d
               const isConfirmed = ds === cdStr
 
-              let faceGradient = undefined
+              let statusIcon = null
               if (!past && total >= 2) {
-                if (uCnt === total)  faceGradient = ['#FF7A58', '#CC2828']
-                else if (uCnt === 0) faceGradient = ['#C4E040', '#42A82A']
-                else                 faceGradient = ['#D0D0D0', '#909090']
+                if (uCnt === total)  statusIcon = icon3
+                else if (uCnt === 0) statusIcon = icon1
+                else                 statusIcon = icon2
               }
 
               return (
@@ -224,7 +227,10 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
                   onClick={() => handleCellClick(d, past)}
                 >
                   <div className={`day-num${isToday?' today':(dow===0||holiday)?' sun':dow===6?' sat':''}`}>{d}</div>
-                  {!past && <Face type={faceType} size={19} className="day-face" gradient={faceGradient} />}
+                  {!past && (statusIcon
+                    ? <img src={statusIcon} className="day-face" style={{ width: 19, height: 19 }} alt="" />
+                    : <Face type={faceType} size={19} className="day-face" />
+                  )}
                   {isConfirmed && (
                     <Heart size={10} fill="#E05070" color="#E05070" style={{ position: 'absolute', top: -3, right: -3 }} />
                   )}
@@ -295,9 +301,9 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
 
         {/* 범례 */}
         <div className="legend">
-          <div className="leg-item"><Face type="excited" size={14} gradient={['#C4E040','#42A82A']} style={{ flexShrink: 0 }} />모두 가능</div>
-          <div className="leg-item"><Face type="happy"   size={14} gradient={['#D0D0D0','#909090']} style={{ flexShrink: 0 }} />일부 불가</div>
-          <div className="leg-item"><Face type="upset"   size={14} gradient={['#FF7A58','#CC2828']} style={{ flexShrink: 0 }} />모두 불가</div>
+          <div className="leg-item"><img src={icon1} style={{ width: 14, height: 14, flexShrink: 0 }} alt="" />모두 가능</div>
+          <div className="leg-item"><img src={icon2} style={{ width: 14, height: 14, flexShrink: 0 }} alt="" />일부 불가</div>
+          <div className="leg-item"><img src={icon3} style={{ width: 14, height: 14, flexShrink: 0 }} alt="" />모두 불가</div>
         </div>
 
         {/* 참여자 현황 */}

@@ -1,5 +1,8 @@
 import { useState } from 'react'
 import Face from './Face'
+import icon1 from '../assets/icon1.svg'
+import icon2 from '../assets/icon2.svg'
+import icon3 from '../assets/icon3.svg'
 
 function translateError(msg) {
   if (!msg) return '오류가 발생했어요. 다시 시도해주세요.'
@@ -124,7 +127,7 @@ export default function LoginScreen({ onGoogle, onIdLogin, onIdSignup, onResetPa
   // 회원가입 완료
   if (done) return (
     <div className="screen" style={{ justifyContent: 'center', alignItems: 'center', textAlign: 'center', padding: '0 28px' }}>
-      <Face type="excited" size={60} />
+      <img src={icon1} alt="" style={{ width: 60, height: 60 }} />
       <h2 style={{ marginTop: 20, fontWeight: 800, fontSize: '1.3rem' }}>가입 완료!</h2>
       <p style={{ color: 'var(--mid)', marginTop: 10, fontSize: '.9rem', lineHeight: 1.7 }}>
         아이디 <b>{id}</b>로 가입됐어요.<br />로그인해주세요.
@@ -141,9 +144,9 @@ export default function LoginScreen({ onGoogle, onIdLogin, onIdSignup, onResetPa
 
       {/* 헤더 */}
       <div style={{ textAlign: 'center', marginBottom: 32 }}>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 22, flexWrap: 'wrap' }}>
-          {['happy', 'excited', 'calm', 'sad', 'upset', 'bored'].map(t => (
-            <Face key={t} type={t} size={46} className="face-icon" />
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 16, marginBottom: 22 }}>
+          {[icon1, icon2, icon3].map((src, i) => (
+            <img key={i} src={src} alt="" style={{ width: 52, height: 52 }} />
           ))}
         </div>
         <h1 style={{ fontSize: '2rem', fontWeight: 800 }}>모여모여 ✨</h1>
