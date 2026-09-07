@@ -1,11 +1,23 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Sparkles } from 'lucide-react'
-import Face from './Face'
 import TopBar from './TopBar'
+import icon1 from '../assets/icon1.svg'
+import icon2 from '../assets/icon2.svg'
+import icon3 from '../assets/icon3.svg'
+import icon4 from '../assets/icon4.svg'
+
+const icons = [icon1, icon2, icon3, icon4]
 
 export default function CreateScreen({ onBack, onCreate, defaultName }) {
   const [roomName, setRoomName] = useState('')
   const [loading, setLoading]   = useState(false)
+  const [iconIdx, setIconIdx]   = useState(0)
+
+  useEffect(() => {
+    if (!loading) return
+    const t = setInterval(() => setIconIdx(Math.floor(Math.random() * 4)), 350)
+    return () => clearInterval(t)
+  }, [loading])
 
   async function handleCreate() {
     if (!roomName.trim()) return
@@ -19,7 +31,7 @@ export default function CreateScreen({ onBack, onCreate, defaultName }) {
       <TopBar onBack={onBack} title="새 방 만들기" />
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: 'rgba(112,152,192,.1)', borderRadius: 13, marginBottom: 20 }}>
-        <Face type="happy" size={28} style={{ flexShrink: 0 }} />
+        <img src={icon4} alt="" style={{ height: 28, flexShrink: 0 }} />
         <div style={{ fontSize: '.85rem' }}>
           <span style={{ fontWeight: 700 }}>{defaultName}</span>
           <span style={{ color: 'var(--mid)' }}>으로 방장이 돼요</span>
@@ -36,7 +48,9 @@ export default function CreateScreen({ onBack, onCreate, defaultName }) {
       <div className="spacer" />
       <button className="btn btn-blue" style={{ marginTop: 16 }} onClick={handleCreate}
         disabled={loading || !roomName.trim()}>
-        {loading ? '생성 중...' : <><Sparkles size={15} style={{ verticalAlign: 'middle', marginRight: 5 }} />방 만들기</>}
+        {loading
+          ? <img src={icons[iconIdx]} alt="" style={{ height: 22 }} />
+          : <><Sparkles size={15} style={{ verticalAlign: 'middle', marginRight: 5 }} />방 만들기</>}
       </button>
     </div>
   )
