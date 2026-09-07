@@ -112,7 +112,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
         </div>
         <button className="btn btn-ghost btn-sm" onClick={() => setShowLeaveModal(true)}
           style={{ whiteSpace: 'nowrap', color: 'var(--upset)', borderColor: 'rgba(192,86,90,.3)' }}>
-          나가기
+          방 나가기
         </button>
       </div>
 
@@ -121,12 +121,14 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
         {cdParsed && (
           <div style={{
             display: 'flex', alignItems: 'center', gap: 10,
-            background: 'rgba(91,141,184,.12)', border: '1.5px solid rgba(91,141,184,.45)',
+            background: 'rgba(255,255,255,0.55)',
+            backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
+            border: '1.5px solid rgba(255,255,255,0.8)',
             borderRadius: 14, padding: '13px 15px', marginBottom: 12,
           }}>
             <CalendarDays size={22} color="var(--calm)" style={{ flexShrink: 0 }} />
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: '.75rem', fontWeight: 700, color: 'var(--calm)' }}>확정된 날짜</div>
+              <div style={{ fontSize: '.75rem', fontWeight: 600, color: 'var(--calm)' }}>확정된 날짜</div>
               <div style={{ fontSize: '.95rem', fontWeight: 700, marginTop: 2 }}>
                 {cdParsed[0]}년 {cdParsed[1]}월 {cdParsed[2]}일
               </div>
@@ -144,16 +146,16 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
         {/* 내 안되는 날 카드 */}
         <div style={{
           display: 'flex', alignItems: 'center', gap: 10,
-          background: editMode ? 'rgba(91,141,184,.1)' : 'rgba(91,141,184,.06)',
-          border: `1.5px solid ${editMode ? 'rgba(91,141,184,.45)' : 'transparent'}`,
+          background: 'rgba(255,255,255,0.55)',
+          backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
+          border: `1.5px solid ${editMode ? 'rgba(91,141,184,.45)' : 'rgba(255,255,255,0.8)'}`,
           borderRadius: 14, padding: '11px 13px', marginBottom: 12, transition: 'all .2s',
         }}>
-          <Face type={editMode ? 'worried' : 'happy'} size={26} style={{ flexShrink: 0 }} />
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: '.83rem', fontWeight: 700 }}>{myName}의 안되는 날</div>
-            <div style={{ fontSize: '.72rem', color: 'var(--mid)', marginTop: 2 }}>
+            <div style={{ fontSize: '.83rem', fontWeight: 600 }}>{myName}의 안되는 날</div>
+            <div style={{ fontSize: '.72rem', color: 'var(--mid)', marginTop: 2, fontWeight: editMode ? 500 : undefined }}>
               {editMode ? '날짜를 눌러 선택 · 다시 누르면 취소'
-                : mySet.size === 0 ? <><Smile size={13} style={{ verticalAlign: 'middle', marginRight: 3 }} />안되는 날 없음</> : `${mySet.size}일 표시됨`}
+                : mySet.size === 0 ? <><Smile size={13} style={{ verticalAlign: 'middle', marginRight: 3 }} />안되는 날 없음</> : <span style={{ fontWeight: 500 }}>{mySet.size}일 표시됨</span>}
             </div>
             {editMode && (
               <button onClick={openImportModal} style={{
@@ -232,13 +234,13 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
                   <div className={`day-num${isToday?' today':(dow===0||holiday)?' sun':dow===6?' sat':''}`}>{d}</div>
                   {!past && (statusIcon
                     ? <img src={statusIcon} className="day-face" alt="" />
-                    : <Face type={faceType} size={25} className="day-face" />
+                    : <img src={isMine ? icon3 : icon1} className="day-face" alt="" />
                   )}
                   {isConfirmed && (
                     <Heart size={10} fill="#E05070" color="#E05070" style={{ position: 'absolute', top: -3, right: -3 }} />
                   )}
                   {!past && isMine && (
-                    <div className="badge badge-red" style={{ top: 'auto', bottom: -3, right: 'auto', left: -3 }}>나</div>
+                    <div className="badge badge-red" style={{ top: 'auto', bottom: -3, right: 'auto', left: -6, fontSize: '.45rem', width: 13, height: 13 }}>나</div>
                   )}
                 </div>
               )
@@ -317,7 +319,6 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
               const displayName = mb.user_id === myUserId ? myName : mb.name
               return (
                 <div key={mb.id} className="member-item">
-                  <Face type="happy" size={32} fill={getMemberColor(mb.user_id, myUserId, displayName)} style={{ flexShrink: 0 }} />
                   <div style={{ flex: 1 }}>
                     <div style={{ fontWeight: 700, fontSize: '.85rem', color: mb.user_id === myUserId ? 'var(--calm)' : 'inherit' }}>
                       {displayName}{mb.user_id === myUserId ? ' (나)' : ''}
