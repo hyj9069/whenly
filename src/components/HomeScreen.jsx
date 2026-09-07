@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Home, Users, User, CalendarDays, Check, ChevronLeft, ChevronRight } from 'lucide-react'
 import Face from './Face'
 import icon1 from '../assets/icon1.svg'
+import icon2 from '../assets/icon2.svg'
 import icon4 from '../assets/icon4.svg'
 import { toDateStr } from '../utils'
 import { useHolidays } from '../hooks/useHolidays'
@@ -120,7 +121,7 @@ function DaySheet({ selDay, holiday, rooms, onClose, onEnterRoom }) {
 
         {/* 날짜 헤더 */}
         <div style={{ padding: '8px 24px 4px' }}>
-          <div style={{ fontSize: '1.45rem', fontWeight: 700, color: isRed ? '#D05055' : 'var(--dark)', display: 'flex', alignItems: 'baseline', gap: 10 }}>
+          <div style={{ fontSize: '1.25rem', fontWeight: 700, color: isRed ? '#D05055' : 'var(--dark)', display: 'flex', alignItems: 'baseline', gap: 10 }}>
             {selDay.getMonth() + 1}월 {selDay.getDate()}일 ({dow})
             {holiday && <span style={{ fontSize: '.95rem', fontWeight: 700 }}>{holiday}</span>}
           </div>
@@ -148,7 +149,7 @@ function DaySheet({ selDay, holiday, rooms, onClose, onEnterRoom }) {
         <div style={{ flex: 1, overflowY: 'auto', padding: '16px 24px 32px' }}>
           {sheetTab === '일정' && (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, padding: '48px 0', color: 'var(--mid)' }}>
-              <Face type="bored" size={52} />
+              <img src={icon2} alt="" style={{ height: 52 }} />
               <div style={{ fontSize: '.85rem' }}>일정 기능은 준비 중이에요</div>
             </div>
           )}
