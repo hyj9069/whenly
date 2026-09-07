@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Home, Users, CalendarDays, User } from 'lucide-react'
 import Face from './Face'
 import { toDateStr, getDayFaceType, getMemberColor } from '../utils'
 import { useHolidays } from '../hooks/useHolidays'
@@ -353,15 +354,11 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
           pointerEvents: 'none',
         }} />
         {[
-          { key: 'home',    label: '홈',      active: false,
-            icon: (a) => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={a?'var(--calm)':'var(--mid)'} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg> },
-          { key: 'rooms',   label: '모임',    active: false,
-            icon: (a) => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={a?'var(--calm)':'var(--mid)'} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="7" r="4"/><circle cx="17" cy="9" r="3"/><path d="M1 21v-1a7 7 0 0114 0v1"/><path d="M21 21v-1a5 5 0 00-4-4.9"/></svg> },
-          { key: 'cal',     label: '달력',    active: true,
-            icon: (a) => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={a?'var(--calm)':'var(--mid)'} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> },
-          { key: 'profile', label: '내 정보', active: false,
-            icon: (a) => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={a?'var(--calm)':'var(--mid)'} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20a8 8 0 0116 0"/></svg> },
-        ].map(({ key, label, active, icon }) => (
+          { key: 'home',    label: '홈',      active: false, Icon: Home },
+          { key: 'rooms',   label: '모임',    active: false, Icon: Users },
+          { key: 'cal',     label: '달력',    active: true,  Icon: CalendarDays },
+          { key: 'profile', label: '내 정보', active: false, Icon: User },
+        ].map(({ key, label, active, Icon }) => (
           <button key={key} onClick={() => !active && onHome(key)} style={{
             flex: 1, position: 'relative', zIndex: 1,
             display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3,
@@ -370,7 +367,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
             cursor: active ? 'default' : 'pointer',
             fontFamily: 'inherit',
           }}>
-            {icon(active)}
+            <Icon size={21} strokeWidth={2.2} color={active ? 'var(--calm)' : 'var(--mid)'} />
             <span style={{ fontSize: '.6rem', fontWeight: 700, color: active ? 'var(--calm)' : 'var(--mid)', transition: 'color .25s' }}>{label}</span>
           </button>
         ))}

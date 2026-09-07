@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { Home, Users, User, CalendarDays } from 'lucide-react'
 import Face from './Face'
 import emptyRoomImg from '../assets/empty-room.svg'
 import { toDateStr } from '../utils'
@@ -420,54 +421,12 @@ function ProfileTab({ user, myName, onLogout, onUpdateName }) {
   )
 }
 
-// ── 탭바 아이콘 SVG ──────────────────────────────
-function HomeIcon({ active }) {
-  const c = active ? 'var(--calm)' : 'var(--mid)'
-  return (
-    <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/>
-      <path d="M9 21V12h6v9"/>
-    </svg>
-  )
-}
-function CalIcon({ active }) {
-  const c = active ? 'var(--calm)' : 'var(--mid)'
-  return (
-    <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="3" y="4" width="18" height="18" rx="2"/>
-      <line x1="16" y1="2" x2="16" y2="6"/>
-      <line x1="8" y1="2" x2="8" y2="6"/>
-      <line x1="3" y1="10" x2="21" y2="10"/>
-      <line x1="8" y1="15" x2="8" y2="15" strokeWidth="3" strokeLinecap="round"/>
-      <line x1="12" y1="15" x2="12" y2="15" strokeWidth="3" strokeLinecap="round"/>
-      <line x1="16" y1="15" x2="16" y2="15" strokeWidth="3" strokeLinecap="round"/>
-    </svg>
-  )
-}
-function RoomsIcon({ active }) {
-  const c = active ? 'var(--calm)' : 'var(--mid)'
-  return (
-    <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="9" cy="7" r="4"/><circle cx="17" cy="9" r="3"/>
-      <path d="M1 21v-1a7 7 0 0114 0v1"/><path d="M21 21v-1a5 5 0 00-4-4.9"/>
-    </svg>
-  )
-}
-function ProfileIcon({ active }) {
-  const c = active ? 'var(--calm)' : 'var(--mid)'
-  return (
-    <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="8" r="4"/>
-      <path d="M4 20a8 8 0 0116 0"/>
-    </svg>
-  )
-}
-
 // ── 메인 ────────────────────────────────────────
+const IC = { color: (a) => a ? 'var(--calm)' : 'var(--mid)', size: 21, strokeWidth: 2.2 }
 const TABS = [
-  { key: 'home',    label: '홈',      Icon: HomeIcon },
-  { key: 'rooms',   label: '모임',    Icon: RoomsIcon },
-  { key: 'profile', label: '내 정보', Icon: ProfileIcon },
+  { key: 'home',    label: '홈',      Icon: ({ active }) => <Home      size={IC.size} strokeWidth={IC.strokeWidth} color={IC.color(active)} /> },
+  { key: 'rooms',   label: '모임',    Icon: ({ active }) => <Users     size={IC.size} strokeWidth={IC.strokeWidth} color={IC.color(active)} /> },
+  { key: 'profile', label: '내 정보', Icon: ({ active }) => <User      size={IC.size} strokeWidth={IC.strokeWidth} color={IC.color(active)} /> },
 ]
 
 export default function HomeScreen({ user, myName, myRooms, initialTab = 'home', onCreate, onJoinCode, onEnterRoom, onLogout, onUpdateName, onLeaveRoom }) {
