@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Home, Users, User, CalendarDays, Check, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Home, Users, User, CalendarDays, Check, ChevronLeft, ChevronRight, Smile } from 'lucide-react'
 import Face from './Face'
 import icon1 from '../assets/icon1.svg'
 import icon2 from '../assets/icon2.svg'
@@ -199,7 +199,7 @@ function HomeCalendarTab({ myName, myRooms, onEnterRoom }) {
     <>
       {/* 인사말 */}
       <div style={{ fontWeight: 700, fontSize: '1.05rem', marginBottom: 16 }}>
-        안녕하세요, {myName}님 👋
+        안녕하세요, {myName}님 <Smile size={16} style={{ verticalAlign: 'middle' }} />
       </div>
 
       {/* 월 탐색 */}
@@ -211,7 +211,7 @@ function HomeCalendarTab({ myName, myRooms, onEnterRoom }) {
 
       {allConfirmed.length > 0 && (
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10, padding: '8px 12px', background: 'rgba(112,152,192,.1)', borderRadius: 12 }}>
-          <span style={{ fontSize: '.8rem', fontWeight: 700, color: 'var(--calm)' }}>총 확정 모임 {allConfirmed.length}개</span>
+          <span style={{ fontSize: '.8rem', fontWeight: 600, color: 'var(--calm)' }}>총 확정 모임 {allConfirmed.length}개</span>
         </div>
       )}
 
