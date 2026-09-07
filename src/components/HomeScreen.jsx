@@ -117,6 +117,8 @@ function DaySheet({ selDay, holiday, rooms, onClose, onEnterRoom }) {
         background: 'rgba(0,0,0,0.18)',
         backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)',
         zIndex: 60,
+        opacity: Math.max(0, 1 - dragY / 250),
+        transition: dragY === 0 ? 'opacity .3s' : 'none',
       }} />
       <div
         onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}
