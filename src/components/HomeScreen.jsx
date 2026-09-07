@@ -67,10 +67,11 @@ function RoomItem({ room, onEnterRoom, selectionMode, selected, onSelect, onLong
         <button
           onClick={() => onLongPress(room.id)}
           style={{
-            background: 'rgba(0,0,0,.06)', border: 'none', borderRadius: 8,
-            padding: '8px 10px', cursor: 'pointer', color: 'var(--mid)',
-            fontSize: '.85rem', fontWeight: 800, lineHeight: 1, flexShrink: 0,
-            fontFamily: 'inherit', alignSelf: 'stretch', display: 'flex', alignItems: 'center',
+            width: 35, height: 35, flexShrink: 0,
+            background: 'rgba(0,0,0,.06)', border: 'none', borderRadius: '50%',
+            cursor: 'pointer', color: 'var(--mid)',
+            fontSize: '.85rem', fontWeight: 800, lineHeight: 1,
+            fontFamily: 'inherit', display: 'flex', justifyContent: 'center', alignItems: 'center',
           }}
         >···</button>
       )}
@@ -206,7 +207,6 @@ function HomeCalendarTab({ myName, myRooms, onEnterRoom }) {
 
       {allConfirmed.length > 0 && (
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10, padding: '8px 12px', background: 'rgba(112,152,192,.1)', borderRadius: 12 }}>
-          <Face type="excited" size={22} />
           <span style={{ fontSize: '.8rem', fontWeight: 700, color: 'var(--calm)' }}>총 확정 모임 {allConfirmed.length}개</span>
         </div>
       )}
