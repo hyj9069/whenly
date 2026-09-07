@@ -86,11 +86,29 @@ function RoomItem({ room, onEnterRoom, selectionMode, selected, onSelect, onLong
 // ── 날짜 바텀시트 ────────────────────────────────
 function DaySheet({ selDay, holiday, rooms, onClose, onEnterRoom }) {
   const [sheetTab, setSheetTab] = useState('일정')
+  const [dragY, setDragY]       = useState(0)
+  const startYRef               = useRef(null)
+  const draggingRef             = useRef(false)
 
   if (!selDay) return null
 
   const dow   = ['일','월','화','수','목','금','토'][selDay.getDay()]
   const isRed = selDay.getDay() === 0 || !!holiday
+
+  function onTouchStart(e) {
+    startYRef.current = e.touches[0].clientY
+    draggingRef.current = true
+  }
+  function onTouchMove(e) {
+    if (!draggingRef.current) return
+    const dy = e.touches[0].clientY - startYRef.current
+    if (dy > 0) setDragY(dy)
+  }
+  function onTouchEnd() {
+    draggingRef.current = false
+    if (dragY > 80) { setDragY(0); onClose() }
+    else setDragY(0)
+  }
 
   return (
     <>
@@ -100,20 +118,24 @@ function DaySheet({ selDay, holiday, rooms, onClose, onEnterRoom }) {
         backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)',
         zIndex: 60,
       }} />
-      <div style={{
-        position: 'fixed', bottom: 0, left: 0, right: 0, margin: '0 auto',
-        width: '100%', maxWidth: 480,
-        height: '88dvh',
-        background: 'rgba(245,247,250,0.88)',
-        backdropFilter: 'blur(32px)', WebkitBackdropFilter: 'blur(32px)',
-        borderRadius: '24px 24px 0 0',
-        border: '1.5px solid rgba(255,255,255,0.72)',
-        boxShadow: '0 -4px 48px rgba(0,0,0,0.13)',
-        zIndex: 61,
-        display: 'flex', flexDirection: 'column',
-        overflow: 'hidden',
-        animation: 'slideUp .32s cubic-bezier(.32,.72,0,1)',
-      }}>
+      <div
+        onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}
+        style={{
+          position: 'fixed', bottom: 0, left: 0, right: 0, margin: '0 auto',
+          width: '100%', maxWidth: 480,
+          height: '88dvh',
+          background: 'rgba(245,247,250,0.88)',
+          backdropFilter: 'blur(32px)', WebkitBackdropFilter: 'blur(32px)',
+          borderRadius: '24px 24px 0 0',
+          border: '1.5px solid rgba(255,255,255,0.72)',
+          boxShadow: '0 -4px 48px rgba(0,0,0,0.13)',
+          zIndex: 61,
+          display: 'flex', flexDirection: 'column',
+          overflow: 'hidden',
+          transform: `translateY(${dragY}px)`,
+          transition: dragY === 0 ? 'transform .3s cubic-bezier(.32,.72,0,1)' : 'none',
+          animation: dragY === 0 ? 'slideUp .32s cubic-bezier(.32,.72,0,1)' : 'none',
+        }}>
         {/* 드래그 핸들 */}
         <div style={{ display: 'flex', justifyContent: 'center', padding: '14px 0 6px' }}>
           <div style={{ width: 40, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.12)' }} />
