@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Home, Users, CalendarDays, User, Pencil, Heart, Sparkles, Link, CheckCheck, Smile, Copy } from 'lucide-react'
+import { Home, Users, CalendarDays, User, Pencil, Heart, Sparkles, Link, CheckCheck, Smile, Copy, ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react'
 import icon1 from '../assets/icon1.svg'
 import icon2 from '../assets/icon2.svg'
 import icon3 from '../assets/icon3.svg'
@@ -162,7 +162,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
                 marginTop: 5, background: 'none', border: 'none', padding: 0,
                 fontSize: '.7rem', color: 'var(--calm)', fontWeight: 700,
                 cursor: 'pointer', fontFamily: 'inherit',
-              }}>다른 방 일정 불러오기 →</button>
+              }}><ArrowRight size={12} style={{ verticalAlign: 'middle', marginRight: 3 }} />다른 방 일정 불러오기</button>
             )}
           </div>
           {editMode ? (
@@ -183,9 +183,9 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
         {/* 달력 */}
         <div className="card" style={{ marginBottom: 12 }}>
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: 10 }}>
-            <button onClick={prevMonth} style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer', color: 'var(--mid)', padding: '4px 8px', fontFamily: 'inherit' }}>‹</button>
+            <button onClick={prevMonth} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--mid)', padding: '4px 8px', display: 'flex' }}><ChevronLeft size={18} /></button>
             <div style={{ flex: 1, textAlign: 'center', fontWeight: 700, fontSize: '.95rem' }}>{yr}년 {mo}월</div>
-            <button onClick={nextMonth} style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer', color: 'var(--mid)', padding: '4px 8px', fontFamily: 'inherit' }}>›</button>
+            <button onClick={nextMonth} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--mid)', padding: '4px 8px', display: 'flex' }}><ChevronRight size={18} /></button>
           </div>
           <div className="wday-row">
             {['일','월','화','수','목','금','토'].map((d, i) => (
@@ -395,8 +395,8 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
               {importRoomSel && (
                 <button onClick={() => setImportRoomSel(null)} style={{
                   background: 'none', border: 'none', cursor: 'pointer', padding: '0 4px 0 0',
-                  fontSize: '1rem', color: 'var(--mid)', lineHeight: 1, fontFamily: 'inherit',
-                }}>‹</button>
+                  color: 'var(--mid)', display: 'flex', fontFamily: 'inherit',
+                }}><ChevronLeft size={18} /></button>
               )}
               <div style={{ fontSize: '1.05rem', fontWeight: 700 }}>
                 {importRoomSel ? importRoomSel.roomName : '다른 방 일정 불러오기'}

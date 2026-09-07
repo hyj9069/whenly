@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Home, Users, User, CalendarDays, Check } from 'lucide-react'
+import { Home, Users, User, CalendarDays, Check, ChevronLeft, ChevronRight } from 'lucide-react'
 import Face from './Face'
 import icon1 from '../assets/icon1.svg'
 import icon4 from '../assets/icon4.svg'
@@ -203,9 +203,9 @@ function HomeCalendarTab({ myName, myRooms, onEnterRoom }) {
 
       {/* 월 탐색 */}
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: 12 }}>
-        <button onClick={prev} style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer', color: 'var(--mid)', padding: '4px 8px', fontFamily: 'inherit' }}>‹</button>
+        <button onClick={prev} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--mid)', padding: '4px 8px', display: 'flex' }}><ChevronLeft size={18} /></button>
         <div style={{ flex: 1, textAlign: 'center', fontWeight: 700, fontSize: '1rem' }}>{vy}년 {vm}월</div>
-        <button onClick={next} style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer', color: 'var(--mid)', padding: '4px 8px', fontFamily: 'inherit' }}>›</button>
+        <button onClick={next} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--mid)', padding: '4px 8px', display: 'flex' }}><ChevronRight size={18} /></button>
       </div>
 
       {allConfirmed.length > 0 && (
