@@ -25,6 +25,7 @@
 
 body {
   font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 700;
   background: linear-gradient(160deg, #EDF3FB 0%, #F0EDF8 55%, #F5F3EC 100%);
   background-attachment: fixed;
   color: var(--dark);
