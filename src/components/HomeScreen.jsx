@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import Face from './Face'
-import emptyRoomImg from '../assets/icon.svg'
+import emptyRoomImg from '../assets/empty-room.svg'
 import { toDateStr } from '../utils'
 import { useHolidays } from '../hooks/useHolidays'
 
