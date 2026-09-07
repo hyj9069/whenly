@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Check, X } from 'lucide-react'
 import Face from './Face'
-import icon4 from '../assets/icon4.svg'
+import icon4 from '../assets/icon4.webp'
 import googleIcon from '../assets/googleIcon.svg'
 
 function translateError(msg) {

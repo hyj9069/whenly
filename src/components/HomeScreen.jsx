@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
 import { Home, Users, User, CalendarDays, Check, ChevronLeft, ChevronRight, Smile, Plus } from 'lucide-react'
 import Face from './Face'
-import icon1 from '../assets/icon1.svg'
-import icon2 from '../assets/icon2.svg'
-import icon4 from '../assets/icon4.svg'
+import icon1 from '../assets/icon1.webp'
+import icon2 from '../assets/icon2.webp'
+import icon4 from '../assets/icon4.webp'
 import { toDateStr } from '../utils'
 import { useHolidays } from '../hooks/useHolidays'
 
