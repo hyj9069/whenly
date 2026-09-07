@@ -26,53 +26,55 @@ function RoomItem({ room, onEnterRoom, selectionMode, selected, onSelect, onLong
   }
 
   return (
-    <button
-      onClick={handleClick}
-      onMouseDown={startPress} onMouseUp={cancelPress} onMouseLeave={cancelPress}
-      onTouchStart={startPress} onTouchEnd={cancelPress} onTouchMove={cancelPress}
-      style={{
-        display: 'flex', alignItems: 'center', gap: 12, padding: '13px 15px',
-        background: selected ? 'rgba(91,141,184,.1)' : '#fff',
-        border: `2px solid ${selected ? 'var(--calm)' : 'rgba(0,0,0,.07)'}`,
-        borderRadius: 16, cursor: 'pointer', textAlign: 'left',
-        boxShadow: '0 2px 8px var(--shadow)', fontFamily: 'inherit', width: '100%',
-        transition: 'background .15s, border-color .15s',
-        userSelect: 'none', WebkitUserSelect: 'none',
-      }}>
-      {selectionMode ? (
-        <div style={{
-          width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
-          border: `2px solid ${selected ? 'var(--calm)' : 'var(--mid)'}`,
-          background: selected ? 'var(--calm)' : 'transparent',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+      <button
+        onClick={handleClick}
+        onMouseDown={startPress} onMouseUp={cancelPress} onMouseLeave={cancelPress}
+        onTouchStart={startPress} onTouchEnd={cancelPress} onTouchMove={cancelPress}
+        style={{
+          flex: 1, display: 'flex', alignItems: 'center', gap: 12, padding: '13px 15px',
+          background: selected ? 'rgba(91,141,184,.1)' : '#fff',
+          border: `2px solid ${selected ? 'var(--calm)' : 'rgba(0,0,0,.07)'}`,
+          borderRadius: 16, cursor: 'pointer', textAlign: 'left',
+          boxShadow: '0 2px 8px var(--shadow)', fontFamily: 'inherit',
           transition: 'background .15s, border-color .15s',
+          userSelect: 'none', WebkitUserSelect: 'none',
         }}>
-          {selected && <span style={{ color: '#fff', fontSize: '.7rem', fontWeight: 800 }}>✓</span>}
-        </div>
-      ) : (
-        <Face type="calm" size={36} style={{ flexShrink: 0 }} />
-      )}
-      <div style={{ flex: 1 }}>
-        <div style={{ fontWeight: 800, fontSize: '.93rem' }}>{room.name}</div>
-        <div style={{ fontSize: '.72rem', color: 'var(--mid)', marginTop: 2 }}>{room.id}</div>
-        {cdParsed && (
-          <div style={{ fontSize: '.72rem', color: 'var(--calm)', marginTop: 3, fontWeight: 700 }}>
-            📅 {cdParsed[1]}월 {cdParsed[2]}일 확정
+        {selectionMode ? (
+          <div style={{
+            width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
+            border: `2px solid ${selected ? 'var(--calm)' : 'var(--mid)'}`,
+            background: selected ? 'var(--calm)' : 'transparent',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            transition: 'background .15s, border-color .15s',
+          }}>
+            {selected && <span style={{ color: '#fff', fontSize: '.7rem', fontWeight: 800 }}>✓</span>}
           </div>
+        ) : (
+          <Face type="calm" size={36} style={{ flexShrink: 0 }} />
         )}
-      </div>
-      {!selectionMode && (
+        <div style={{ flex: 1 }}>
+          <div style={{ fontWeight: 800, fontSize: '.93rem' }}>{room.name}</div>
+          <div style={{ fontSize: '.72rem', color: 'var(--mid)', marginTop: 2 }}>{room.id}</div>
+          {cdParsed && (
+            <div style={{ fontSize: '.72rem', color: 'var(--calm)', marginTop: 3, fontWeight: 700 }}>
+              📅 {cdParsed[1]}월 {cdParsed[2]}일 확정
+            </div>
+          )}
+        </div>
+      </button>
+      {!selectionMode && onLongPress && (
         <button
-          onClick={e => { e.stopPropagation(); onLongPress?.(room.id) }}
+          onClick={() => onLongPress(room.id)}
           style={{
             background: 'rgba(0,0,0,.06)', border: 'none', borderRadius: 8,
-            padding: '5px 9px', cursor: 'pointer', color: 'var(--mid)',
+            padding: '8px 10px', cursor: 'pointer', color: 'var(--mid)',
             fontSize: '.85rem', fontWeight: 800, lineHeight: 1, flexShrink: 0,
-            fontFamily: 'inherit',
+            fontFamily: 'inherit', alignSelf: 'stretch', display: 'flex', alignItems: 'center',
           }}
         >···</button>
       )}
-    </button>
+    </div>
   )
 }
 
@@ -302,8 +304,8 @@ function RoomsTab({ myRooms, onCreate, onJoinCode, onEnterRoom, onLeaveRoom }) {
           <button className="btn btn-ghost btn-sm" onClick={cancelSelection}>취소</button>
           <span style={{ fontSize: '.83rem', fontWeight: 700, color: 'var(--mid)' }}>{selectedIds.size}개 선택됨</span>
           <button
-            className="btn btn-sm"
-            style={{ background: 'var(--upset)', color: '#fff', opacity: selectedIds.size === 0 ? 0.5 : 1 }}
+            className="btn btn-ghost btn-sm"
+            style={{ color: 'var(--upset)', borderColor: 'rgba(192,86,90,.3)', opacity: selectedIds.size === 0 ? 0.5 : 1 }}
             disabled={selectedIds.size === 0}
             onClick={() => setShowConfirm(true)}
           >

@@ -221,4 +221,4 @@ body {
 
 .divider { border: none; border-top: 1px solid rgba(0,0,0,.06); margin: 12px 0; }
 .spacer  { flex: 1; }
-.scroll  { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.scroll  { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 2px 4px; margin: 0 -4px; }

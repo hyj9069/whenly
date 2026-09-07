@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Home, Users, CalendarDays, User } from 'lucide-react'
+import { Home, Users, CalendarDays, User, Pencil, Heart } from 'lucide-react'
 import Face from './Face'
 import { toDateStr, getDayFaceType, getMemberColor } from '../utils'
 import { useHolidays } from '../hooks/useHolidays'
@@ -102,7 +102,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
               <button onClick={() => { setRenameValue(room.name); setShowRenameModal(true) }} style={{
                 background: 'none', border: 'none', cursor: 'pointer', padding: '2px 4px',
                 fontSize: '.8rem', color: 'var(--mid)', lineHeight: 1,
-              }}>✏️</button>
+              }}><Pencil size={14} /></button>
             )}
           </div>
           <div style={{ fontSize: '.75rem', color: 'var(--mid)', marginTop: 1 }}>{total}명 참여</div>
@@ -204,7 +204,8 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
               const isMine  = mySet.has(ds)
               const holiday = getHoliday(d)
               const faceType   = getDayFaceType(uCnt, total, isMine)
-              const isSelected = !editMode && selectedDay === d
+              const isSelected  = !editMode && selectedDay === d
+              const isConfirmed = ds === cdStr
 
               let faceGradient = undefined
               if (!past && total >= 2) {
@@ -224,6 +225,9 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
                 >
                   <div className={`day-num${isToday?' today':(dow===0||holiday)?' sun':dow===6?' sat':''}`}>{d}</div>
                   {!past && <Face type={faceType} size={19} className="day-face" gradient={faceGradient} />}
+                  {isConfirmed && (
+                    <Heart size={10} fill="#E05070" color="#E05070" style={{ position: 'absolute', top: -3, right: -3 }} />
+                  )}
                   {!past && isMine && (
                     <div className="badge badge-red" style={{ top: 'auto', bottom: -3, right: 'auto', left: -3 }}>나</div>
                   )}
