@@ -324,7 +324,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
                       {displayName}{mb.user_id === myUserId ? ' (나)' : ''}
                     </div>
                   </div>
-                  <div style={{ fontSize: '.74rem', color: 'var(--mid)' }}>
+                  <div style={{ fontSize: '.74rem', color: 'var(--mid)', fontWeight: 600 }}>
                     {(mb.unavailable_days?.length ?? 0) === 0 ? <><CheckCheck size={13} color="var(--excited)" style={{ verticalAlign: 'middle', marginRight: 2 }} />없음</> : `${mb.unavailable_days.length}일 안됨`}
                   </div>
                 </div>
