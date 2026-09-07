@@ -225,7 +225,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
                   style={{
                     outline: isSelected ? '2px solid var(--calm)' : undefined,
                     outlineOffset: isSelected ? 1 : undefined,
-                    background: isConfirmed ? 'rgba(255,243,249,.83)' : allAvail ? 'rgb(240 245 255 / 83%)' : undefined,
+                    background: isConfirmed ? 'rgb(255 241 248 / 83%)' : allAvail ? 'rgb(240 245 255 / 83%)' : undefined,
                   }}
                   onClick={() => handleCellClick(d, past)}
                 >
