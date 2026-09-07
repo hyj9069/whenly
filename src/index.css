@@ -65,6 +65,7 @@ body {
 .btn-blue  { background: var(--calm);    color: #fff; }
 .btn-teal  { background: var(--excited); color: #fff; }
 .btn-ghost { background: rgba(0,0,0,.055); color: var(--mid); }
+.btn-ghost svg { margin: 0; }
 .btn-sm    { padding: 8px 14px; font-size: .8rem; border-radius: 10px; width: auto; }
 
 /* ── INPUTS ──────────────────────────────── */
