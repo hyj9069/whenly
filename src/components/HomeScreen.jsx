@@ -60,7 +60,17 @@ function RoomItem({ room, onEnterRoom, selectionMode, selected, onSelect, onLong
           </div>
         )}
       </div>
-      {!selectionMode && <span style={{ color: 'var(--mid)' }}>→</span>}
+      {!selectionMode && (
+        <button
+          onClick={e => { e.stopPropagation(); onLongPress?.(room.id) }}
+          style={{
+            background: 'rgba(0,0,0,.06)', border: 'none', borderRadius: 8,
+            padding: '5px 9px', cursor: 'pointer', color: 'var(--mid)',
+            fontSize: '.85rem', fontWeight: 800, lineHeight: 1, flexShrink: 0,
+            fontFamily: 'inherit',
+          }}
+        >···</button>
+      )}
     </button>
   )
 }

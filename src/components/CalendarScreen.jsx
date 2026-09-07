@@ -443,12 +443,12 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
                       )
                     })}
                     <button onClick={() => handleImport(importRoomSel.days)} style={{
-                      background: 'rgba(0,0,0,.04)', border: '1.5px solid rgba(0,0,0,.1)',
+                      background: 'rgba(80,80,80,.11)', border: '1.5px solid rgba(80,80,80,.22)',
                       borderRadius: 12, padding: '11px 14px', cursor: 'pointer', textAlign: 'left',
                       fontFamily: 'inherit', width: '100%',
                     }}>
-                      <div style={{ fontWeight: 800, fontSize: '.88rem', color: 'var(--mid)' }}>전체 가져오기</div>
-                      <div style={{ fontSize: '.72rem', color: 'var(--mid)', marginTop: 3 }}>
+                      <div style={{ fontWeight: 800, fontSize: '.88rem', color: '#555' }}>전체 가져오기</div>
+                      <div style={{ fontSize: '.72rem', color: '#888', marginTop: 3 }}>
                         {importRoomSel.days.length}일 전체
                       </div>
                     </button>
