@@ -22,6 +22,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
   const [importModal, setImportModal]         = useState(false)
   const [importOptions, setImportOptions]     = useState([])
   const [importLoading, setImportLoading]     = useState(false)
+  const [importRoomSel, setImportRoomSel]     = useState(null)
 
   const firstDay  = new Date(yr, mo - 1, 1).getDay()
   const totalDays = new Date(yr, mo, 0).getDate()
@@ -51,8 +52,11 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
   function enterEdit() { setEditMode(true); setSelectedDay(null) }
   function exitEdit()  { setEditMode(false) }
 
+  function closeImportModal() { setImportModal(false); setImportRoomSel(null) }
+
   async function openImportModal() {
     setImportModal(true)
+    setImportRoomSel(null)
     setImportLoading(true)
     const { data: memberRows } = await supabase
       .from('members')
@@ -73,7 +77,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
     if (!me) return
     const merged = [...new Set([...mySet, ...days])].sort()
     await supabase.from('members').update({ unavailable_days: merged }).eq('id', me.id)
-    setImportModal(false)
+    closeImportModal()
   }
 
   function handleCellClick(d, past) {
@@ -374,36 +378,87 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
 
       {/* 일정 불러오기 모달 */}
       {importModal && (
-        <div className="overlay" onClick={() => setImportModal(false)}>
+        <div className="overlay" onClick={closeImportModal}>
           <div className="modal" onClick={e => e.stopPropagation()}>
-            <div style={{ fontSize: '1.05rem', fontWeight: 800, marginBottom: 4 }}>다른 방 일정 불러오기</div>
-            <div style={{ fontSize: '.78rem', color: 'var(--mid)', marginBottom: 14 }}>
-              선택한 방의 일정이 현재 방에 합산됩니다
+            {/* 헤더 */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+              {importRoomSel && (
+                <button onClick={() => setImportRoomSel(null)} style={{
+                  background: 'none', border: 'none', cursor: 'pointer', padding: '0 4px 0 0',
+                  fontSize: '1rem', color: 'var(--mid)', lineHeight: 1, fontFamily: 'inherit',
+                }}>‹</button>
+              )}
+              <div style={{ fontSize: '1.05rem', fontWeight: 800 }}>
+                {importRoomSel ? importRoomSel.roomName : '다른 방 일정 불러오기'}
+              </div>
             </div>
+            <div style={{ fontSize: '.78rem', color: 'var(--mid)', marginBottom: 14 }}>
+              {importRoomSel ? '가져올 월을 선택하세요' : '방을 선택하세요'}
+            </div>
+
             {importLoading ? (
               <div style={{ textAlign: 'center', padding: '24px 0', color: 'var(--mid)', fontSize: '.85rem' }}>불러오는 중...</div>
-            ) : importOptions.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '24px 0', color: 'var(--mid)', fontSize: '.85rem' }}>
-                다른 방에 입력한 일정이 없어요
-              </div>
+            ) : !importRoomSel ? (
+              /* 1단계: 방 목록 */
+              importOptions.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '24px 0', color: 'var(--mid)', fontSize: '.85rem' }}>
+                  다른 방에 입력한 일정이 없어요
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 4 }}>
+                  {importOptions.map((opt, i) => (
+                    <button key={i} onClick={() => setImportRoomSel(opt)} style={{
+                      background: 'rgba(91,141,184,.07)', border: '1.5px solid rgba(91,141,184,.22)',
+                      borderRadius: 12, padding: '11px 14px', cursor: 'pointer', textAlign: 'left',
+                      fontFamily: 'inherit', width: '100%',
+                    }}>
+                      <div style={{ fontWeight: 800, fontSize: '.88rem' }}>{opt.roomName}</div>
+                      <div style={{ fontSize: '.72rem', color: 'var(--mid)', marginTop: 3 }}>
+                        안되는 날 {opt.days.length}일
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 4 }}>
-                {importOptions.map((opt, i) => (
-                  <button key={i} onClick={() => handleImport(opt.days)} style={{
-                    background: 'rgba(91,141,184,.07)', border: '1.5px solid rgba(91,141,184,.22)',
-                    borderRadius: 12, padding: '11px 14px', cursor: 'pointer', textAlign: 'left',
-                    fontFamily: 'inherit', width: '100%',
-                  }}>
-                    <div style={{ fontWeight: 800, fontSize: '.88rem' }}>{opt.roomName}</div>
-                    <div style={{ fontSize: '.72rem', color: 'var(--mid)', marginTop: 3 }}>
-                      안되는 날 {opt.days.length}일
-                    </div>
-                  </button>
-                ))}
-              </div>
+              /* 2단계: 월 선택 */
+              (() => {
+                const months = [...new Set(importRoomSel.days.map(d => d.slice(0, 7)))].sort()
+                return (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 4 }}>
+                    {months.map(ym => {
+                      const [y, m] = ym.split('-')
+                      const filtered = importRoomSel.days.filter(d => d.startsWith(ym))
+                      return (
+                        <button key={ym} onClick={() => handleImport(filtered)} style={{
+                          background: 'rgba(91,141,184,.07)', border: '1.5px solid rgba(91,141,184,.22)',
+                          borderRadius: 12, padding: '11px 14px', cursor: 'pointer', textAlign: 'left',
+                          fontFamily: 'inherit', width: '100%',
+                        }}>
+                          <div style={{ fontWeight: 800, fontSize: '.88rem' }}>{y}년 {+m}월</div>
+                          <div style={{ fontSize: '.72rem', color: 'var(--mid)', marginTop: 3 }}>
+                            {filtered.length}일 선택됨
+                          </div>
+                        </button>
+                      )
+                    })}
+                    <button onClick={() => handleImport(importRoomSel.days)} style={{
+                      background: 'rgba(0,0,0,.04)', border: '1.5px solid rgba(0,0,0,.1)',
+                      borderRadius: 12, padding: '11px 14px', cursor: 'pointer', textAlign: 'left',
+                      fontFamily: 'inherit', width: '100%',
+                    }}>
+                      <div style={{ fontWeight: 800, fontSize: '.88rem', color: 'var(--mid)' }}>전체 가져오기</div>
+                      <div style={{ fontSize: '.72rem', color: 'var(--mid)', marginTop: 3 }}>
+                        {importRoomSel.days.length}일 전체
+                      </div>
+                    </button>
+                  </div>
+                )
+              })()
             )}
+
             <button className="btn btn-ghost" style={{ width: '100%', marginTop: 10 }}
-              onClick={() => setImportModal(false)}>닫기</button>
+              onClick={closeImportModal}>닫기</button>
           </div>
         </div>
       )}
