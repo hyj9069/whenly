@@ -60,8 +60,8 @@ function RoomItem({ room, onEnterRoom, selectionMode, selected, onSelect, onLong
           <div style={{ fontWeight: 800, fontSize: '.93rem' }}>{room.name}</div>
           <div style={{ fontSize: '.72rem', color: 'var(--mid)', marginTop: 2 }}>{room.id}</div>
           {cdParsed && (
-            <div style={{ fontSize: '.72rem', color: 'var(--calm)', marginTop: 3, fontWeight: 700 }}>
-              📅 {cdParsed[1]}월 {cdParsed[2]}일 확정
+            <div style={{ fontSize: '.72rem', color: 'var(--calm)', marginTop: 3, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 3 }}>
+              <CalendarDays size={11} />{cdParsed[1]}월 {cdParsed[2]}일 확정
             </div>
           )}
         </div>
