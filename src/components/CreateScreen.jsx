@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
 import { Sparkles } from 'lucide-react'
 import TopBar from './TopBar'
-import icon1 from '../assets/icon1.webp'
-import icon2 from '../assets/icon2.webp'
-import icon3 from '../assets/icon3.webp'
-import icon4 from '../assets/icon4.webp'
+import icon1 from '../assets/icon1.svg'
+import icon2 from '../assets/icon2.svg'
+import icon3 from '../assets/icon3.svg'
+import icon4 from '../assets/icon4.svg'
 
 const icons = [icon1, icon2, icon3, icon4]
 
@@ -15,7 +15,7 @@ export default function CreateScreen({ onBack, onCreate, defaultName }) {
 
   useEffect(() => {
     if (!loading) return
-    const t = setInterval(() => setIconIdx(Math.floor(Math.random() * 4)), 350)
+    const t = setInterval(() => setIconIdx(i => (i + 1) % 4), 350)
     return () => clearInterval(t)
   }, [loading])
 

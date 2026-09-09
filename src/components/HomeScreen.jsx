@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
 import { Home, Users, User, CalendarDays, Check, ChevronLeft, ChevronRight, Smile, Plus } from 'lucide-react'
 import Face from './Face'
-import icon1 from '../assets/icon1.webp'
-import icon2 from '../assets/icon2.webp'
-import icon4 from '../assets/icon4.webp'
+import icon1 from '../assets/icon1.svg'
+import icon2 from '../assets/icon2.svg'
+import icon4 from '../assets/icon4.svg'
 import { toDateStr } from '../utils'
 import { useHolidays } from '../hooks/useHolidays'
 
@@ -368,7 +368,7 @@ function RoomsTab({ myRooms, onCreate, onJoinCode, onEnterRoom, onLeaveRoom }) {
 
       {!selectionMode && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 8 }}>
-          <button className="btn btn-blue" onClick={onCreate}>새로운 방 만들기</button>
+          <button className="btn btn-blue" onClick={() => onCreate('rooms')}>새로운 방 만들기</button>
           <button className="btn btn-ghost" onClick={onJoinCode}>방 코드로 참여하기</button>
         </div>
       )}

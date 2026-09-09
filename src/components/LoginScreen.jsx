@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { Check, X } from 'lucide-react'
-import Face from './Face'
-import icon4 from '../assets/icon4.webp'
+import icon4 from '../assets/icon4.svg'
 import googleIcon from '../assets/googleIcon.svg'
 
 function translateError(msg) {
@@ -48,44 +47,30 @@ function FieldHint({ touched, error }) {
   if (!touched) return null
   const ok = error === ''
   return (
-    <div style={{ fontSize: '.78rem', fontWeight: 700, paddingLeft: 4, marginTop: -4, color: ok ? '#4CAF7D' : '#C85050' }}>
-      {ok ? <><Check size={13} style={{ verticalAlign: 'middle', marginRight: 2 }} />사용 가능</> : <><X size={13} style={{ verticalAlign: 'middle', marginRight: 2 }} />{error}</>}
+    <div className={`field-hint ${ok ? 'field-hint--ok' : 'field-hint--err'}`}>
+      {ok
+        ? <><Check size={13} style={{ verticalAlign: 'middle', marginRight: 2 }} />사용 가능</>
+        : <><X size={13} style={{ verticalAlign: 'middle', marginRight: 2 }} />{error}</>}
     </div>
   )
 }
 
-const inputStyle = (touched, error) => ({
-  width: '100%', padding: '13px 14px', borderRadius: 12,
-  border: `1.5px solid ${!touched ? 'rgba(0,0,0,.13)' : error === '' ? '#4CAF7D' : '#C85050'}`,
-  fontSize: '.95rem', fontFamily: 'inherit', outline: 'none',
-  background: '#fff', boxSizing: 'border-box', color: '#3D3530',
-  transition: 'border-color .15s',
-})
-
-const btnStyle = (bg, color, shadow) => ({
-  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
-  width: '100%', padding: '14px 20px', borderRadius: 14,
-  border: 'none', fontSize: '.97rem', fontWeight: 700,
-  cursor: 'pointer', background: bg, color,
-  boxShadow: shadow || '0 2px 0 rgba(0,0,0,.08)',
-  fontFamily: 'inherit', transition: 'opacity .12s',
-})
-
-const linkBtn = {
-  background: 'none', border: 'none', cursor: 'pointer',
-  fontWeight: 700, color: '#7098C0', fontFamily: 'inherit', fontSize: 'inherit', padding: 0,
+function inpClass(touched, error) {
+  if (!touched) return 'inp'
+  return `inp ${error === '' ? 'inp--valid' : 'inp--invalid'}`
 }
 
 export default function LoginScreen({ onGoogle, onIdLogin, onIdSignup, onResetPassword }) {
-  const [mode, setMode]         = useState('login')  // 'login' | 'signup' | 'reset'
-  const [id, setId]             = useState('')
-  const [nickname, setNickname] = useState('')
-  const [email, setEmail]       = useState('')
-  const [password, setPassword] = useState('')
-  const [touched, setTouched]   = useState({})
-  const [error, setError]       = useState('')
-  const [loading, setLoading]   = useState(false)
-  const [done, setDone]         = useState(false)
+  const [mode, setMode]           = useState('login')
+  const [id, setId]               = useState(() => localStorage.getItem('saved_id') || '')
+  const [rememberMe, setRememberMe] = useState(() => !!localStorage.getItem('saved_id'))
+  const [nickname, setNickname]   = useState('')
+  const [email, setEmail]         = useState('')
+  const [password, setPassword]   = useState('')
+  const [touched, setTouched]     = useState({})
+  const [error, setError]         = useState('')
+  const [loading, setLoading]     = useState(false)
+  const [done, setDone]           = useState(false)
   const [resetSent, setResetSent] = useState('')
 
   function touch(field) { setTouched(t => ({ ...t, [field]: true })) }
@@ -121,132 +106,116 @@ export default function LoginScreen({ onGoogle, onIdLogin, onIdSignup, onResetPa
       : await onIdLogin(id.trim(), password)
     setLoading(false)
     if (err) { setError(translateError(err.message)); return }
+    if (mode === 'login') {
+      rememberMe ? localStorage.setItem('saved_id', id.trim()) : localStorage.removeItem('saved_id')
+    }
     if (mode === 'signup') setDone(true)
   }
 
-  // 회원가입 완료
   if (done) return (
-    <div className="screen" style={{ justifyContent: 'center', alignItems: 'center', textAlign: 'center', padding: '0 28px' }}>
+    <div className="screen screen--center" style={{ textAlign: 'center' }}>
       <img src={icon4} alt="" style={{ height: 60 }} />
       <h2 style={{ marginTop: 20, fontWeight: 700, fontSize: '1.3rem' }}>가입 완료!</h2>
       <p style={{ color: 'var(--mid)', marginTop: 10, fontSize: '.9rem', lineHeight: 1.7 }}>
         아이디 <b>{id}</b>로 가입됐어요.<br />로그인해주세요.
       </p>
-      <button onClick={() => { setDone(false); switchMode('login') }}
-        style={{ ...btnStyle('#7098C0', '#fff'), marginTop: 24, maxWidth: 320 }}>
+      <button className="btn btn-blue" style={{ marginTop: 24, maxWidth: 320 }}
+        onClick={() => { setDone(false); switchMode('login') }}>
         로그인하러 가기
       </button>
     </div>
   )
 
   return (
-    <div className="screen" style={{ justifyContent: 'center', alignItems: 'center', padding: '0 28px' }}>
+    <div className="screen screen--center">
 
-      {/* 헤더 */}
-      <div style={{ textAlign: 'center', marginBottom: 32 }}>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: 16, marginBottom: 22 }}>
-          {[icon4].map((src, i) => (
-            <img key={i} src={src} alt="" style={{height: 80 }} />
-          ))}
-        </div>
-        <h1 style={{ fontSize: '2rem', fontWeight: 700 }}>모여모여</h1>
-        <p style={{ color: 'var(--mid)', marginTop: 6, fontSize: '.88rem', lineHeight: 1.6 }}>
-          친구들이랑 만날 수 있는 날<br />같이 찾아봐요!
-        </p>
+      <div className="login-header">
+        <img src={icon4} alt="" style={{ height: 80 }} />
+        <h1>언제보꼬</h1>
+        <p>친구들이랑 만날 수 있는 날 같이 찾아봐요!</p>
       </div>
 
-      <div style={{ width: '100%', maxWidth: 340, display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div className="login-body">
 
-        {/* 비밀번호 찾기 모드 */}
-        {mode === 'reset' && (
-          <>
-            <div style={{ fontWeight: 700, fontSize: '1rem', marginBottom: 4 }}>비밀번호 찾기</div>
-            {resetSent ? (
-              <div style={{ fontSize: '.9rem', lineHeight: 1.7, color: 'var(--mid)' }}>
-                <Check size={14} color="#4CAF7D" style={{ verticalAlign: 'middle', marginRight: 4 }} />
-                <b>{resetSent.replace(/(?<=.{2}).(?=[^@]*@)/g, '*')}</b>으로<br />재설정 링크를 보냈어요.
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                <input style={inputStyle(false, '')} placeholder="아이디" value={id} onChange={e => setId(e.target.value)} />
-                {error && <div style={{ fontSize: '.83rem', color: '#C85050', fontWeight: 600, paddingLeft: 4 }}>{error}</div>}
-                <button type="submit" disabled={loading} style={{ ...btnStyle('#7098C0', '#fff'), opacity: loading ? 0.7 : 1 }}>
-                  {loading ? '잠시만요...' : '재설정 링크 전송'}
-                </button>
-              </form>
-            )}
-            <div style={{ textAlign: 'center', fontSize: '.85rem', color: 'var(--mid)', marginTop: 4 }}>
-              <button onClick={() => switchMode('login')} style={linkBtn}>로그인으로 돌아가기</button>
+        {mode === 'reset' && (<>
+          <div style={{ fontWeight: 700, fontSize: '1rem', marginBottom: 4 }}>비밀번호 찾기</div>
+          {resetSent ? (
+            <div style={{ fontSize: '.9rem', lineHeight: 1.7, color: 'var(--mid)' }}>
+              <Check size={14} color="#4CAF7D" style={{ verticalAlign: 'middle', marginRight: 4 }} />
+              <b>{resetSent.replace(/(?<=.{2}).(?=[^@]*@)/g, '*')}</b>으로<br />재설정 링크를 보냈어요.
             </div>
-          </>
-        )}
+          ) : (
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <input className="inp" placeholder="아이디" value={id} onChange={e => setId(e.target.value)} />
+              {error && <div className="form-error">{error}</div>}
+              <button type="submit" className="btn btn-blue" disabled={loading} style={{ opacity: loading ? 0.7 : 1 }}>
+                {loading ? '전송 중...' : '재설정 링크 전송'}
+              </button>
+            </form>
+          )}
+          <div style={{ textAlign: 'center', fontSize: '.85rem', color: 'var(--mid)', marginTop: 4 }}>
+            <button className="link-btn" onClick={() => switchMode('login')}>로그인으로 돌아가기</button>
+          </div>
+        </>)}
 
-        {/* 로그인 / 회원가입 모드 */}
         {mode !== 'reset' && (<>
-          {/* 구글 */}
-          <button style={{ ...btnStyle('#fff', '#3D3530', '0 2px 0 rgba(0,0,0,.09)'), border: '1.5px solid rgba(0,0,0,.13)' }} onClick={onGoogle}>
+          <button className="btn btn-white" onClick={onGoogle}>
             <img src={googleIcon} alt="" style={{ height: 20 }} />
             Google로 시작하기
           </button>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '4px 0' }}>
-            <div style={{ flex: 1, height: 1, background: 'rgba(0,0,0,.1)' }} />
-            <span style={{ fontSize: '.8rem', color: 'var(--mid)', fontWeight: 600 }}>또는</span>
-            <div style={{ flex: 1, height: 1, background: 'rgba(0,0,0,.1)' }} />
-          </div>
+          <div className="login-or">또는</div>
 
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {/* 아이디 */}
-            <input style={inputStyle(touched.id, idErr)} placeholder="아이디" autoComplete="username"
+            <input className={inpClass(touched.id, idErr)} placeholder="아이디" autoComplete="username"
               value={id} onChange={e => { setId(e.target.value); touch('id') }} />
             {mode === 'signup' && <FieldHint touched={touched.id} error={idErr} />}
 
-            {/* 닉네임 - 회원가입만 */}
             {mode === 'signup' && (<>
-              <input style={inputStyle(touched.nickname, nicknameErr)} placeholder="닉네임 (앱에서 표시되는 이름)"
+              <input className={inpClass(touched.nickname, nicknameErr)} placeholder="닉네임 (앱에서 표시되는 이름)"
                 value={nickname} onChange={e => { setNickname(e.target.value); touch('nickname') }} />
               <FieldHint touched={touched.nickname} error={nicknameErr} />
             </>)}
 
-            {/* 이메일 - 회원가입만 */}
             {mode === 'signup' && (<>
-              <input style={inputStyle(touched.email, emailErr)} type="email" placeholder="이메일 (비밀번호 찾기용)"
+              <input className={inpClass(touched.email, emailErr)} type="email" placeholder="이메일 (비밀번호 찾기용)"
                 value={email} onChange={e => { setEmail(e.target.value); touch('email') }} />
               <FieldHint touched={touched.email} error={emailErr} />
             </>)}
 
-            {/* 비밀번호 */}
             <input
-              style={inputStyle(touched.password, mode === 'signup' ? passwordErr : '')} type="password"
+              className={inpClass(touched.password, mode === 'signup' ? passwordErr : '')}
+              type="password"
               placeholder={mode === 'signup' ? '비밀번호 (영문+숫자 조합 8자 이상)' : '비밀번호'}
               autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
               value={password} onChange={e => { setPassword(e.target.value); touch('password') }} />
             {mode === 'signup' && <FieldHint touched={touched.password} error={passwordErr} />}
 
-            {error && <div style={{ fontSize: '.83rem', color: '#C85050', fontWeight: 600, paddingLeft: 4 }}>{error}</div>}
+            {mode === 'login' && (
+              <label className="remember-row">
+                <input type="checkbox" checked={rememberMe} onChange={e => setRememberMe(e.target.checked)} />
+                아이디 기억하기
+              </label>
+            )}
 
-            <button type="submit" disabled={loading}
-              style={{ ...btnStyle('#7098C0', '#fff'), marginTop: 2, opacity: loading ? 0.7 : 1 }}>
-              {loading ? '잠시만요...' : mode === 'login' ? '로그인' : '회원가입'}
+            {error && <div className="form-error">{error}</div>}
+
+            <button type="submit" className="btn" disabled={loading}
+              style={{ marginTop: 7, opacity: loading ? 0.7 : 1, backgroundColor: '#000000', color: '#ffffff' }}>
+              {loading ? (mode === 'login' ? '로그인 중...' : '가입 중...') : mode === 'login' ? '로그인' : '회원가입'}
             </button>
           </form>
 
-          {/* 비밀번호 찾기 링크 - 로그인 모드만 */}
           {mode === 'login' && (
-            <div style={{ textAlign: 'right', marginTop: -4 }}>
-              <button onClick={() => switchMode('reset')} style={{ ...linkBtn, fontSize: '.82rem', color: 'var(--mid)', fontWeight: 600 }}>
-                비밀번호 찾기
-              </button>
+            <div className="login-forgot">
+              <button className="link-btn link-btn--muted" onClick={() => switchMode('reset')}>비밀번호 찾기</button>
             </div>
           )}
 
-          {/* 모드 전환 */}
-          <div style={{ textAlign: 'center', marginTop: 4, fontSize: '.85rem', color: 'var(--mid)' }}>
-            {mode === 'login' ? (
-              <>처음이신가요?{' '}<button onClick={() => switchMode('signup')} style={linkBtn}>회원가입</button></>
-            ) : (
-              <>이미 계정이 있으신가요?{' '}<button onClick={() => switchMode('login')} style={linkBtn}>로그인</button></>
-            )}
+          <div className="login-switch">
+            {mode === 'login'
+              ? <>처음이신가요?{' '}<button className="link-btn" onClick={() => switchMode('signup')}>회원가입</button></>
+              : <>이미 계정이 있으신가요?{' '}<button className="link-btn" onClick={() => switchMode('login')}>로그인</button></>}
           </div>
         </>)}
 
