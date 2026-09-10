@@ -196,7 +196,7 @@ function HomeCalendarTab({ myName, myRooms, onEnterRoom }) {
       <div className="card" style={{ marginBottom: 16 }}>
         <div className="home-cal-wday">
           {['일','월','화','수','목','금','토'].map((d, i) => (
-            <div key={d} style={{ textAlign: 'center', fontSize: '.65rem', fontWeight: 700, color: i === 0 ? '#D05055' : i === 6 ? '#5060CC' : 'var(--mid)', padding: '4px 0' }}>{d}</div>
+            <div key={d} className="home-cal-wday-cell" style={{ color: i === 0 ? '#D05055' : i === 6 ? '#5060CC' : 'var(--mid)' }}>{d}</div>
           ))}
         </div>
         <div className="home-cal-grid">
@@ -214,20 +214,17 @@ function HomeCalendarTab({ myName, myRooms, onEnterRoom }) {
             return (
               <div key={d} className="home-cal-cell"
                 onClick={() => setSelDay(prev => prev && date.toDateString() === prev.toDateString() ? null : date)}>
-                <div style={{
-                  width: 32, height: 32, borderRadius: '50%',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                <div className="home-cal-day-num" style={{
                   background: isSelected ? 'var(--calm)' : isToday ? 'rgba(112,152,192,.12)' : 'transparent',
                   border: isToday && !isSelected ? '1.5px solid var(--calm)' : '1.5px solid transparent',
                   color: isSelected ? '#fff' : textColor,
-                  fontSize: '.84rem', fontWeight: 700, transition: 'all .15s',
                 }}>{d}</div>
                 <div className="home-cal-dot-row">
                   {confirmedCnt === 1 && (
                     <div style={{ width: 5, height: 5, borderRadius: '50%', background: isSelected ? 'var(--mid)' : 'var(--calm)', opacity: isSelected ? 0.5 : 0.9 }} />
                   )}
                   {confirmedCnt > 1 && (
-                    <div style={{ fontSize: '.42rem', fontWeight: 700, color: isSelected ? 'rgba(255,255,255,.7)' : 'var(--calm)', lineHeight: 1 }}>{confirmedCnt}</div>
+                    <div className="home-cal-dot-num" style={{ color: isSelected ? 'rgba(255,255,255,.7)' : 'var(--calm)' }}>{confirmedCnt}</div>
                   )}
                 </div>
               </div>
@@ -402,7 +399,7 @@ function ProfileTab({ user, myName, onLogout, onUpdateName }) {
 }
 
 // ── 메인 ────────────────────────────────────────
-const IC = { color: (a) => a ? 'var(--calm)' : 'var(--mid)', size: 21, strokeWidth: 2.2 }
+const IC = { color: (a) => a ? 'var(--calm)' : 'var(--mid)', size: 18, strokeWidth: 2.2 }
 const TABS = [
   { key: 'home',    label: '홈',      Icon: ({ active }) => <Home      size={IC.size} strokeWidth={IC.strokeWidth} color={IC.color(active)} /> },
   { key: 'rooms',   label: '모임',    Icon: ({ active }) => <Users     size={IC.size} strokeWidth={IC.strokeWidth} color={IC.color(active)} /> },
