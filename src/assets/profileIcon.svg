@@ -1,9 +1,9 @@
-<svg width="39" height="22" viewBox="0 0 39 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="39" height="20" viewBox="0 0 39 20" fill="none" xmlns="http://www.w3.org/2000/svg">
 <circle cx="10.2732" cy="2.90678" r="2.90678" fill="black"/>
 <circle cx="29.1636" cy="2.90678" r="2.90678" fill="black"/>
 <path d="M21.3577 14.2706C20.5617 15.4097 18.8752 15.4097 18.0791 14.2706L16.2545 11.6599C15.328 10.3342 16.2765 8.51423 17.8938 8.51423H21.543C23.1604 8.51423 24.1089 10.3342 23.1823 11.6599L21.3577 14.2706Z" fill="black"/>
-<path d="M7.87549 14.1613C8.4581 16.2589 10.5323 20.454 14.1682 20.454C17.8041 20.454 19.2958 16.2589 19.5871 14.1613" stroke="black" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M31.2986 14.1613C30.716 16.2589 28.6418 20.454 25.0059 20.454C21.37 20.454 19.8783 16.2589 19.587 14.1613" stroke="black" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M11.0566 14.0159C11.481 15.5437 12.9918 18.5994 15.6401 18.5994C18.2884 18.5994 19.3749 15.5437 19.5871 14.0159" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M28.1174 14.0159C27.6931 15.5437 26.1823 18.5994 23.534 18.5994C20.8857 18.5994 19.7992 15.5437 19.587 14.0159" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M32.8445 8.89405C32.9266 8.89405 33.2152 8.81195 33.7115 8.66704C34.2078 8.56317 34.79 8.43878 35.4723 8.31439C35.8262 8.27209 36.1956 8.27209 36.5762 8.27209" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M32.9688 11.5063C33.4228 11.5473 34.25 11.7949 35.1836 12.0443C35.6183 12.2502 36.035 12.4181 36.4486 12.5213C36.657 12.5835 36.8622 12.6656 37.1981 12.8746" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M5.22945 8.02329C4.65476 7.9412 3.82506 7.89891 2.91388 7.93996C2.53635 7.98101 2.33111 8.06311 2.12275 8.12592C1.9144 8.18874 1.70915 8.22979 1.37329 8.27209" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
