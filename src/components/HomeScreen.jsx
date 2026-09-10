@@ -26,28 +26,14 @@ function RoomItem({ room, onEnterRoom, selectionMode, selected, onSelect, onLong
   }
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+    <div className="room-item">
       <button
         onClick={handleClick}
         onMouseDown={startPress} onMouseUp={cancelPress} onMouseLeave={cancelPress}
         onTouchStart={startPress} onTouchEnd={cancelPress} onTouchMove={cancelPress}
-        style={{
-          flex: 1, display: 'flex', alignItems: 'center', gap: 12, padding: '13px 15px',
-          background: '#fff',
-          border: selected ? '2px solid var(--calm)' : 'none',
-          borderRadius: 16, cursor: 'pointer', textAlign: 'left',
-          boxShadow: '0 2px 8px var(--shadow)', fontFamily: 'inherit',
-          transition: 'background .15s, border-color .15s',
-          userSelect: 'none', WebkitUserSelect: 'none',
-        }}>
+        className={`room-item-btn${selected ? ' selected' : ''}`}>
         {selectionMode ? (
-          <div style={{
-            width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
-            border: `2px solid ${selected ? 'var(--calm)' : 'var(--mid)'}`,
-            background: selected ? 'var(--calm)' : 'transparent',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            transition: 'background .15s, border-color .15s',
-          }}>
+          <div className={`room-item-check${selected ? ' selected' : ''}`}>
             {selected && <Check size={13} color="#fff" strokeWidth={3} />}
           </div>
         ) : cdParsed ? (
@@ -56,26 +42,17 @@ function RoomItem({ room, onEnterRoom, selectionMode, selected, onSelect, onLong
           <img src={icon4} alt="" style={{ height: 30, flexShrink: 0 }} />
         )}
         <div style={{ flex: 1 }}>
-          <div style={{ fontWeight: 700, fontSize: '.85rem' }}>{room.name}</div>
-          <div style={{ fontSize: '.72rem', color: 'var(--mid)', marginTop: 3 }}>{room.id}</div>
+          <div className="room-item-name">{room.name}</div>
+          <div className="room-item-id">{room.id}</div>
           {cdParsed && (
-            <div style={{ fontSize: '.7rem', color: 'var(--calm)', marginTop: 5, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 3 }}>
+            <div className="room-item-confirmed">
               <CalendarDays size={11} />{cdParsed[1]}월 {cdParsed[2]}일 확정
             </div>
           )}
         </div>
       </button>
       {!selectionMode && onLongPress && (
-        <button
-          onClick={() => onLongPress(room.id)}
-          style={{
-            width: 35, height: 35, flexShrink: 0,
-            background: 'rgba(0,0,0,.06)', border: 'none', borderRadius: '50%',
-            cursor: 'pointer', color: 'var(--mid)',
-            fontSize: '.85rem', fontWeight: 700, lineHeight: 1,
-            fontFamily: 'inherit', display: 'flex', justifyContent: 'center', alignItems: 'center',
-          }}
-        >···</button>
+        <button onClick={() => onLongPress(room.id)} className="room-item-more">···</button>
       )}
     </div>
   )
@@ -110,76 +87,55 @@ function DaySheet({ selDay, holiday, rooms, onClose, onEnterRoom }) {
 
   return (
     <>
-      <div onClick={onClose} style={{
-        position: 'fixed', inset: 0,
-        background: 'rgba(0,0,0,0.18)',
-        backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)',
-        zIndex: 60,
+      <div onClick={onClose} className="day-sheet-overlay" style={{
         opacity: Math.max(0, 1 - dragY / 250),
         transition: dragY === 0 ? 'opacity .3s' : 'none',
       }} />
       <div
         onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}
+        className="day-sheet"
         style={{
-          position: 'fixed', bottom: 0, left: 0, right: 0, margin: '0 auto',
-          width: '100%', maxWidth: 480,
-          height: '88dvh',
-          background: 'rgba(245,247,250,0.88)',
-          backdropFilter: 'blur(32px)', WebkitBackdropFilter: 'blur(32px)',
-          borderRadius: '24px 24px 0 0',
-          border: '1.5px solid rgba(255,255,255,0.72)',
-          boxShadow: '0 -4px 48px rgba(0,0,0,0.13)',
-          zIndex: 61,
-          display: 'flex', flexDirection: 'column',
-          overflow: 'hidden',
           transform: `translateY(${dragY}px)`,
           transition: dragY === 0 ? 'transform .3s cubic-bezier(.32,.72,0,1)' : 'none',
           animation: dragY === 0 ? 'slideUp .32s cubic-bezier(.32,.72,0,1)' : 'none',
         }}>
         {/* 드래그 핸들 */}
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '14px 0 6px' }}>
-          <div style={{ width: 40, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.12)' }} />
+        <div className="day-sheet-handle">
+          <div className="day-sheet-handle-bar" />
         </div>
 
         {/* 날짜 헤더 */}
-        <div style={{ padding: '8px 24px 4px' }}>
-          <div style={{ fontSize: '1.25rem', fontWeight: 700, color: isRed ? '#D05055' : 'var(--dark)', display: 'flex', alignItems: 'baseline', gap: 10 }}>
+        <div className="day-sheet-header">
+          <div className="day-sheet-date" style={{ color: isRed ? '#D05055' : 'var(--dark)' }}>
             {selDay.getMonth() + 1}월 {selDay.getDate()}일 ({dow})
-            {holiday && <span style={{ fontSize: '.95rem', fontWeight: 700 }}>{holiday}</span>}
+            {holiday && <span className="day-sheet-holiday">{holiday}</span>}
           </div>
         </div>
 
         {/* 탭 */}
-        <div style={{ display: 'flex', gap: 8, padding: '14px 24px 10px' }}>
+        <div className="day-sheet-tabs">
           {['일정', '모임'].map(t => (
-            <button key={t} onClick={() => setSheetTab(t)} style={{
-              padding: '8px 22px', borderRadius: 20, fontFamily: 'inherit',
-              background: sheetTab === t ? 'rgba(255,255,255,0.92)' : 'rgba(0,0,0,0.055)',
-              border: sheetTab === t ? '1.5px solid rgba(91,141,184,0.32)' : '1.5px solid transparent',
-              color: sheetTab === t ? 'var(--calm)' : 'var(--mid)',
-              fontWeight: 700, fontSize: '.88rem', cursor: 'pointer',
-              boxShadow: sheetTab === t ? '0 2px 10px rgba(0,0,0,0.07)' : 'none',
-              transition: 'all .15s',
-            }}>{t}</button>
+            <button key={t} onClick={() => setSheetTab(t)}
+              className={`day-sheet-tab${sheetTab === t ? ' active' : ''}`}>{t}</button>
           ))}
         </div>
 
         {/* 구분선 */}
-        <div style={{ height: 1, background: 'rgba(0,0,0,0.06)', margin: '0 24px' }} />
+        <div className="day-sheet-divider" />
 
         {/* 콘텐츠 */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '16px 24px 32px' }}>
+        <div className="day-sheet-content">
           {sheetTab === '일정' && (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, padding: '48px 0', color: 'var(--mid)' }}>
+            <div className="day-sheet-empty">
               <img src={icon2} alt="" style={{ height: 52 }} />
-              <div style={{ fontSize: '.85rem' }}>일정 기능은 준비 중이에요</div>
+              <div>일정 기능은 준비 중이에요</div>
             </div>
           )}
           {sheetTab === '모임' && (
             rooms.length === 0 ? (
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, padding: '48px 0', color: 'var(--mid)' }}>
+              <div className="day-sheet-empty">
                 <Face type="bored" size={52} />
-                <div style={{ fontSize: '.85rem' }}>이 날 확정된 모임이 없어요</div>
+                <div>이 날 확정된 모임이 없어요</div>
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -219,32 +175,31 @@ function HomeCalendarTab({ myName, myRooms, onEnterRoom }) {
 
   return (
     <>
-      {/* 인사말 */}
-      <div style={{ fontWeight: 700, fontSize: '1.05rem', marginBottom: 30 }}>
+      <div className="home-greeting">
         안녕하세요, {myName}님 <Smile size={16} style={{ verticalAlign: 'middle' }} />
       </div>
 
       {/* 월 탐색 */}
-      <div style={{ display: 'flex', alignItems: 'center', marginBottom: 12 }}>
-        <button onClick={prev} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--mid)', padding: '4px 8px', display: 'flex' }}><ChevronLeft size={18} /></button>
-        <div style={{ flex: 1, textAlign: 'center', fontWeight: 700, fontSize: '1rem' }}>{vy}년 {vm}월</div>
-        <button onClick={next} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--mid)', padding: '4px 8px', display: 'flex' }}><ChevronRight size={18} /></button>
+      <div className="home-month-nav">
+        <button onClick={prev} className="cal-month-btn"><ChevronLeft size={18} /></button>
+        <div className="home-month-label">{vy}년 {vm}월</div>
+        <button onClick={next} className="cal-month-btn"><ChevronRight size={18} /></button>
       </div>
 
       {allConfirmed.length > 0 && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10, padding: '8px 12px', background: 'rgba(112,152,192,.1)', borderRadius: 12 }}>
-          <span style={{ fontSize: '.8rem', fontWeight: 600, color: 'var(--calm)' }}>총 확정 모임 {allConfirmed.length}개</span>
+        <div className="home-confirmed-banner">
+          <span className="home-confirmed-text">총 확정 모임 {allConfirmed.length}개</span>
         </div>
       )}
 
       {/* 달력 그리드 */}
       <div className="card" style={{ marginBottom: 16 }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', marginBottom: 6 }}>
+        <div className="home-cal-wday">
           {['일','월','화','수','목','금','토'].map((d, i) => (
             <div key={d} style={{ textAlign: 'center', fontSize: '.65rem', fontWeight: 700, color: i === 0 ? '#D05055' : i === 6 ? '#5060CC' : 'var(--mid)', padding: '4px 0' }}>{d}</div>
           ))}
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px 0' }}>
+        <div className="home-cal-grid">
           {Array.from({ length: firstDay }, (_, i) => <div key={`e${i}`} />)}
           {Array.from({ length: totalDays }, (_, i) => {
             const d            = i + 1
@@ -257,8 +212,8 @@ function HomeCalendarTab({ myName, myRooms, onEnterRoom }) {
             const textColor    = isRed ? '#D05055' : dow === 6 ? '#5060CC' : 'var(--dark)'
             const confirmedCnt = myRooms.filter(r => r.confirmed_day === toDateStr(vy, vm, d)).length
             return (
-              <div key={d} onClick={() => setSelDay(prev => prev && date.toDateString() === prev.toDateString() ? null : date)}
-                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, cursor: 'pointer', padding: '2px 0' }}>
+              <div key={d} className="home-cal-cell"
+                onClick={() => setSelDay(prev => prev && date.toDateString() === prev.toDateString() ? null : date)}>
                 <div style={{
                   width: 32, height: 32, borderRadius: '50%',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -267,7 +222,7 @@ function HomeCalendarTab({ myName, myRooms, onEnterRoom }) {
                   color: isSelected ? '#fff' : textColor,
                   fontSize: '.84rem', fontWeight: 700, transition: 'all .15s',
                 }}>{d}</div>
-                <div style={{ height: 5, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div className="home-cal-dot-row">
                   {confirmedCnt === 1 && (
                     <div style={{ width: 5, height: 5, borderRadius: '50%', background: isSelected ? 'var(--mid)' : 'var(--calm)', opacity: isSelected ? 0.5 : 0.9 }} />
                   )}
@@ -326,9 +281,9 @@ function RoomsTab({ myRooms, onCreate, onJoinCode, onEnterRoom, onLeaveRoom }) {
   return (
     <>
       {selectionMode && (
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+        <div className="rooms-sel-header">
           <button className="btn btn-ghost btn-sm" onClick={cancelSelection}>취소</button>
-          <span style={{ fontSize: '.83rem', fontWeight: 700, color: 'var(--mid)' }}>{selectedIds.size}개 선택됨</span>
+          <span className="rooms-sel-count">{selectedIds.size}개 선택됨</span>
           <button
             className="btn btn-ghost btn-sm"
             style={{ color: 'var(--upset)', borderColor: 'rgba(192,86,90,.3)', opacity: selectedIds.size === 0 ? 0.5 : 1 }}
@@ -341,9 +296,9 @@ function RoomsTab({ myRooms, onCreate, onJoinCode, onEnterRoom, onLeaveRoom }) {
       )}
 
       {myRooms.length > 0 ? (
-        <div style={{ marginBottom: 20 }}>
-          <div style={{ fontSize: '.78rem', fontWeight: 700, color: 'var(--mid)', marginBottom: 10 }}>참여 중인 방</div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <div className="rooms-section">
+          <div className="rooms-section-label">참여 중인 방</div>
+          <div className="rooms-list">
             {myRooms.map(r => (
               <RoomItem
                 key={r.id} room={r} onEnterRoom={onEnterRoom}
@@ -356,16 +311,16 @@ function RoomsTab({ myRooms, onCreate, onJoinCode, onEnterRoom, onLeaveRoom }) {
           </div>
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, color: 'var(--mid)', padding: '32px 0' }}>
+        <div className="rooms-empty">
           <img src={icon4} alt="" style={{ height: 125 }} />
-          <div style={{ fontSize: '.9rem', textAlign: 'center', lineHeight: 1.6 }}>
+          <div className="rooms-empty-text">
             아직 참여 중인 방이 없어요<br />방을 만들거나 초대 링크로 참여해봐요!
           </div>
         </div>
       )}
 
       {!selectionMode && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 8 }}>
+        <div className="rooms-actions">
           <button className="btn btn-blue" onClick={() => onCreate('rooms')}>새로운 방 만들기</button>
           <button className="btn btn-ghost" onClick={onJoinCode}>방 코드로 참여하기</button>
         </div>
@@ -374,11 +329,11 @@ function RoomsTab({ myRooms, onCreate, onJoinCode, onEnterRoom, onLeaveRoom }) {
       {showConfirm && (
         <div className="overlay" onClick={() => setShowConfirm(false)}>
           <div className="modal" onClick={e => e.stopPropagation()}>
-            <div style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: 8 }}>방을 나가겠어요?</div>
-            <div style={{ fontSize: '.85rem', color: 'var(--mid)', marginBottom: 20, lineHeight: 1.6 }}>
+            <div className="modal-title" style={{ marginBottom: 8 }}>방을 나가겠어요?</div>
+            <div className="modal-desc">
               선택한 {selectedIds.size}개의 방에서 나갑니다.<br />내가 만든 방은 삭제됩니다.
             </div>
-            <div style={{ display: 'flex', gap: 10 }}>
+            <div className="modal-btns">
               <button className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setShowConfirm(false)}>취소</button>
               <button className="btn" style={{ flex: 1, background: 'var(--upset)', color: '#fff' }} onClick={confirmLeave}>확인</button>
             </div>
@@ -406,23 +361,23 @@ function ProfileTab({ user, myName, onLogout, onUpdateName }) {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, padding: '24px 0 16px' }}>
+    <div className="profile-tab">
+      <div className="profile-avatar-area">
         {user?.user_metadata?.avatar_url
-          ? <img src={user.user_metadata.avatar_url} alt="" style={{ width: 72, height: 72, borderRadius: '50%', objectFit: 'cover', border: '3px solid rgba(0,0,0,.08)' }} />
+          ? <img src={user.user_metadata.avatar_url} alt="" className="profile-avatar" />
           : <Face type="calm" size={72} />
         }
-        <div style={{ fontWeight: 700, fontSize: '1.1rem' }}>{myName}</div>
-        <div style={{ fontSize: '.75rem', color: 'var(--mid)' }}>{user?.email}</div>
+        <div className="profile-name">{myName}</div>
+        <div className="profile-email">{user?.email}</div>
       </div>
 
       <div className="card">
-        <div style={{ fontSize: '.78rem', fontWeight: 700, color: 'var(--mid)', marginBottom: 12 }}>표시 이름</div>
+        <div className="profile-card-label">표시 이름</div>
         {editing ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <div className="profile-edit-form">
             <input className="inp" value={name} onChange={e => setName(e.target.value)}
               maxLength={20} placeholder="표시 이름 입력" autoFocus />
-            <div style={{ display: 'flex', gap: 8 }}>
+            <div className="profile-edit-btns">
               <button className="btn btn-blue" style={{ flex: 1, padding: 11 }} onClick={save} disabled={saving}>
                 {saving ? '저장 중...' : '저장'}
               </button>
@@ -431,12 +386,9 @@ function ProfileTab({ user, myName, onLogout, onUpdateName }) {
             </div>
           </div>
         ) : (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{ flex: 1, fontSize: '.9rem', fontWeight: 700 }}>{myName}</div>
-            <button onClick={() => setEditing(true)}
-              style={{ background: 'rgba(0,0,0,.05)', border: 'none', borderRadius: 10, padding: '6px 14px', fontSize: '.8rem', fontWeight: 700, cursor: 'pointer', color: 'var(--mid)', fontFamily: 'inherit' }}>
-              수정
-            </button>
+          <div className="profile-display">
+            <div className="profile-display-name">{myName}</div>
+            <button onClick={() => setEditing(true)} className="profile-edit-btn">수정</button>
           </div>
         )}
       </div>
@@ -466,50 +418,19 @@ export default function HomeScreen({ user, myName, myRooms, initialTab = 'home',
       {tab === 'rooms'   && <RoomsTab   myRooms={myRooms} onCreate={onCreate} onJoinCode={onJoinCode} onEnterRoom={onEnterRoom} onLeaveRoom={onLeaveRoom} />}
       {tab === 'profile' && <ProfileTab user={user} myName={myName} onLogout={onLogout} onUpdateName={onUpdateName} />}
 
-      <div style={{
-        position: 'fixed',
-        bottom: 'calc(14px + env(safe-area-inset-bottom))',
-        left: '50%', transform: 'translateX(-50%)',
-        width: 'calc(100% - 32px)', maxWidth: 440,
-        display: 'flex', alignItems: 'center', gap: 10,
-        zIndex: 50,
-      }}>
-        {/* Pill nav */}
-        <div style={{
-          flex: 1, position: 'relative',
-          display: 'flex', alignItems: 'center', padding: '5px',
-          background: 'rgba(255,255,255,0.76)',
-          backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)',
-          borderRadius: 100,
-          border: '1.5px solid rgba(255,255,255,0.94)',
-          boxShadow: '0 8px 32px rgba(0,0,0,0.10), inset 0 1px 0 rgba(255,255,255,0.9)',
-        }}>
-          {/* 슬라이딩 타원 */}
-          <div style={{
-            position: 'absolute',
-            top: 5, bottom: 5, left: 5,
+      <div className="home-nav-wrap">
+        <div className="home-nav-pill">
+          <div className="home-nav-indicator" style={{
             width: `calc((100% - 10px) / ${TABS.length})`,
-            borderRadius: 100,
-            background: '#fff',
-            boxShadow: '0 2px 12px rgba(0,0,0,0.09)',
             transform: `translateX(calc(${TABS.findIndex(t => t.key === tab)} * 100%))`,
-            transition: 'transform .32s cubic-bezier(.32,.72,0,1)',
-            pointerEvents: 'none',
           }} />
-
           {TABS.map(({ key, label, Icon }) => {
             const active = tab === key
             return (
-              <button key={key} onClick={() => setTab(key)} style={{
-                flex: 1, position: 'relative', zIndex: 1,
-                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3,
-                padding: '8px 0',
-                background: 'transparent', border: 'none', borderRadius: 100,
-                cursor: active ? 'default' : 'pointer',
-                fontFamily: 'inherit',
-              }}>
+              <button key={key} onClick={() => setTab(key)} className="home-nav-btn"
+                style={{ cursor: active ? 'default' : undefined }}>
                 <Icon active={active} />
-                <span style={{ fontSize: '.6rem', fontWeight: 700, color: active ? 'var(--calm)' : 'var(--mid)', transition: 'color .25s' }}>
+                <span className="home-nav-label" style={{ color: active ? 'var(--calm)' : 'var(--mid)' }}>
                   {label}
                 </span>
               </button>
@@ -517,16 +438,9 @@ export default function HomeScreen({ user, myName, myRooms, initialTab = 'home',
           })}
         </div>
 
-        {/* FAB */}
-        <button onClick={() => onCreate('home')} style={{
-          width: 52, height: 52, borderRadius: '50%', flexShrink: 0,
-          background: 'linear-gradient(135deg, #8BBDE8 0%, #5B8DB8 55%, #7C6ED6 100%)',
-          border: 'none', color: '#fff',
-          cursor: 'pointer',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: '0 4px 20px rgba(91,141,184,.50), 0 2px 8px rgba(0,0,0,.12)',
-          transition: 'transform .15s',
-        }}><Plus size={24} strokeWidth={2.5} /></button>
+        <button onClick={() => onCreate('home')} className="home-nav-fab">
+          <Plus size={24} strokeWidth={2.5} />
+        </button>
       </div>
     </div>
   )
