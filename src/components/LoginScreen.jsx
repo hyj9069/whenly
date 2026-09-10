@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Check, X } from 'lucide-react'
-import icon4 from '../assets/icon4.svg'
+import { icon4 } from '../assets/icons'
 import googleIcon from '../assets/googleIcon.svg'
 
 function translateError(msg) {
@@ -62,8 +62,9 @@ function inpClass(touched, error) {
 
 export default function LoginScreen({ onGoogle, onIdLogin, onIdSignup, onResetPassword }) {
   const [mode, setMode]           = useState('login')
-  const [id, setId]               = useState(() => localStorage.getItem('saved_id') || '')
-  const [rememberMe, setRememberMe] = useState(() => !!localStorage.getItem('saved_id'))
+  const savedId = localStorage.getItem('saved_id') || ''
+  const [id, setId]               = useState(savedId)
+  const [rememberMe, setRememberMe] = useState(!!savedId)
   const [nickname, setNickname]   = useState('')
   const [email, setEmail]         = useState('')
   const [password, setPassword]   = useState('')
@@ -200,8 +201,8 @@ export default function LoginScreen({ onGoogle, onIdLogin, onIdSignup, onResetPa
 
             {error && <div className="form-error">{error}</div>}
 
-            <button type="submit" className="btn" disabled={loading}
-              style={{ marginTop: 7, opacity: loading ? 0.7 : 1, backgroundColor: '#000000', color: '#ffffff' }}>
+            <button type="submit" className="btn btn-dark" disabled={loading}
+              style={{ marginTop: 7, opacity: loading ? 0.7 : 1 }}>
               {loading ? (mode === 'login' ? '로그인 중...' : '가입 중...') : mode === 'login' ? '로그인' : '회원가입'}
             </button>
           </form>

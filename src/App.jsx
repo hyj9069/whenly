@@ -3,12 +3,7 @@ import { useAuth } from './hooks/useAuth'
 import { useRooms } from './hooks/useRooms'
 import { useMembers } from './hooks/useMembers'
 import Toast from './components/Toast'
-import icon1 from './assets/icon1.svg'
-import icon2 from './assets/icon2.svg'
-import icon3 from './assets/icon3.svg'
-import icon4 from './assets/icon4.svg'
-
-const loadingIcons = [icon1, icon2, icon3, icon4]
+import { useAnimatedIcon } from './hooks/useAnimatedIcon'
 import LoginScreen from './components/LoginScreen'
 import HomeScreen from './components/HomeScreen'
 import CreateScreen from './components/CreateScreen'
@@ -61,13 +56,7 @@ export default function App() {
   const [showShare, setShowShare] = useState(false)
   const [toast, setToast] = useState({ msg: '', vis: false })
   const toastTimer = useRef(null)
-  const [iconIdx, setIconIdx] = useState(0)
-
-  useEffect(() => {
-    if (!loading) return
-    const t = setInterval(() => setIconIdx(i => (i + 1) % 4), 350)
-    return () => clearInterval(t)
-  }, [loading])
+  const loadingIcon = useAnimatedIcon(loading)
 
   function showToast(msg) {
     setToast({ msg, vis: true })
@@ -136,7 +125,7 @@ export default function App() {
 
   if (loading) return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', flexDirection: 'column', gap: 16 }}>
-      <img src={loadingIcons[iconIdx]} alt="" style={{ height: 60 }} />
+      <img src={loadingIcon} alt="" style={{ height: 60 }} />
       <div style={{ fontSize: '.85rem', color: 'var(--mid)' }}>로딩 중...</div>
     </div>
   )

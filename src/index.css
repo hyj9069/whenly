@@ -108,6 +108,11 @@ body {
   color: #fff;
 }
 
+.btn-dark {
+  background: #000;
+  color: #fff;
+}
+
 .btn-ghost {
   background: rgba(0, 0, 0, .055);
   color: var(--mid);

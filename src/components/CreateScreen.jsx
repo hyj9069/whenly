@@ -1,23 +1,13 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Sparkles } from 'lucide-react'
 import TopBar from './TopBar'
-import icon1 from '../assets/icon1.svg'
-import icon2 from '../assets/icon2.svg'
-import icon3 from '../assets/icon3.svg'
-import icon4 from '../assets/icon4.svg'
-
-const icons = [icon1, icon2, icon3, icon4]
+import { icon4 } from '../assets/icons'
+import { useAnimatedIcon } from '../hooks/useAnimatedIcon'
 
 export default function CreateScreen({ onBack, onCreate, defaultName }) {
   const [roomName, setRoomName] = useState('')
   const [loading, setLoading]   = useState(false)
-  const [iconIdx, setIconIdx]   = useState(0)
-
-  useEffect(() => {
-    if (!loading) return
-    const t = setInterval(() => setIconIdx(i => (i + 1) % 4), 350)
-    return () => clearInterval(t)
-  }, [loading])
+  const loadingIcon = useAnimatedIcon(loading)
 
   async function handleCreate() {
     if (!roomName.trim()) return
@@ -49,7 +39,7 @@ export default function CreateScreen({ onBack, onCreate, defaultName }) {
       <button className="btn btn-blue" style={{ marginTop: 16 }} onClick={handleCreate}
         disabled={loading || !roomName.trim()}>
         {loading
-          ? <img src={icons[iconIdx]} alt="" style={{ height: 22 }} />
+          ? <img src={loadingIcon} alt="" style={{ height: 22 }} />
           : <><Sparkles size={15} style={{ verticalAlign: 'middle', marginRight: 5 }} />방 만들기</>}
       </button>
     </div>
