@@ -8,7 +8,7 @@ function shareKakao(url, onFail) {
   try {
     window.Kakao.Share.sendDefault({
       objectType: 'text',
-      text: '모여모여에 초대합니다! 🎉\n아래 링크로 참여해주세요 :)',
+      text: '언제보꼬에 초대합니다! 🎉\n아래 링크로 참여해주세요 :)',
       link: { mobileWebUrl: url, webUrl: url },
       buttons: [{ title: '참여하기', link: { mobileWebUrl: url, webUrl: url } }],
     })
