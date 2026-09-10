@@ -45,9 +45,7 @@ export default function ShareModal({ roomId, onClose, onToast }) {
   return (
     <div className="overlay" onClick={onClose}>
       <div className="modal" onClick={e => e.stopPropagation()}>
-        <div style={{ fontSize: '1.76rem', fontWeight: 700, marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>친구한테 공유하기 <Link size={16} /></div>
-        <div style={{ fontSize: '1.4rem', color: 'var(--mid)', marginBottom: 14 }}>링크 또는 방 코드로 초대해요!</div>
-
+        <div style={{ fontSize: '1.7rem', fontWeight: 700, marginBottom: 14, display: 'flex', alignItems: 'center', gap: 6 }}>친구한테 공유하기 <Link size={16} /></div>
         <div style={{ fontSize: '1.3rem', fontWeight: 700, color: 'var(--mid)', marginBottom: 5 }}>방 코드</div>
         <div className="code-box" onClick={copyCode} style={{ cursor: 'pointer' }}>
           <div style={{ fontSize: '2.8rem', fontWeight: 700, letterSpacing: 8, color: 'var(--calm)' }}>{roomId}</div>
@@ -59,11 +57,11 @@ export default function ShareModal({ roomId, onClose, onToast }) {
           <a href={url} target="_blank" rel="noreferrer" style={{ color: 'var(--calm)', wordBreak: 'break-all' }}>{url}</a>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
           <button style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-            width: '100%', padding: 13, background: '#FEE500', border: 'none', borderRadius: 14,
-            fontSize: '1.52rem', fontWeight: 700, cursor: 'pointer', color: '#3A1D1D',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5,
+            width: '100%', padding: 11, background: '#FEE500', border: 'none', borderRadius: 14,
+            fontSize: '1.4rem', fontWeight: 700, cursor: 'pointer', color: '#3A1D1D',
             boxShadow: '0 2px 0 rgba(0,0,0,.1)',
           }} onClick={() => shareKakao(url, msg => { onToast(msg); onClose() })}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="#3A1D1D">
@@ -72,7 +70,7 @@ export default function ShareModal({ roomId, onClose, onToast }) {
             카카오톡으로 공유하기
           </button>
           <div style={{ display: 'flex', gap: 9 }}>
-            <button className="btn btn-blue" style={{ flex: 1, padding: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }} onClick={copy}><Copy size={14} />링크 복사</button>
+            <button className="btn btn-blue" style={{ flex: 1, padding: 11, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }} onClick={copy}><Copy size={14} />링크 복사</button>
             <button className="btn btn-ghost btn-sm" onClick={onClose}>닫기</button>
           </div>
         </div>
