@@ -49,7 +49,7 @@ function PasswordResetScreen({ onSubmit }) {
 
 export default function App() {
   const { user, loading, recovering, myName, loginWithGoogle, signInWithId, signUpWithId, resetPassword, updatePassword, logout, updateName } = useAuth()
-  const { myRooms, loadMyRooms, createRoom, joinRoom, leaveRoom, leaveRoomById, confirmDay, renameRoom } = useRooms(user, myName)
+  const { myRooms, roomsLoading, loadMyRooms, createRoom, joinRoom, leaveRoom, leaveRoomById, confirmDay, renameRoom } = useRooms(user, myName)
   const [screen, setScreen] = useState('home')
   const [room, setRoom] = useState(null)
   const { members, toggleDay } = useMembers(room)
@@ -147,7 +147,7 @@ export default function App() {
 
       {user && screen === 'home' && (
         <HomeScreen
-          user={user} myName={myName} myRooms={myRooms}
+          user={user} myName={myName} myRooms={myRooms} roomsLoading={roomsLoading}
           initialTab={homeInitialTab}
           onCreate={(fromTab = 'rooms') => { setCreateFromTab(fromTab); setScreen('create') }}
           onJoinCode={() => setScreen('join')}

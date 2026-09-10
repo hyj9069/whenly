@@ -1,6 +1,5 @@
 ﻿import { useState } from 'react'
 import { Home, Users, CalendarDays, User, Pencil, Heart, Sparkles, Link, CheckCheck, Smile, Copy, ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react'
-import { icon1, icon2, icon3 } from '../assets/icons'
 import { toDateStr, getDayFaceType, getMemberColor } from '../utils'
 import { useHolidays } from '../hooks/useHolidays'
 import { supabase } from '../supabase'
@@ -152,7 +151,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
         </div>
 
         {/* 달력 */}
-        <div className="card" style={{ marginBottom: 12 }}>
+        <div className="card" style={{ marginBottom: 12, background: #ffffff4a }}>
           <div className="cal-month-nav">
             <button onClick={prevMonth} className="cal-month-btn"><ChevronLeft size={18} /></button>
             <div className="cal-month-label">{yr}년 {mo}월</div>
@@ -183,11 +182,11 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
               const isSelected  = !editMode && selectedDay === d
               const isConfirmed = ds === cdStr
 
-              let statusIcon = null
+              let statusType = null
               if (!past && total >= 2) {
-                if (uCnt === total)  statusIcon = icon3
-                else if (uCnt === 0) statusIcon = icon1
-                else                 statusIcon = icon2
+                if (uCnt === total)  statusType = 'none'
+                else if (uCnt === 0) statusType = 'all'
+                else                 statusType = 'some'
               }
 
               const allAvail = !past && total >= 2 && uCnt === 0
@@ -202,10 +201,12 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
                   onClick={() => handleCellClick(d, past)}
                 >
                   <div className={`day-num${isToday?' today':(dow===0||holiday)?' sun':dow===6?' sat':''}`}>{d}</div>
-                  {!past && (statusIcon
-                    ? <img src={statusIcon} className="day-face" alt="" />
-                    : <img src={isMine ? icon3 : icon1} className="day-face" alt="" />
-                  )}
+                  {!past && (() => {
+                    const t = statusType ?? (isMine ? 'none' : 'all')
+                    const sym = { all: '○', some: '△', none: '✕' }
+                    const clr = { all: 'var(--excited)', some: '#F0A040', none: 'var(--upset)' }
+                    return <span className="day-face-icon" style={{ color: clr[t] }}>{sym[t]}</span>
+                  })()}
                   {isConfirmed && (
                     <Heart size={10} fill="#E05070" color="#E05070" style={{ position: 'absolute', top: -3, right: -3 }} />
                   )}
@@ -272,9 +273,9 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
 
         {/* 범례 */}
         <div className="legend">
-          <div className="leg-item"><img src={icon1} alt="" />모두 가능</div>
-          <div className="leg-item"><img src={icon2} alt="" />일부 불가</div>
-          <div className="leg-item"><img src={icon3} alt="" />모두 불가</div>
+          <div className="leg-item"><span style={{ color: 'var(--excited)', fontWeight: 900 }}>○</span>모두 가능</div>
+          <div className="leg-item"><span style={{ color: '#F0A040', fontWeight: 900 }}>△</span>일부 불가</div>
+          <div className="leg-item"><span style={{ color: 'var(--upset)', fontWeight: 900 }}>✕</span>모두 불가</div>
         </div>
 
         {/* 참여자 현황 */}

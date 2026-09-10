@@ -245,7 +245,7 @@ function HomeCalendarTab({ myName, myRooms, onEnterRoom }) {
 }
 
 // ── 모임 탭 ─────────────────────────────────────
-function RoomsTab({ myRooms, onCreate, onJoinCode, onEnterRoom, onLeaveRoom }) {
+function RoomsTab({ myRooms, roomsLoading, onCreate, onJoinCode, onEnterRoom, onLeaveRoom }) {
   const [selectionMode, setSelectionMode] = useState(false)
   const [selectedIds, setSelectedIds] = useState(new Set())
   const [showConfirm, setShowConfirm] = useState(false)
@@ -274,6 +274,14 @@ function RoomsTab({ myRooms, onCreate, onJoinCode, onEnterRoom, onLeaveRoom }) {
     setShowConfirm(false)
     cancelSelection()
   }
+
+  if (roomsLoading) return (
+    <div className="rooms-list">
+      <RoomItemSkeleton />
+      <RoomItemSkeleton />
+      <RoomItemSkeleton />
+    </div>
+  )
 
   return (
     <>
@@ -406,13 +414,27 @@ const TABS = [
   { key: 'profile', label: '내 정보', Icon: ({ active }) => <User      size={IC.size} strokeWidth={IC.strokeWidth} color={IC.color(active)} /> },
 ]
 
-export default function HomeScreen({ user, myName, myRooms, initialTab = 'home', onCreate, onJoinCode, onEnterRoom, onLogout, onUpdateName, onLeaveRoom }) {
+function RoomItemSkeleton() {
+  return (
+    <div className="room-item">
+      <div className="room-item-btn" style={{ pointerEvents: 'none' }}>
+        <div className="skeleton skeleton-icon" />
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div className="skeleton skeleton-line" style={{ width: '55%' }} />
+          <div className="skeleton skeleton-line" style={{ width: '35%' }} />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default function HomeScreen({ user, myName, myRooms, roomsLoading, initialTab = 'home', onCreate, onJoinCode, onEnterRoom, onLogout, onUpdateName, onLeaveRoom }) {
   const [tab, setTab] = useState(initialTab === 'cal' ? 'home' : initialTab)
 
   return (
     <div className="screen" style={{ paddingTop: 24, paddingBottom: 94 }}>
       {tab === 'home'    && <HomeCalendarTab myName={myName} myRooms={myRooms} onEnterRoom={onEnterRoom} />}
-      {tab === 'rooms'   && <RoomsTab   myRooms={myRooms} onCreate={onCreate} onJoinCode={onJoinCode} onEnterRoom={onEnterRoom} onLeaveRoom={onLeaveRoom} />}
+      {tab === 'rooms'   && <RoomsTab   myRooms={myRooms} roomsLoading={roomsLoading} onCreate={onCreate} onJoinCode={onJoinCode} onEnterRoom={onEnterRoom} onLeaveRoom={onLeaveRoom} />}
       {tab === 'profile' && <ProfileTab user={user} myName={myName} onLogout={onLogout} onUpdateName={onUpdateName} />}
 
       <div className="home-nav-wrap">

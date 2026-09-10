@@ -4,18 +4,21 @@ import { genId } from '../utils'
 
 export function useRooms(user, myName) {
   const [myRooms, setMyRooms] = useState([])
+  const [roomsLoading, setRoomsLoading] = useState(true)
 
   async function loadMyRooms() {
-    if (!user?.id) return
+    if (!user?.id) { setRoomsLoading(false); return }
+    setRoomsLoading(true)
 
     const { data: memberRows, error: e1 } = await supabase
       .from('members')
       .select('room_id')
       .eq('user_id', user.id)
 
-    if (e1) return
+    if (e1) { setRoomsLoading(false); return }
     if (!memberRows || memberRows.length === 0) {
       setMyRooms([])
+      setRoomsLoading(false)
       return
     }
 
@@ -26,11 +29,12 @@ export function useRooms(user, myName) {
       .in('id', ids)
 
     if (!e2 && roomRows) setMyRooms(roomRows)
+    setRoomsLoading(false)
   }
 
   useEffect(() => {
     if (user) loadMyRooms()
-    else setMyRooms([])
+    else { setMyRooms([]); setRoomsLoading(false) }
   }, [user]) // eslint-disable-line react-hooks/exhaustive-deps
 
   async function createRoom(name) {
@@ -103,5 +107,5 @@ export function useRooms(user, myName) {
     await leaveRoom(roomId, isHost)
   }
 
-  return { myRooms, loadMyRooms, createRoom, joinRoom, leaveRoom, leaveRoomById, confirmDay, renameRoom }
+  return { myRooms, roomsLoading, loadMyRooms, createRoom, joinRoom, leaveRoom, leaveRoomById, confirmDay, renameRoom }
 }
