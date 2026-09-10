@@ -281,10 +281,10 @@ body {
 
 
 .day-num {
-  font-size: 1.01rem;
+  font-size: 1.1rem;
   font-weight: 700;
   line-height: 1;
-  margin-bottom: 17px;
+  margin-bottom: 5px;
 }
 
 .day-num.sun {
@@ -299,16 +299,11 @@ body {
   background: var(--calm);
   color: #fff !important;
   border-radius: 50%;
-  width: 16px;
-  height: 16px;
+  width: 17px;
+  height: 17px;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.day-face-icon {
-  position: absolute;
-  bottom: 1px;
 }
 
 @keyframes shimmer {
