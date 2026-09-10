@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Home, Users, User, CalendarDays, Check, ChevronLeft, ChevronRight, Smile, Plus } from 'lucide-react'
 import Face from './Face'
 import { icon1, icon2, icon4 } from '../assets/icons'
+import profileIcon from '../assets/profileIcon.svg'
 import { toDateStr } from '../utils'
 import { useHolidays } from '../hooks/useHolidays'
 
@@ -370,7 +371,7 @@ function ProfileTab({ user, myName, onLogout, onUpdateName }) {
       <div className="profile-avatar-area">
         {user?.user_metadata?.avatar_url
           ? <img src={user.user_metadata.avatar_url} alt="" className="profile-avatar" />
-          : <img src={icon1} alt="" className="profile-avatar" />
+          : <img src={profileIcon} alt="" className="profile-avatar" />
         }
         <div className="profile-name">{myName}</div>
         <div className="profile-email">{user?.email}</div>
