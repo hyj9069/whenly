@@ -131,7 +131,7 @@ export default function LoginScreen({ onGoogle, onIdLogin, onIdSignup, onResetPa
     <div className="screen screen--center">
 
       <div className="login-header">
-        <img src={icon4} alt="" style={{ height: 80 }} />
+        <img src={icon4} alt="" style={{ height: 100 }} />
         <h1>언제보꼬</h1>
         <p>친구들이랑 만날 수 있는 날 같이 찾아봐요!</p>
       </div>
