@@ -41,7 +41,7 @@
 }
 
 body {
-  font-family: 'HakgyoansimSaekyeonpil', 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'Pretendard', -apple-system, sans-serif;
   font-weight: 400;
   background: linear-gradient(160deg, #EDF3FB 0%, #F0EDF8 55%, #F5F3EC 100%);
   background-attachment: fixed;
