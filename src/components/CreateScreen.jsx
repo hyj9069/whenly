@@ -20,7 +20,7 @@ export default function CreateScreen({ onBack, onCreate, defaultName }) {
     <div className="screen">
       <TopBar onBack={onBack} title="새 방 만들기" />
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: 'rgba(112,152,192,.1)', borderRadius: 13, marginBottom: 20 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: 'rgba(255,255,255,.55)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,.78)', borderRadius: 13, marginBottom: 20 }}>
         <img src={icon4} alt="" style={{ height: 28, flexShrink: 0 }} />
         <div style={{ fontSize: '1.36rem' }}>
           <span style={{ fontWeight: 700 }}>{defaultName}</span>

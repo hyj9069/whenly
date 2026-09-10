@@ -419,9 +419,10 @@ function RoomItemSkeleton() {
     <div className="room-item">
       <div className="room-item-btn" style={{ pointerEvents: 'none' }}>
         <div className="skeleton skeleton-icon" />
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 7 }}>
           <div className="skeleton skeleton-line" style={{ width: '55%' }} />
           <div className="skeleton skeleton-line" style={{ width: '35%' }} />
+          <div className="skeleton skeleton-line" style={{ width: '48%' }} />
         </div>
       </div>
     </div>

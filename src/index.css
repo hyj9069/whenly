@@ -142,7 +142,7 @@ body {
 }
 
 .btn-sm {
-  padding: 6px 10px;
+  padding: 6px 11px;
   font-size: 1.3rem;
   border-radius: 10px;
   width: auto;
@@ -205,7 +205,7 @@ body {
 
 .top-bar-title {
   font-weight: 700;
-  font-size: 1.68rem;
+  font-size: 1.6rem;
 }
 
 .back-btn:hover {
@@ -313,9 +313,9 @@ body {
 
 .skeleton {
   background: linear-gradient(90deg,
-    rgba(255, 255, 255, .3) 25%,
-    rgba(255, 255, 255, .65) 50%,
-    rgba(255, 255, 255, .3) 75%);
+    rgba(155, 175, 210, .38) 25%,
+    rgba(200, 215, 238, .68) 50%,
+    rgba(155, 175, 210, .38) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.4s ease-in-out infinite;
   border-radius: 8px;
