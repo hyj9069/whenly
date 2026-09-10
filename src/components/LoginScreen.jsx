@@ -202,7 +202,7 @@ export default function LoginScreen({ onGoogle, onIdLogin, onIdSignup, onResetPa
             {error && <div className="form-error">{error}</div>}
 
             <button type="submit" className="btn btn-dark" disabled={loading}
-              style={{ marginTop: 7, opacity: loading ? 0.7 : 1 }}>
+              style={{ marginTop: 10, opacity: loading ? 0.7 : 1 }}>
               {loading ? (mode === 'login' ? '로그인 중...' : '가입 중...') : mode === 'login' ? '로그인' : '회원가입'}
             </button>
           </form>

@@ -151,7 +151,7 @@ body {
 /* ── INPUTS ──────────────────────────────── */
 .inp {
   width: 100%;
-  padding: 13px 15px;
+  padding: 12px 15px;
   border: 1.5px solid rgba(255, 255, 255, .75);
   border-radius: 12px;
   font-family: inherit;
@@ -513,7 +513,8 @@ body {
 .btn-white {
   background: #fff;
   color: var(--dark);
-  border: 1.5px solid rgba(0, 0, 0, .13);
+  border: 1.5px solid rgba(0, 0, 0, .1);
+  padding: 11px 18px;
 }
 
 .inp--valid {
