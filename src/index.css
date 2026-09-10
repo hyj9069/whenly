@@ -1389,7 +1389,8 @@ body {
   width: 72px;
   height: 72px;
   border-radius: 50%;
-  object-fit: cover;
+  background-color: #fff;
+  object-fit: contain;
   border: 3px solid rgba(0, 0, 0, .08);
 }
 
