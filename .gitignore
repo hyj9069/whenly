@@ -2,3 +2,10 @@ node_modules
 dist
 .env.local
 .vercel
+
+# 테스트 자격증명 및 임시 파일
+.env.test
+e2e/.auth/
+test-results/
+e2e-screenshots/
+.playwright-mcp/
