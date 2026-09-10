@@ -10,7 +10,7 @@ function translateError(msg) {
   if (msg.includes('already registered'))        return '이미 사용 중인 이메일이에요.'
   if (msg.includes('Invalid login credentials')) return '아이디 또는 비밀번호가 틀렸어요.'
   if (msg.includes('Email not confirmed'))       return '이메일 인증을 먼저 완료해주세요.'
-  if (msg.includes('Password should be'))        return '비밀번호는 8자 이상, 영문+숫자 조합이어야 해요.'
+  if (msg.includes('Password should be'))        return '비밀번호가 너무 짧아요. 더 길게 입력해주세요.'
   return `오류: ${msg}`
 }
 
@@ -37,9 +37,6 @@ function validateEmail(val) {
 
 function validatePassword(val) {
   if (!val) return '비밀번호를 입력해주세요'
-  if (val.length < 8) return '8자 이상 입력해주세요'
-  if (!/[a-zA-Z]/.test(val)) return '영문을 포함해야 해요'
-  if (!/[0-9]/.test(val)) return '숫자를 포함해야 해요'
   return ''
 }
 
@@ -187,7 +184,7 @@ export default function LoginScreen({ onGoogle, onIdLogin, onIdSignup, onResetPa
             <input
               className={inpClass(touched.password, mode === 'signup' ? passwordErr : '')}
               type="password"
-              placeholder={mode === 'signup' ? '비밀번호 (영문+숫자 조합 8자 이상)' : '비밀번호'}
+              placeholder="비밀번호"
               autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
               value={password} onChange={e => { setPassword(e.target.value); touch('password') }} />
             {mode === 'signup' && <FieldHint touched={touched.password} error={passwordErr} />}

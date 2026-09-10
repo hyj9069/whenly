@@ -19,8 +19,6 @@ function PasswordResetScreen({ onSubmit }) {
 
   async function handleSubmit(e) {
     e.preventDefault()
-    if (password.length < 8) { setError('8자 이상 입력해주세요.'); return }
-    if (!/[a-zA-Z]/.test(password) || !/[0-9]/.test(password)) { setError('영문+숫자 조합으로 입력해주세요.'); return }
     if (password !== confirm) { setError('비밀번호가 일치하지 않아요.'); return }
     setLoading(true)
     const err = await onSubmit(password)
@@ -35,7 +33,7 @@ function PasswordResetScreen({ onSubmit }) {
       <div style={{ width: '100%', maxWidth: 340 }}>
         <h2 style={{ fontWeight: 700, fontSize: '1.92rem', marginBottom: 20 }}>새 비밀번호 설정</h2>
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <input style={inputSt} type="password" placeholder="새 비밀번호 (영문+숫자 조합 8자 이상)" value={password} onChange={e => setPassword(e.target.value)} />
+          <input style={inputSt} type="password" placeholder="새 비밀번호" value={password} onChange={e => setPassword(e.target.value)} />
           <input style={inputSt} type="password" placeholder="비밀번호 확인" value={confirm} onChange={e => setConfirm(e.target.value)} />
           {error && <div style={{ fontSize: '1.33rem', color: '#C85050', fontWeight: 600 }}>{error}</div>}
           <button type="submit" disabled={loading} style={{ padding: '14px', borderRadius: 14, border: 'none', background: '#7098C0', color: '#fff', fontWeight: 700, fontSize: '1.55rem', cursor: 'pointer', fontFamily: 'inherit', opacity: loading ? 0.7 : 1 }}>
