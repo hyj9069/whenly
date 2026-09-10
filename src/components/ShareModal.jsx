@@ -1,4 +1,4 @@
-import { Link, Copy } from 'lucide-react'
+﻿import { Link, Copy } from 'lucide-react'
 
 function shareKakao(url, onFail) {
   if (!window.Kakao?.isInitialized()) {
@@ -32,19 +32,29 @@ export default function ShareModal({ roomId, onClose, onToast }) {
     onClose()
   }
 
+  async function copyCode() {
+    try { await navigator.clipboard.writeText(roomId) }
+    catch {
+      const t = document.createElement('textarea')
+      t.value = roomId; document.body.appendChild(t); t.select()
+      document.execCommand('copy'); document.body.removeChild(t)
+    }
+    onToast('방 코드 복사됐어요!')
+  }
+
   return (
     <div className="overlay" onClick={onClose}>
       <div className="modal" onClick={e => e.stopPropagation()}>
-        <div style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>친구한테 공유하기 <Link size={16} /></div>
-        <div style={{ fontSize: '.82rem', color: 'var(--mid)', marginBottom: 14 }}>링크 또는 방 코드로 초대해요!</div>
+        <div style={{ fontSize: '1.76rem', fontWeight: 700, marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>친구한테 공유하기 <Link size={16} /></div>
+        <div style={{ fontSize: '1.4rem', color: 'var(--mid)', marginBottom: 14 }}>링크 또는 방 코드로 초대해요!</div>
 
-        <div style={{ fontSize: '.8rem', fontWeight: 700, color: 'var(--mid)', marginBottom: 5 }}>방 코드</div>
-        <div className="code-box">
-          <div style={{ fontSize: '2.1rem', fontWeight: 700, letterSpacing: 8, color: 'var(--calm)' }}>{roomId}</div>
-          <div style={{ fontSize: '.73rem', color: 'var(--mid)', marginTop: 5 }}>친구에게 이 코드를 알려주세요</div>
+        <div style={{ fontSize: '1.3rem', fontWeight: 700, color: 'var(--mid)', marginBottom: 5 }}>방 코드</div>
+        <div className="code-box" onClick={copyCode} style={{ cursor: 'pointer' }}>
+          <div style={{ fontSize: '2.8rem', fontWeight: 700, letterSpacing: 8, color: 'var(--calm)' }}>{roomId}</div>
+          <div style={{ fontSize: '1.2rem', color: 'var(--mid)', marginTop: 5 }}>탭하면 코드가 복사돼요</div>
         </div>
 
-        <div style={{ fontSize: '.8rem', fontWeight: 700, color: 'var(--mid)', marginBottom: 5 }}>공유 링크</div>
+        <div style={{ fontSize: '1.3rem', fontWeight: 700, color: 'var(--mid)', marginBottom: 5 }}>공유 링크</div>
         <div className="url-box">
           <a href={url} target="_blank" rel="noreferrer" style={{ color: 'var(--calm)', wordBreak: 'break-all' }}>{url}</a>
         </div>
@@ -53,7 +63,7 @@ export default function ShareModal({ roomId, onClose, onToast }) {
           <button style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
             width: '100%', padding: 13, background: '#FEE500', border: 'none', borderRadius: 14,
-            fontSize: '.95rem', fontWeight: 700, cursor: 'pointer', color: '#3A1D1D',
+            fontSize: '1.52rem', fontWeight: 700, cursor: 'pointer', color: '#3A1D1D',
             boxShadow: '0 2px 0 rgba(0,0,0,.1)',
           }} onClick={() => shareKakao(url, msg => { onToast(msg); onClose() })}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="#3A1D1D">

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { Sparkles } from 'lucide-react'
 import TopBar from './TopBar'
 import { icon4 } from '../assets/icons'
@@ -22,7 +22,7 @@ export default function CreateScreen({ onBack, onCreate, defaultName }) {
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: 'rgba(112,152,192,.1)', borderRadius: 13, marginBottom: 20 }}>
         <img src={icon4} alt="" style={{ height: 28, flexShrink: 0 }} />
-        <div style={{ fontSize: '.85rem' }}>
+        <div style={{ fontSize: '1.36rem' }}>
           <span style={{ fontWeight: 700 }}>{defaultName}</span>
           <span style={{ color: 'var(--mid)' }}>으로 방장이 돼요</span>
         </div>

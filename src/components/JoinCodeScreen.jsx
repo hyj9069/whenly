@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import Face from './Face'
 import TopBar from './TopBar'
 
@@ -18,11 +18,11 @@ export default function JoinCodeScreen({ onBack, onJoin }) {
       <TopBar onBack={onBack} title="방 코드로 참여" />
       <div style={{ textAlign: 'center', padding: '16px 0 24px' }}>
         <Face type="calm" size={64} />
-        <p style={{ fontSize: '.85rem', color: 'var(--mid)', marginTop: 10 }}>친구에게 받은 6자리 코드를 입력해요</p>
+        <p style={{ fontSize: '1.36rem', color: 'var(--mid)', marginTop: 10 }}>친구에게 받은 6자리 코드를 입력해요</p>
       </div>
       <div className="form-group">
         <input className="inp" placeholder="예: AB1C2D" maxLength={6}
-          style={{ textTransform: 'uppercase', letterSpacing: 5, fontSize: '1.5rem', textAlign: 'center', fontWeight: 700 }}
+          style={{ textTransform: 'uppercase', letterSpacing: 5, fontSize: '2.4rem', textAlign: 'center', fontWeight: 700 }}
           value={code} onChange={e => setCode(e.target.value.toUpperCase())} />
       </div>
       <div className="spacer" />

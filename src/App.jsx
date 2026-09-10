@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+﻿import { useState, useEffect, useRef } from 'react'
 import { useAuth } from './hooks/useAuth'
 import { useRooms } from './hooks/useRooms'
 import { useMembers } from './hooks/useMembers'
@@ -28,17 +28,17 @@ function PasswordResetScreen({ onSubmit }) {
     if (err) setError(err.message || '오류가 발생했어요. 다시 시도해주세요.')
   }
 
-  const inputSt = { width: '100%', padding: '13px 14px', borderRadius: 12, border: '1.5px solid rgba(0,0,0,.13)', fontSize: '.95rem', fontFamily: 'inherit', outline: 'none', background: '#fff', boxSizing: 'border-box' }
+  const inputSt = { width: '100%', padding: '13px 14px', borderRadius: 12, border: '1.5px solid rgba(0,0,0,.13)', fontSize: '1.52rem', fontFamily: 'inherit', outline: 'none', background: '#fff', boxSizing: 'border-box' }
 
   return (
     <div className="screen" style={{ justifyContent: 'center', alignItems: 'center', padding: '0 28px' }}>
       <div style={{ width: '100%', maxWidth: 340 }}>
-        <h2 style={{ fontWeight: 700, fontSize: '1.2rem', marginBottom: 20 }}>새 비밀번호 설정</h2>
+        <h2 style={{ fontWeight: 700, fontSize: '1.92rem', marginBottom: 20 }}>새 비밀번호 설정</h2>
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           <input style={inputSt} type="password" placeholder="새 비밀번호 (영문+숫자 조합 8자 이상)" value={password} onChange={e => setPassword(e.target.value)} />
           <input style={inputSt} type="password" placeholder="비밀번호 확인" value={confirm} onChange={e => setConfirm(e.target.value)} />
-          {error && <div style={{ fontSize: '.83rem', color: '#C85050', fontWeight: 600 }}>{error}</div>}
-          <button type="submit" disabled={loading} style={{ padding: '14px', borderRadius: 14, border: 'none', background: '#7098C0', color: '#fff', fontWeight: 700, fontSize: '.97rem', cursor: 'pointer', fontFamily: 'inherit', opacity: loading ? 0.7 : 1 }}>
+          {error && <div style={{ fontSize: '1.33rem', color: '#C85050', fontWeight: 600 }}>{error}</div>}
+          <button type="submit" disabled={loading} style={{ padding: '14px', borderRadius: 14, border: 'none', background: '#7098C0', color: '#fff', fontWeight: 700, fontSize: '1.55rem', cursor: 'pointer', fontFamily: 'inherit', opacity: loading ? 0.7 : 1 }}>
             {loading ? '잠시만요...' : '비밀번호 변경'}
           </button>
         </form>
@@ -126,7 +126,7 @@ export default function App() {
   if (loading) return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', flexDirection: 'column', gap: 16 }}>
       <img src={loadingIcon} alt="" style={{ height: 60 }} />
-      <div style={{ fontSize: '.85rem', color: 'var(--mid)' }}>로딩 중...</div>
+      <div style={{ fontSize: '1.36rem', color: 'var(--mid)' }}>로딩 중...</div>
     </div>
   )
 

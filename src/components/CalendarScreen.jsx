@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { Home, Users, CalendarDays, User, Pencil, Heart, Sparkles, Link, CheckCheck, Smile, Copy, ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react'
 import { icon1, icon2, icon3 } from '../assets/icons'
 import { toDateStr, getDayFaceType, getMemberColor } from '../utils'
@@ -17,8 +17,9 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
   const getHoliday  = useHolidays(yr, mo)
   const [selectedDay, setSelectedDay]         = useState(null)
   const [editMode, setEditMode]               = useState(false)
-  const [showLeaveModal, setShowLeaveModal]   = useState(false)
-  const [showRenameModal, setShowRenameModal] = useState(false)
+  const [showLeaveModal, setShowLeaveModal]       = useState(false)
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false)
+  const [showRenameModal, setShowRenameModal]     = useState(false)
   const [renameValue, setRenameValue]         = useState('')
   const [importModal, setImportModal]         = useState(false)
   const [importOptions, setImportOptions]     = useState([])
@@ -107,7 +108,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
           <div className="cal-member-count">{total}명 참여</div>
         </div>
         <button className="btn btn-ghost btn-sm" onClick={() => setShowLeaveModal(true)}
-          style={{ whiteSpace: 'nowrap', color: 'var(--upset)', borderColor: 'rgba(192,86,90,.3)' }}>
+          style={{ whiteSpace: 'nowrap', color: 'var(--upset)', border: '1px solid rgba(255,147,152,.7)', background: 'rgba(255,202,204,.3)' }}>
           방 나가기
         </button>
       </div>
@@ -124,7 +125,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
               </div>
             </div>
             {isHost && (
-              <button onClick={() => onConfirmDay(null)} className="cal-confirm-cancel">취소</button>
+              <button onClick={() => setShowCancelConfirm(true)} className="cal-confirm-cancel">취소</button>
             )}
           </div>
         )}
@@ -209,7 +210,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
                     <Heart size={10} fill="#E05070" color="#E05070" style={{ position: 'absolute', top: -3, right: -3 }} />
                   )}
                   {!past && isMine && (
-                    <div className="badge badge-red" style={{ top: 'auto', bottom: -3, right: 'auto', left: -6, fontSize: '.45rem', width: 13, height: 13 }}>나</div>
+                    <div className="badge badge-red" style={{ top: 'auto', bottom: -3, right: 'auto', left: -6, fontSize: '.72rem', width: 13, height: 13 }}>나</div>
                   )}
                 </div>
               )
@@ -255,11 +256,11 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
               {isHost && (
                 <div className="detail-confirm">
                   {isConfirmed ? (
-                    <button className="btn btn-ghost" style={{ fontSize: '.82rem', padding: 10 }} onClick={() => onConfirmDay(null)}>
+                    <button className="btn btn-ghost" style={{ fontSize: '1.31rem', padding: 10 }} onClick={() => setShowCancelConfirm(true)}>
                       확정 취소하기
                     </button>
                   ) : (
-                    <button className="btn btn-blue" style={{ fontSize: '.82rem', padding: 10 }} onClick={() => onConfirmDay(ds)}>
+                    <button className="btn btn-blue" style={{ fontSize: '1.31rem', padding: 10 }} onClick={() => onConfirmDay(ds)}>
                       <CalendarDays size={15} style={{ verticalAlign: 'middle'}} />이 날로 확정하기
                     </button>
                   )}
@@ -290,15 +291,15 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
                     </div>
                   </div>
                   <div className="member-status">
-                    {(mb.unavailable_days?.length ?? 0) === 0 ? <><CheckCheck size={13} color="var(--excited)" style={{ verticalAlign: 'middle', marginRight: 2 }} />없음</> : `${mb.unavailable_days.length}일 안됨`}
+                    {(mb.unavailable_days?.length ?? 0) === 0 ? <>모두 가능</> : `${mb.unavailable_days.length}일 안됨`}
                   </div>
                 </div>
               )
             })}
           </div>
           <div className="divider" />
-          <button className="btn btn-ghost" style={{ fontSize: '.82rem', padding: 10 }} onClick={onOpenShare}>
-            <Link size={14} style={{ verticalAlign: 'middle', marginRight: 5 }} />링크로 친구 더 초대하기
+          <button className="btn btn-ghost" style={{ fontSize: '1.31rem', padding: 10 }} onClick={onOpenShare}>
+            <Link size={14} style={{ verticalAlign: 'middle'}} />링크로 친구 더 초대하기
           </button>
         </div>
 
@@ -318,7 +319,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
         ].map(({ key, label, active, Icon }) => (
           <button key={key} onClick={() => !active && onHome(key)} className="cal-nav-btn"
             style={{ cursor: active ? 'default' : undefined }}>
-            <Icon size={21} strokeWidth={2.2} color={active ? 'var(--calm)' : 'var(--mid)'} />
+            <Icon size={18} strokeWidth={2.2} color={active ? 'var(--calm)' : 'var(--mid)'} />
             <span className="cal-nav-label" style={{ color: active ? 'var(--calm)' : 'var(--mid)' }}>{label}</span>
           </button>
         ))}
@@ -400,6 +401,21 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
               <button className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setShowRenameModal(false)}>취소</button>
               <button className="btn btn-blue" style={{ flex: 1 }} disabled={!renameValue.trim()}
                 onClick={() => { onRenameRoom(renameValue.trim()); setShowRenameModal(false) }}>저장</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 확정 취소 확인 모달 */}
+      {showCancelConfirm && (
+        <div className="overlay" onClick={() => setShowCancelConfirm(false)}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-title" style={{ marginBottom: 8 }}>확정을 취소할까요?</div>
+            <div className="modal-desc">확정된 날짜가 사라져요.</div>
+            <div className="modal-btns">
+              <button className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setShowCancelConfirm(false)}>아니요</button>
+              <button className="btn" style={{ flex: 1, background: 'var(--upset)', color: '#fff' }}
+                onClick={() => { setShowCancelConfirm(false); onConfirmDay(null) }}>취소하기</button>
             </div>
           </div>
         </div>

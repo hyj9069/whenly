@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { Check, X } from 'lucide-react'
 import { icon4 } from '../assets/icons'
 import googleIcon from '../assets/googleIcon.svg'
@@ -116,8 +116,8 @@ export default function LoginScreen({ onGoogle, onIdLogin, onIdSignup, onResetPa
   if (done) return (
     <div className="screen screen--center" style={{ textAlign: 'center' }}>
       <img src={icon4} alt="" style={{ height: 60 }} />
-      <h2 style={{ marginTop: 20, fontWeight: 700, fontSize: '1.3rem' }}>가입 완료!</h2>
-      <p style={{ color: 'var(--mid)', marginTop: 10, fontSize: '.9rem', lineHeight: 1.7 }}>
+      <h2 style={{ marginTop: 20, fontWeight: 700, fontSize: '2.08rem' }}>가입 완료!</h2>
+      <p style={{ color: 'var(--mid)', marginTop: 10, fontSize: '1.44rem', lineHeight: 1.7 }}>
         아이디 <b>{id}</b>로 가입됐어요.<br />로그인해주세요.
       </p>
       <button className="btn btn-blue" style={{ marginTop: 24, maxWidth: 320 }}
@@ -139,9 +139,9 @@ export default function LoginScreen({ onGoogle, onIdLogin, onIdSignup, onResetPa
       <div className="login-body">
 
         {mode === 'reset' && (<>
-          <div style={{ fontWeight: 700, fontSize: '1rem', marginBottom: 4 }}>비밀번호 찾기</div>
+          <div style={{ fontWeight: 700, fontSize: '1.6rem', marginBottom: 4 }}>비밀번호 찾기</div>
           {resetSent ? (
-            <div style={{ fontSize: '.9rem', lineHeight: 1.7, color: 'var(--mid)' }}>
+            <div style={{ fontSize: '1.44rem', lineHeight: 1.7, color: 'var(--mid)' }}>
               <Check size={14} color="#4CAF7D" style={{ verticalAlign: 'middle', marginRight: 4 }} />
               <b>{resetSent.replace(/(?<=.{2}).(?=[^@]*@)/g, '*')}</b>으로<br />재설정 링크를 보냈어요.
             </div>
@@ -154,7 +154,7 @@ export default function LoginScreen({ onGoogle, onIdLogin, onIdSignup, onResetPa
               </button>
             </form>
           )}
-          <div style={{ textAlign: 'center', fontSize: '.85rem', color: 'var(--mid)', marginTop: 4 }}>
+          <div style={{ textAlign: 'center', fontSize: '1.36rem', color: 'var(--mid)', marginTop: 4 }}>
             <button className="link-btn" onClick={() => switchMode('login')}>로그인으로 돌아가기</button>
           </div>
         </>)}
