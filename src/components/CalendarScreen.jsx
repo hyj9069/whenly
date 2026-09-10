@@ -151,7 +151,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
         </div>
 
         {/* 달력 */}
-        <div className="card" style={{ marginBottom: 12, background: '#ffffff4a' }}>
+        <div className="card" style={{ marginBottom: 12 }}>
           <div className="cal-month-nav">
             <button onClick={prevMonth} className="cal-month-btn"><ChevronLeft size={18} /></button>
             <div className="cal-month-label">{yr}년 {mo}월</div>
@@ -279,7 +279,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
         </div>
 
         {/* 참여자 현황 */}
-        <div className="card" style={{ marginBottom: 12 }}>
+        <div className="card" style={{ marginBottom: 12, background: '#ffffff4a' }}>
           <div className="member-section-header">참여자 현황 <Users size={15} /></div>
           <div className="member-list">
             {members.map(mb => {
