@@ -40,7 +40,7 @@ export default function CreateScreen({ onBack, onCreate, defaultName }) {
         disabled={loading || !roomName.trim()}>
         {loading
           ? <img src={loadingIcon} alt="" style={{ height: 22 }} />
-          : <><Sparkles size={15} style={{ verticalAlign: 'middle', marginRight: 5 }} />방 만들기</>}
+          : <><Sparkles size={15} style={{ verticalAlign: 'middle'}} />방 만들기</>}
       </button>
     </div>
   )
