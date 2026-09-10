@@ -88,24 +88,23 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
     else setSelectedDay(prev => prev === d ? null : d)
   }
 
-  const cdStr    = room.confirmed_day  // "YYYY-MM-DD" or null
+  const cdStr    = room.confirmed_day
   const cdParsed = cdStr ? cdStr.split('-').map(Number) : null
 
   return (
     <div className="screen" style={{ paddingTop: 20, paddingBottom: 94 }}>
       {/* 헤더 */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-<div style={{ flex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <div style={{ fontSize: '1.1rem', fontWeight: 700, lineHeight: 1.2 }}>{room.name}</div>
+      <div className="cal-header">
+        <div style={{ flex: 1 }}>
+          <div className="cal-room-name-row">
+            <div className="cal-room-name">{room.name}</div>
             {isHost && (
-              <button onClick={() => { setRenameValue(room.name); setShowRenameModal(true) }} style={{
-                background: 'none', border: 'none', cursor: 'pointer', padding: '2px 4px',
-                fontSize: '.8rem', color: 'var(--mid)', lineHeight: 1,
-              }}><Pencil size={14} /></button>
+              <button onClick={() => { setRenameValue(room.name); setShowRenameModal(true) }} className="cal-rename-btn">
+                <Pencil size={14} />
+              </button>
             )}
           </div>
-          <div style={{ fontSize: '.75rem', color: 'var(--mid)', marginTop: 1 }}>{total}명 참여</div>
+          <div className="cal-member-count">{total}명 참여</div>
         </div>
         <button className="btn btn-ghost btn-sm" onClick={() => setShowLeaveModal(true)}
           style={{ whiteSpace: 'nowrap', color: 'var(--upset)', borderColor: 'rgba(192,86,90,.3)' }}>
@@ -116,73 +115,47 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
       <div className="scroll">
         {/* 확정 배너 */}
         {cdParsed && (
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 10,
-            background: 'rgba(255,255,255,0.55)',
-            backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
-            border: '1.5px solid rgba(255,255,255,0.8)',
-            borderRadius: 14, padding: '13px 15px', marginBottom: 12,
-          }}>
+          <div className="cal-confirm-banner">
             <CalendarDays size={22} color="var(--calm)" style={{ flexShrink: 0 }} />
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: '.75rem', fontWeight: 600, color: 'var(--calm)' }}>확정된 날짜</div>
-              <div style={{ fontSize: '.95rem', fontWeight: 700, marginTop: 2 }}>
+              <div className="cal-confirm-label">확정된 날짜</div>
+              <div className="cal-confirm-date">
                 {cdParsed[0]}년 {cdParsed[1]}월 {cdParsed[2]}일
               </div>
             </div>
             {isHost && (
-              <button onClick={() => onConfirmDay(null)} style={{
-                background: 'none', border: '1px solid rgba(91,141,184,.4)', borderRadius: 8,
-                padding: '4px 10px', fontSize: '.72rem', fontWeight: 700,
-                cursor: 'pointer', color: 'var(--calm)', fontFamily: 'inherit',
-              }}>취소</button>
+              <button onClick={() => onConfirmDay(null)} className="cal-confirm-cancel">취소</button>
             )}
           </div>
         )}
 
         {/* 내 안되는 날 카드 */}
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: 10,
-          background: 'rgba(255,255,255,0.55)',
-          backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
-          border: `1.5px solid ${editMode ? 'rgba(91,141,184,.45)' : 'rgba(255,255,255,0.8)'}`,
-          borderRadius: 14, padding: '11px 13px', marginBottom: 12, transition: 'all .2s',
-        }}>
+        <div className={`cal-my-card${editMode ? ' edit' : ''}`}>
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: '.83rem', fontWeight: 600 }}>{myName}의 안되는 날</div>
-            <div style={{ fontSize: '.72rem', color: 'var(--mid)', marginTop: 2, fontWeight: editMode ? 500 : undefined }}>
+            <div className="cal-my-name">{myName}의 안되는 날</div>
+            <div className={`cal-my-hint${editMode ? ' edit' : ''}`}>
               {editMode ? '날짜를 눌러 선택 · 다시 누르면 취소'
                 : mySet.size === 0 ? <><Smile size={13} style={{ verticalAlign: 'middle', marginRight: 3 }} />안되는 날 없음</> : <span style={{ fontWeight: 500 }}>{mySet.size}일 표시됨</span>}
             </div>
             {editMode && (
-              <button onClick={openImportModal} style={{
-                marginTop: 5, background: 'none', border: 'none', padding: 0,
-                fontSize: '.7rem', color: 'var(--calm)', fontWeight: 700,
-                cursor: 'pointer', fontFamily: 'inherit',
-              }}><ArrowRight size={12} style={{ verticalAlign: 'middle', marginRight: 3 }} />다른 방 일정 불러오기</button>
+              <button onClick={openImportModal} className="cal-import-btn">
+                <ArrowRight size={12} style={{ verticalAlign: 'middle', marginRight: 3 }} />다른 방 일정 불러오기
+              </button>
             )}
           </div>
           {editMode ? (
-            <button onClick={exitEdit} style={{
-              background: 'var(--calm)', border: 'none', borderRadius: 9, padding: '6px 13px',
-              fontSize: '.78rem', fontWeight: 700, cursor: 'pointer', color: '#fff',
-              fontFamily: 'inherit', whiteSpace: 'nowrap',
-            }}>완료</button>
+            <button onClick={exitEdit} className="cal-edit-done">완료</button>
           ) : (
-            <button onClick={enterEdit} style={{
-              background: 'rgba(0,0,0,.07)', border: 'none', borderRadius: 9, padding: '6px 13px',
-              fontSize: '.78rem', fontWeight: 700, cursor: 'pointer', color: 'var(--mid)',
-              fontFamily: 'inherit', whiteSpace: 'nowrap',
-            }}>{mySet.size === 0 ? '선택하기' : '수정하기'}</button>
+            <button onClick={enterEdit} className="cal-edit-start">{mySet.size === 0 ? '선택하기' : '수정하기'}</button>
           )}
         </div>
 
         {/* 달력 */}
         <div className="card" style={{ marginBottom: 12 }}>
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: 10 }}>
-            <button onClick={prevMonth} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--mid)', padding: '4px 8px', display: 'flex' }}><ChevronLeft size={18} /></button>
-            <div style={{ flex: 1, textAlign: 'center', fontWeight: 700, fontSize: '.95rem' }}>{yr}년 {mo}월</div>
-            <button onClick={nextMonth} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--mid)', padding: '4px 8px', display: 'flex' }}><ChevronRight size={18} /></button>
+          <div className="cal-month-nav">
+            <button onClick={prevMonth} className="cal-month-btn"><ChevronLeft size={18} /></button>
+            <div className="cal-month-label">{yr}년 {mo}월</div>
+            <button onClick={nextMonth} className="cal-month-btn"><ChevronRight size={18} /></button>
           </div>
           <div className="wday-row">
             {['일','월','화','수','목','금','토'].map((d, i) => (
@@ -254,37 +227,33 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
           const isConfirmed = cdStr === ds
           const holiday = getHoliday(yr, mo, selectedDay)
           return (
-            <div className="card" style={{ marginBottom: 12,  }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                <div style={{ fontWeight: 700, fontSize: '.9rem' }}>{mo}월 {selectedDay}일</div>
-                {holiday && (
-                  <span style={{ fontSize: '.72rem', fontWeight: 700, color: '#C85050', background: 'rgba(200,85,85,.1)', borderRadius: 8, padding: '2px 8px' }}>
-                    {holiday}
-                  </span>
-                )}
+            <div className="card" style={{ marginBottom: 12 }}>
+              <div className="detail-header">
+                <div className="detail-date">{mo}월 {selectedDay}일</div>
+                {holiday && <span className="holiday-badge">{holiday}</span>}
               </div>
               {unavailNames.length === 0 ? (
-                <div style={{ fontSize: '.83rem', color: 'var(--excited)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: 4 }}>모두 가능한 날 <Sparkles size={14} /></div>
+                <div className="all-avail">모두 가능한 날 <Sparkles size={14} /></div>
               ) : (
                 <>
-                  <div style={{ fontSize: '.73rem', color: 'var(--mid)', marginBottom: 5 }}>안되는 사람</div>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: availNames.length ? 10 : 0 }}>
+                  <div className="section-label">안되는 사람</div>
+                  <div className="pill-row" style={{ marginBottom: availNames.length ? 10 : 0 }}>
                     {unavailNames.map(n => (
-                      <span key={n} style={{ padding: '3px 10px', background: 'rgba(192,86,90,.1)', color: 'var(--upset)', borderRadius: 20, fontSize: '.77rem', fontWeight: 700 }}>{n}</span>
+                      <span key={n} className="pill-unavail">{n}</span>
                     ))}
                   </div>
                   {availNames.length > 0 && <>
-                    <div style={{ fontSize: '.73rem', color: 'var(--mid)', marginBottom: 5 }}>가능한 사람</div>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+                    <div className="section-label">가능한 사람</div>
+                    <div className="pill-row">
                       {availNames.map(n => (
-                        <span key={n} style={{ padding: '3px 10px', background: 'rgba(78,128,102,.1)', color: 'var(--excited)', borderRadius: 20, fontSize: '.77rem', fontWeight: 700 }}>{n}</span>
+                        <span key={n} className="pill-avail">{n}</span>
                       ))}
                     </div>
                   </>}
                 </>
               )}
               {isHost && (
-                <div style={{ marginTop: 12, paddingTop: 10, borderTop: '1px solid var(--border)' }}>
+                <div className="detail-confirm">
                   {isConfirmed ? (
                     <button className="btn btn-ghost" style={{ fontSize: '.82rem', padding: 10 }} onClick={() => onConfirmDay(null)}>
                       확정 취소하기
@@ -302,25 +271,25 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
 
         {/* 범례 */}
         <div className="legend">
-          <div className="leg-item"><img src={icon1} style={{ height: 20, flexShrink: 0 }} alt="" />모두 가능</div>
-          <div className="leg-item"><img src={icon2} style={{ height: 20, flexShrink: 0 }} alt="" />일부 불가</div>
-          <div className="leg-item"><img src={icon3} style={{ height: 20, flexShrink: 0 }} alt="" />모두 불가</div>
+          <div className="leg-item"><img src={icon1} alt="" />모두 가능</div>
+          <div className="leg-item"><img src={icon2} alt="" />일부 불가</div>
+          <div className="leg-item"><img src={icon3} alt="" />모두 불가</div>
         </div>
 
         {/* 참여자 현황 */}
         <div className="card" style={{ marginBottom: 12 }}>
-          <div style={{ fontSize: '.85rem', fontWeight: 700, marginBottom: 10, display: 'flex', alignItems: 'center', gap: 5 }}>참여자 현황 <Users size={15} /></div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+          <div className="member-section-header">참여자 현황 <Users size={15} /></div>
+          <div className="member-list">
             {members.map(mb => {
               const displayName = mb.user_id === myUserId ? myName : mb.name
               return (
                 <div key={mb.id} className="member-item">
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: 700, fontSize: '.8rem', color: mb.user_id === myUserId ? 'var(--calm)' : 'inherit' }}>
+                    <div className="member-name" style={{ color: mb.user_id === myUserId ? 'var(--calm)' : undefined }}>
                       {displayName}{mb.user_id === myUserId ? ' (나)' : ''}
                     </div>
                   </div>
-                  <div style={{ fontSize: '.74rem', color: 'var(--mid)', fontWeight: 600 }}>
+                  <div className="member-status">
                     {(mb.unavailable_days?.length ?? 0) === 0 ? <><CheckCheck size={13} color="var(--excited)" style={{ verticalAlign: 'middle', marginRight: 2 }} />없음</> : `${mb.unavailable_days.length}일 안됨`}
                   </div>
                 </div>
@@ -333,52 +302,24 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
           </button>
         </div>
 
-        <div style={{ textAlign: 'center', fontSize: '.72rem', color: 'var(--mid)', paddingBottom: 8 }}>
+        <div className="realtime-notice">
           변경사항은 실시간으로 반영돼요 <Sparkles size={12} style={{ verticalAlign: 'middle' }} />
         </div>
       </div>
 
       {/* 하단 네비게이션 */}
-      <nav style={{
-        position: 'fixed',
-        bottom: 'calc(14px + env(safe-area-inset-bottom))',
-        left: '50%', transform: 'translateX(-50%)',
-        width: 'calc(100% - 32px)', maxWidth: 440,
-        display: 'flex', alignItems: 'center', padding: '5px',
-        background: 'rgba(255,255,255,0.76)',
-        backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)',
-        borderRadius: 100,
-        border: '1.5px solid rgba(255,255,255,0.94)',
-        boxShadow: '0 8px 32px rgba(0,0,0,0.10), inset 0 1px 0 rgba(255,255,255,0.9)',
-        zIndex: 50,
-      }}>
-        {/* 슬라이딩 인디케이터 — 달력(index 2) 고정 */}
-        <div style={{
-          position: 'absolute',
-          top: 5, bottom: 5, left: 5,
-          width: 'calc((100% - 10px) / 4)',
-          borderRadius: 100,
-          background: '#fff',
-          boxShadow: '0 2px 12px rgba(0,0,0,0.09)',
-          transform: 'translateX(calc(2 * 100%))',
-          pointerEvents: 'none',
-        }} />
+      <nav className="cal-nav">
+        <div className="cal-nav-indicator" />
         {[
           { key: 'home',    label: '홈',      active: false, Icon: Home },
           { key: 'rooms',   label: '모임',    active: false, Icon: Users },
           { key: 'cal',     label: '달력',    active: true,  Icon: CalendarDays },
           { key: 'profile', label: '내 정보', active: false, Icon: User },
         ].map(({ key, label, active, Icon }) => (
-          <button key={key} onClick={() => !active && onHome(key)} style={{
-            flex: 1, position: 'relative', zIndex: 1,
-            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3,
-            padding: '8px 0',
-            background: 'transparent', border: 'none', borderRadius: 100,
-            cursor: active ? 'default' : 'pointer',
-            fontFamily: 'inherit',
-          }}>
+          <button key={key} onClick={() => !active && onHome(key)} className="cal-nav-btn"
+            style={{ cursor: active ? 'default' : undefined }}>
             <Icon size={21} strokeWidth={2.2} color={active ? 'var(--calm)' : 'var(--mid)'} />
-            <span style={{ fontSize: '.6rem', fontWeight: 700, color: active ? 'var(--calm)' : 'var(--mid)', transition: 'color .25s' }}>{label}</span>
+            <span className="cal-nav-label" style={{ color: active ? 'var(--calm)' : 'var(--mid)' }}>{label}</span>
           </button>
         ))}
       </nav>
@@ -387,77 +328,53 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
       {importModal && (
         <div className="overlay" onClick={closeImportModal}>
           <div className="modal" onClick={e => e.stopPropagation()}>
-            {/* 헤더 */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+            <div className="import-header">
               {importRoomSel && (
-                <button onClick={() => setImportRoomSel(null)} style={{
-                  background: 'none', border: 'none', cursor: 'pointer', padding: '0 4px 0 0',
-                  color: 'var(--mid)', display: 'flex', fontFamily: 'inherit',
-                }}><ChevronLeft size={18} /></button>
+                <button onClick={() => setImportRoomSel(null)} className="cal-back-btn">
+                  <ChevronLeft size={18} />
+                </button>
               )}
-              <div style={{ fontSize: '1.05rem', fontWeight: 700 }}>
+              <div className="import-title">
                 {importRoomSel ? importRoomSel.roomName : '다른 방 일정 불러오기'}
               </div>
             </div>
-            <div style={{ fontSize: '.78rem', color: 'var(--mid)', marginBottom: 14 }}>
+            <div className="import-hint">
               {importRoomSel ? '가져올 월을 선택하세요' : '방을 선택하세요'}
             </div>
 
             {importLoading ? (
-              <div style={{ textAlign: 'center', padding: '24px 0', color: 'var(--mid)', fontSize: '.85rem' }}>불러오는 중...</div>
+              <div className="import-loading">불러오는 중...</div>
             ) : !importRoomSel ? (
-              /* 1단계: 방 목록 */
               importOptions.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '24px 0', color: 'var(--mid)', fontSize: '.85rem' }}>
-                  다른 방에 입력한 일정이 없어요
-                </div>
+                <div className="import-loading">다른 방에 입력한 일정이 없어요</div>
               ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 4 }}>
+                <div className="import-btn-list">
                   {importOptions.map((opt, i) => (
-                    <button key={i} onClick={() => setImportRoomSel(opt)} style={{
-                      background: 'rgba(91,141,184,.07)', border: '1.5px solid rgba(91,141,184,.22)',
-                      borderRadius: 12, padding: '11px 14px', cursor: 'pointer', textAlign: 'left',
-                      fontFamily: 'inherit', width: '100%',
-                    }}>
-                      <div style={{ fontWeight: 700, fontSize: '.88rem' }}>{opt.roomName}</div>
-                      <div style={{ fontSize: '.72rem', color: 'var(--mid)', marginTop: 3 }}>
-                        안되는 날 {opt.days.length}일
-                      </div>
+                    <button key={i} onClick={() => setImportRoomSel(opt)} className="import-room-btn">
+                      <div className="import-btn-name">{opt.roomName}</div>
+                      <div className="import-btn-sub">안되는 날 {opt.days.length}일</div>
                     </button>
                   ))}
                 </div>
               )
             ) : (
-              /* 2단계: 월 선택 */
               (() => {
                 const months = [...new Set(importRoomSel.days.map(d => d.slice(0, 7)))].sort()
                 return (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 4 }}>
+                  <div className="import-btn-list">
                     {months.map(ym => {
                       const [y, m] = ym.split('-')
                       const filtered = importRoomSel.days.filter(d => d.startsWith(ym))
                       return (
-                        <button key={ym} onClick={() => handleImport(filtered)} style={{
-                          background: 'rgba(91,141,184,.07)', border: '1.5px solid rgba(91,141,184,.22)',
-                          borderRadius: 12, padding: '11px 14px', cursor: 'pointer', textAlign: 'left',
-                          fontFamily: 'inherit', width: '100%',
-                        }}>
-                          <div style={{ fontWeight: 700, fontSize: '.88rem' }}>{y}년 {+m}월</div>
-                          <div style={{ fontSize: '.72rem', color: 'var(--mid)', marginTop: 3 }}>
-                            {filtered.length}일 선택됨
-                          </div>
+                        <button key={ym} onClick={() => handleImport(filtered)} className="import-room-btn">
+                          <div className="import-btn-name">{y}년 {+m}월</div>
+                          <div className="import-btn-sub">{filtered.length}일 선택됨</div>
                         </button>
                       )
                     })}
-                    <button onClick={() => handleImport(importRoomSel.days)} style={{
-                      background: 'rgba(80,80,80,.11)', border: '1.5px solid rgba(80,80,80,.22)',
-                      borderRadius: 12, padding: '11px 14px', cursor: 'pointer', textAlign: 'left',
-                      fontFamily: 'inherit', width: '100%',
-                    }}>
-                      <div style={{ fontWeight: 700, fontSize: '.88rem', color: '#555' }}>전체 가져오기</div>
-                      <div style={{ fontSize: '.72rem', color: '#888', marginTop: 3 }}>
-                        {importRoomSel.days.length}일 전체
-                      </div>
+                    <button onClick={() => handleImport(importRoomSel.days)} className="import-all-btn">
+                      <div className="import-all-name">전체 가져오기</div>
+                      <div className="import-all-sub">{importRoomSel.days.length}일 전체</div>
                     </button>
                   </div>
                 )
@@ -474,12 +391,12 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
       {showRenameModal && (
         <div className="overlay" onClick={() => setShowRenameModal(false)}>
           <div className="modal" onClick={e => e.stopPropagation()}>
-            <div style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: 16 }}>방 이름 수정</div>
+            <div className="modal-title">방 이름 수정</div>
             <input className="inp" value={renameValue} onChange={e => setRenameValue(e.target.value)}
               maxLength={30} autoFocus style={{ marginBottom: 16 }}
               onKeyDown={e => { if (e.key === 'Enter' && renameValue.trim()) { onRenameRoom(renameValue.trim()); setShowRenameModal(false) } }}
             />
-            <div style={{ display: 'flex', gap: 10 }}>
+            <div className="modal-btns">
               <button className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setShowRenameModal(false)}>취소</button>
               <button className="btn btn-blue" style={{ flex: 1 }} disabled={!renameValue.trim()}
                 onClick={() => { onRenameRoom(renameValue.trim()); setShowRenameModal(false) }}>저장</button>
@@ -492,14 +409,14 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
       {showLeaveModal && (
         <div className="overlay" onClick={() => setShowLeaveModal(false)}>
           <div className="modal" onClick={e => e.stopPropagation()}>
-            <div style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: 8 }}>
+            <div className="modal-title" style={{ marginBottom: 8 }}>
               {isHost ? '방을 삭제할까요?' : '방을 나갈까요?'}
             </div>
-            <div style={{ fontSize: '.85rem', color: 'var(--mid)', marginBottom: 20, lineHeight: 1.6 }}>
+            <div className="modal-desc">
               {isHost ? '방장이 나가면 방이 삭제되고\n모든 데이터가 사라져요.'
                 : '방에서 나가면 다시 초대 링크로만\n참여할 수 있어요.'}
             </div>
-            <div style={{ display: 'flex', gap: 10 }}>
+            <div className="modal-btns">
               <button className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setShowLeaveModal(false)}>취소</button>
               <button className="btn" style={{ flex: 1, background: 'var(--upset)', color: '#fff' }}
                 onClick={() => { setShowLeaveModal(false); onLeave() }}>확인</button>

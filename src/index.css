@@ -592,3 +592,133 @@ body {
   accent-color: var(--dark);
   cursor: pointer;
 }
+
+/* ── CALENDAR SCREEN ─────────────────────────── */
+.cal-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+.cal-room-name-row { display: flex; align-items: center; gap: 6px; }
+.cal-room-name { font-size: 1.1rem; font-weight: 700; line-height: 1.2; }
+.cal-member-count { font-size: .75rem; color: var(--mid); margin-top: 1px; }
+.cal-rename-btn { padding: 2px 4px; font-size: .8rem; color: var(--mid); line-height: 1; }
+
+.cal-confirm-banner {
+  display: flex; align-items: center; gap: 10px;
+  background: rgba(255,255,255,.55);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border: 1.5px solid rgba(255,255,255,.8);
+  border-radius: 14px; padding: 13px 15px; margin-bottom: 12px;
+}
+.cal-confirm-label { font-size: .75rem; font-weight: 600; color: var(--calm); }
+.cal-confirm-date { font-size: .95rem; font-weight: 700; margin-top: 2px; }
+.cal-confirm-cancel {
+  border: 1px solid rgba(91,141,184,.4);
+  border-radius: 8px; padding: 4px 10px;
+  font-size: .72rem; font-weight: 700; color: var(--calm);
+}
+
+.cal-my-card {
+  display: flex; align-items: center; gap: 10px;
+  background: rgba(255,255,255,.55);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border: 1.5px solid rgba(255,255,255,.8);
+  border-radius: 14px; padding: 11px 13px; margin-bottom: 12px; transition: all .2s;
+}
+.cal-my-card.edit { border-color: rgba(91,141,184,.45); }
+.cal-my-name { font-size: .83rem; font-weight: 600; }
+.cal-my-hint { font-size: .72rem; color: var(--mid); margin-top: 2px; }
+.cal-my-hint.edit { font-weight: 500; }
+.cal-import-btn { margin-top: 5px; font-size: .7rem; color: var(--calm); font-weight: 700; }
+.cal-edit-done {
+  background: var(--calm); border-radius: 9px; padding: 6px 13px;
+  font-size: .78rem; font-weight: 700; color: #fff; white-space: nowrap;
+}
+.cal-edit-start {
+  background: rgba(0,0,0,.07); border-radius: 9px; padding: 6px 13px;
+  font-size: .78rem; font-weight: 700; color: var(--mid); white-space: nowrap;
+}
+
+.cal-month-nav { display: flex; align-items: center; margin-bottom: 10px; }
+.cal-month-btn { color: var(--mid); padding: 4px 8px; display: flex; }
+.cal-month-label { flex: 1; text-align: center; font-weight: 700; font-size: .95rem; }
+
+.leg-item img { height: 20px; flex-shrink: 0; }
+
+/* ── DATE DETAIL POPUP ───────────────────────── */
+.detail-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.detail-date { font-weight: 700; font-size: .9rem; }
+.holiday-badge {
+  font-size: .72rem; font-weight: 700; color: #C85050;
+  background: rgba(200,85,85,.1); border-radius: 8px; padding: 2px 8px;
+}
+.all-avail { font-size: .83rem; color: var(--excited); font-weight: 700; display: flex; align-items: center; gap: 4px; }
+.section-label { font-size: .73rem; color: var(--mid); margin-bottom: 5px; }
+.pill-row { display: flex; flex-wrap: wrap; gap: 5px; }
+.pill-unavail {
+  padding: 3px 10px; background: rgba(192,86,90,.1); color: var(--upset);
+  border-radius: 20px; font-size: .77rem; font-weight: 700;
+}
+.pill-avail {
+  padding: 3px 10px; background: rgba(78,128,102,.1); color: var(--excited);
+  border-radius: 20px; font-size: .77rem; font-weight: 700;
+}
+.detail-confirm { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); }
+
+/* ── MEMBERS SECTION ─────────────────────────── */
+.member-section-header { font-size: .85rem; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 5px; }
+.member-list { display: flex; flex-direction: column; gap: 7px; }
+.member-name { font-weight: 700; font-size: .8rem; }
+.member-status { font-size: .74rem; color: var(--mid); font-weight: 600; }
+.realtime-notice { text-align: center; font-size: .72rem; color: var(--mid); padding-bottom: 8px; }
+
+/* ── BOTTOM NAV ──────────────────────────────── */
+.cal-nav {
+  position: fixed;
+  bottom: calc(14px + env(safe-area-inset-bottom));
+  left: 50%; transform: translateX(-50%);
+  width: calc(100% - 32px); max-width: 440px;
+  display: flex; align-items: center; padding: 5px;
+  background: rgba(255,255,255,.76);
+  backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+  border-radius: 100px;
+  border: 1.5px solid rgba(255,255,255,.94);
+  box-shadow: 0 8px 32px rgba(0,0,0,.10), inset 0 1px 0 rgba(255,255,255,.9);
+  z-index: 50;
+}
+.cal-nav-indicator {
+  position: absolute;
+  top: 5px; bottom: 5px; left: 5px;
+  width: calc((100% - 10px) / 4);
+  border-radius: 100px; background: #fff;
+  box-shadow: 0 2px 12px rgba(0,0,0,.09);
+  transform: translateX(calc(2 * 100%));
+  pointer-events: none;
+}
+.cal-nav-btn {
+  flex: 1; position: relative; z-index: 1;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  padding: 8px 0; border-radius: 100px;
+}
+.cal-nav-label { font-size: .6rem; font-weight: 700; transition: color .25s; }
+
+/* ── MODALS ──────────────────────────────────── */
+.modal-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 16px; }
+.modal-desc { font-size: .85rem; color: var(--mid); margin-bottom: 20px; line-height: 1.6; }
+.modal-btns { display: flex; gap: 10px; }
+
+.import-header { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.cal-back-btn { padding: 0 4px 0 0; color: var(--mid); display: flex; }
+.import-title { font-size: 1.05rem; font-weight: 700; }
+.import-hint { font-size: .78rem; color: var(--mid); margin-bottom: 14px; }
+.import-loading { text-align: center; padding: 24px 0; color: var(--mid); font-size: .85rem; }
+.import-btn-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 4px; }
+.import-room-btn {
+  background: rgba(91,141,184,.07); border: 1.5px solid rgba(91,141,184,.22);
+  border-radius: 12px; padding: 11px 14px; text-align: left; width: 100%;
+}
+.import-btn-name { font-weight: 700; font-size: .88rem; }
+.import-btn-sub { font-size: .72rem; color: var(--mid); margin-top: 3px; }
+.import-all-btn {
+  background: rgba(80,80,80,.11); border: 1.5px solid rgba(80,80,80,.22);
+  border-radius: 12px; padding: 11px 14px; text-align: left; width: 100%;
+}
+.import-all-name { font-weight: 700; font-size: .88rem; color: #555; }
+.import-all-sub { font-size: .72rem; color: #888; margin-top: 3px; }
