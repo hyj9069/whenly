@@ -1,0 +1,197 @@
+/* ── LANDING PAGE ────────────────────────────────── */
+.lp {
+  min-height: 100svh;
+  font-family: 'Pretendard', -apple-system, sans-serif;
+  background: linear-gradient(160deg, #ddecff, #eff3fd 55%, #ddecff);
+  background-attachment: fixed;
+  color: #2E2925;
+  overflow-x: hidden;
+}
+
+/* ── HERO ──────────────────────────────────────── */
+.lp-hero {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px 48px;
+  gap: 36px;
+}
+
+/* ── LOGO ──────────────────────────────────────── */
+.lp-logo-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lp-logo {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  transform: rotate(-10deg);
+  gap: 0;
+  filter: drop-shadow(0 4px 24px rgba(0, 143, 255, 0.18));
+}
+
+.lp-logo-row {
+  display: flex;
+  gap: 0;
+  line-height: 1;
+}
+
+.lp-logo-row:last-child {
+  padding-left: 0.18em;
+}
+
+/* overflow:hidden wrapper — clips the sliding character */
+.lp-cw {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  line-height: 1.08;
+}
+
+/* Each character slides up into view */
+.lp-c {
+  display: block;
+  font-weight: 900;
+  font-size: clamp(3.8rem, 15vw, 6rem);
+  color: #2E2925;
+  letter-spacing: -0.03em;
+  animation: lpCharIn 0.5s cubic-bezier(0.34, 1.18, 0.64, 1) both;
+}
+
+@keyframes lpCharIn {
+  from { transform: translateY(110%); }
+  to   { transform: translateY(0); }
+}
+
+/* ── HERO BODY ─────────────────────────────────── */
+.lp-hero-body {
+  text-align: center;
+  animation: lpFadeUp 0.65s ease both;
+}
+
+.lp-h1 {
+  font-size: clamp(2rem, 6.5vw, 2.6rem);
+  font-weight: 700;
+  line-height: 1.4;
+  margin-bottom: 10px;
+}
+
+.lp-sub {
+  font-size: 1.45rem;
+  color: #8A7F7A;
+  margin-bottom: 30px;
+  font-weight: 500;
+}
+
+/* ── BUTTON ────────────────────────────────────── */
+.lp-btn {
+  background: rgba(0, 143, 255, 0.9);
+  color: #fff;
+  border: none;
+  border-radius: 100px;
+  padding: 14px 38px;
+  font-size: 1.6rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(0, 143, 255, 0.3);
+  transition: transform 0.15s, box-shadow 0.15s;
+  letter-spacing: -0.01em;
+}
+
+.lp-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(0, 143, 255, 0.4);
+}
+
+.lp-btn:active {
+  transform: scale(0.97);
+}
+
+.lp-btn--lg {
+  font-size: 1.8rem;
+  padding: 16px 46px;
+}
+
+/* ── FEATURES ──────────────────────────────────── */
+.lp-feats {
+  padding: 0 20px 48px;
+  max-width: 480px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.lp-feat-card {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1.5px solid rgba(255, 255, 255, 0.88);
+  border-radius: 20px;
+  padding: 20px 22px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.lp-feat-icon {
+  font-size: 2.2rem;
+  flex-shrink: 0;
+  width: 44px;
+  text-align: center;
+}
+
+.lp-feat-title {
+  font-size: 1.52rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.lp-feat-desc {
+  font-size: 1.25rem;
+  color: #8A7F7A;
+  line-height: 1.55;
+}
+
+/* ── BOTTOM CTA ────────────────────────────────── */
+.lp-bottom {
+  padding: 16px 24px 52px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.lp-bottom-text {
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+/* ── FOOTER ────────────────────────────────────── */
+.lp-footer {
+  text-align: center;
+  padding: 16px 24px 32px;
+  font-size: 1.2rem;
+  color: #8A7F7A;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+/* ── ANIMATION ─────────────────────────────────── */
+@keyframes lpFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

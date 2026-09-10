@@ -10,6 +10,7 @@ import CreateScreen from './components/CreateScreen'
 import JoinCodeScreen from './components/JoinCodeScreen'
 import CalendarScreen from './components/CalendarScreen'
 import ShareModal from './components/ShareModal'
+import LandingPage from './components/LandingPage'
 import { icon1, icon2, icon3, icon4 } from './assets/icons'
 import profileIcon from './assets/profileIcon.svg'
 
@@ -51,6 +52,7 @@ export default function App() {
   const { user, loading, recovering, myName, loginWithGoogle, signInWithId, signUpWithId, resetPassword, updatePassword, logout, updateName } = useAuth()
   const { myRooms, roomsLoading, loadMyRooms, createRoom, joinRoom, leaveRoom, leaveRoomById, confirmDay, renameRoom } = useRooms(user, myName)
   const [assetsReady, setAssetsReady] = useState(false)
+  const [showLanding, setShowLanding] = useState(() => !sessionStorage.getItem('lp_seen'))
 
   useEffect(() => {
     const srcs = [icon1, icon2, icon3, icon4, profileIcon]
@@ -130,6 +132,13 @@ export default function App() {
     setScreen('home')
     await loadMyRooms()
   }
+
+  if (!loading && assetsReady && !user && !recovering && showLanding) return (
+    <LandingPage onStart={() => {
+      sessionStorage.setItem('lp_seen', '1')
+      setShowLanding(false)
+    }} />
+  )
 
   if (loading || !assetsReady) return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', flexDirection: 'column', gap: 10 }}>
