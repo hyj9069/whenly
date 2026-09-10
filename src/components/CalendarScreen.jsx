@@ -1,5 +1,5 @@
 ﻿import { useState } from 'react'
-import { Home, Users, CalendarDays, User, Pencil, Heart, Sparkles, Link, CheckCheck, Smile, Copy, ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react'
+import { Home, Users, CalendarDays, User, Pencil, Heart, Sparkles, Link, CheckCheck, Smile, Copy, ChevronLeft, ChevronRight, ArrowRight, Circle, Triangle, X } from 'lucide-react'
 import { toDateStr, getDayFaceType, getMemberColor } from '../utils'
 import { useHolidays } from '../hooks/useHolidays'
 import { supabase } from '../supabase'
@@ -203,9 +203,9 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
                   <div className={`day-num${isToday?' today':(dow===0||holiday)?' sun':dow===6?' sat':''}`}>{d}</div>
                   {!past && (() => {
                     const t = statusType ?? (isMine ? 'none' : 'all')
-                    const sym = { all: '○', some: '△', none: '✕' }
-                    const clr = { all: 'var(--excited)', some: '#F0A040', none: 'var(--upset)' }
-                    return <span className="day-face-icon" style={{ color: clr[t] }}>{sym[t]}</span>
+                    if (t === 'all')  return <Circle   size={11} className="day-face-icon" color="var(--excited)" fill="var(--excited)" />
+                    if (t === 'some') return <Triangle size={11} className="day-face-icon" color="#F0A040" fill="#F0A040" />
+                    return <X size={11} className="day-face-icon" color="var(--upset)" strokeWidth={3} />
                   })()}
                   {isConfirmed && (
                     <Heart size={10} fill="#E05070" color="#E05070" style={{ position: 'absolute', top: -3, right: -3 }} />
@@ -273,9 +273,9 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
 
         {/* 범례 */}
         <div className="legend">
-          <div className="leg-item"><span style={{ color: 'var(--excited)', fontWeight: 900 }}>○</span>모두 가능</div>
-          <div className="leg-item"><span style={{ color: '#F0A040', fontWeight: 900 }}>△</span>일부 불가</div>
-          <div className="leg-item"><span style={{ color: 'var(--upset)', fontWeight: 900 }}>✕</span>모두 불가</div>
+          <div className="leg-item"><Circle   size={10} color="var(--excited)" fill="var(--excited)" />모두 가능</div>
+          <div className="leg-item"><Triangle size={10} color="#F0A040" fill="#F0A040" />일부 불가</div>
+          <div className="leg-item"><X        size={10} color="var(--upset)" strokeWidth={3} />모두 불가</div>
         </div>
 
         {/* 참여자 현황 */}
