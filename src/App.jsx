@@ -10,6 +10,8 @@ import CreateScreen from './components/CreateScreen'
 import JoinCodeScreen from './components/JoinCodeScreen'
 import CalendarScreen from './components/CalendarScreen'
 import ShareModal from './components/ShareModal'
+import { icon1, icon2, icon3, icon4 } from './assets/icons'
+import profileIcon from './assets/profileIcon.svg'
 
 function PasswordResetScreen({ onSubmit }) {
   const [password, setPassword] = useState('')
@@ -48,6 +50,14 @@ function PasswordResetScreen({ onSubmit }) {
 export default function App() {
   const { user, loading, recovering, myName, loginWithGoogle, signInWithId, signUpWithId, resetPassword, updatePassword, logout, updateName } = useAuth()
   const { myRooms, roomsLoading, loadMyRooms, createRoom, joinRoom, leaveRoom, leaveRoomById, confirmDay, renameRoom } = useRooms(user, myName)
+  const [assetsReady, setAssetsReady] = useState(false)
+
+  useEffect(() => {
+    const srcs = [icon1, icon2, icon3, icon4, profileIcon]
+    Promise.all(srcs.map(src => new Promise(res => {
+      const img = new Image(); img.onload = img.onerror = res; img.src = src
+    }))).then(() => setAssetsReady(true))
+  }, [])
   const [screen, setScreen] = useState('home')
   const [room, setRoom] = useState(null)
   const { members, toggleDay } = useMembers(room)
@@ -121,10 +131,11 @@ export default function App() {
     await loadMyRooms()
   }
 
-  if (loading) return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', flexDirection: 'column', gap: 16 }}>
-      <img src={loadingIcon} alt="" style={{ height: 60 }} />
-      <div style={{ fontSize: '1.36rem', color: 'var(--mid)' }}>로딩 중...</div>
+  if (loading || !assetsReady) return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', flexDirection: 'column', gap: 10 }}>
+      <img src={icon4} alt="" style={{ height: 80 }} />
+      <div style={{ fontFamily: 'HakgyoansimSaekyeonpil', fontSize: '3.2rem', color: 'var(--dark)' }}>언제보꼬</div>
+      <div style={{ fontSize: '1.28rem', color: 'var(--mid)', marginTop: 4 }}>친구들과 날짜 맞춰봐요</div>
     </div>
   )
 
