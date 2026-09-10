@@ -370,7 +370,7 @@ function ProfileTab({ user, myName, onLogout, onUpdateName }) {
       <div className="profile-avatar-area">
         {user?.user_metadata?.avatar_url
           ? <img src={user.user_metadata.avatar_url} alt="" className="profile-avatar" />
-          : <Face type="calm" size={72} />
+          : <img src={icon1} alt="" className="profile-avatar" />
         }
         <div className="profile-name">{myName}</div>
         <div className="profile-email">{user?.email}</div>
