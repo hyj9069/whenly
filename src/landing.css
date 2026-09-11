@@ -4,6 +4,12 @@
   to   { opacity: 1; filter: blur(0); }
 }
 
+@keyframes lp-sway {
+  0%   { transform: rotate(-20deg); animation-timing-function: steps(1, end); }
+  50%  { transform: rotate(-12deg); animation-timing-function: steps(1, end); }
+  100% { transform: rotate(-20deg); }
+}
+
 @keyframes lp-slide-up {
   from { opacity: 0; transform: translateY(28px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -43,8 +49,8 @@
   display: inline-flex;
   flex-direction: column;
   align-items: flex-start;
-  transform: rotate(-10deg);
   filter: drop-shadow(0 3px 16px rgba(0, 143, 255, 0.15));
+  animation: lp-sway 2.4s linear infinite;
 }
 
 .lp-logo-row {
