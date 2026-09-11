@@ -1,4 +1,4 @@
-﻿import { useState } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { Home, Users, CalendarDays, User, Pencil, Heart, Sparkles, Link, CheckCheck, Smile, Copy, ChevronLeft, ChevronRight, ArrowRight, Circle, Triangle, X } from 'lucide-react'
 import { toDateStr, getDayFaceType, getMemberColor } from '../utils'
 import { useHolidays } from '../hooks/useHolidays'
@@ -20,6 +20,18 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
   const [showCancelConfirm, setShowCancelConfirm] = useState(false)
   const [showRenameModal, setShowRenameModal]     = useState(false)
   const [renameValue, setRenameValue]         = useState('')
+  const [vpOffset, setVpOffset]               = useState(0)
+
+  useEffect(() => {
+    if (!showRenameModal) { setVpOffset(0); return }
+    const vv = window.visualViewport
+    if (!vv) return
+    function update() { setVpOffset(window.innerHeight - vv.height - vv.offsetTop) }
+    update()
+    vv.addEventListener('resize', update)
+    vv.addEventListener('scroll', update)
+    return () => { vv.removeEventListener('resize', update); vv.removeEventListener('scroll', update) }
+  }, [showRenameModal])
   const [importModal, setImportModal]         = useState(false)
   const [importOptions, setImportOptions]     = useState([])
   const [importLoading, setImportLoading]     = useState(false)
@@ -391,7 +403,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
 
       {/* 방 이름 수정 모달 */}
       {showRenameModal && (
-        <div className="overlay" style={{ alignItems: 'center', padding: '0 20px' }} onClick={() => setShowRenameModal(false)}>
+        <div className="overlay" style={{ alignItems: 'center', padding: '0 20px', bottom: vpOffset }} onClick={() => setShowRenameModal(false)}>
           <div className="modal" style={{ borderRadius: 20, width: '100%' }} onClick={e => e.stopPropagation()}>
             <div className="modal-title">방 이름 수정</div>
             <input className="inp" value={renameValue} onChange={e => setRenameValue(e.target.value)}
