@@ -86,7 +86,7 @@ export default function App() {
     const code = params.get('room')
     if (!code) return
     window.history.replaceState({}, '', window.location.pathname)
-    handleJoinByCode(code.toUpperCase())
+    handleJoinByCode(code.toUpperCase(), { silent: true })
   }, [user, loading, roomsLoading]) // eslint-disable-line react-hooks/exhaustive-deps
 
   async function handleCreate(name) {
@@ -102,7 +102,7 @@ export default function App() {
     setTimeout(() => setShowShare(true), 500)
   }
 
-  async function handleJoinByCode(code) {
+  async function handleJoinByCode(code, { silent = false } = {}) {
     const already = myRooms.find(r => r.id === code)
     if (already) {
       setRoom(already)
@@ -111,7 +111,7 @@ export default function App() {
       return
     }
     const roomData = await joinRoom(code)
-    if (!roomData) { showToast('방을 찾을 수 없어요 😢'); return }
+    if (!roomData) { if (!silent) showToast('방을 찾을 수 없어요 😢'); return }
     setRoom(roomData)
     setScreen('cal')
     history.pushState({ room: true }, '')
