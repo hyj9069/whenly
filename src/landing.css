@@ -68,7 +68,7 @@
   font-size: clamp(3.2rem, 12vw, 5rem);
   color: #2E2925;
   letter-spacing: -0.01em;
-  line-height: 1.1;
+  line-height: 1;
 }
 
 /* ── HERO BODY ─────────────────────────────────── */
@@ -77,15 +77,9 @@
   animation: lp-slide-up 0.65s ease 0.35s both;
 }
 
-.lp-h1 {
-  font-size: clamp(1.8rem, 5.5vw, 2.2rem);
-  font-weight: 700;
-  line-height: 1.4;
-  margin-bottom: 8px;
-}
 
 .lp-sub {
-  font-size: 1.36rem;
+  font-size: 1.5rem;
   color: #8A7F7A;
   font-weight: 500;
 }

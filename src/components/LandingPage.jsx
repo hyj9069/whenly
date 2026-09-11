@@ -19,8 +19,7 @@ export default function LandingPage({ onStart }) {
         </div>
 
         <div className="lp-hero-body">
-          <h1 className="lp-h1">친구들과<br />날짜 맞춰봐요</h1>
-          <p className="lp-sub">모두가 되는 날, 함께 찾아요</p>
+<p className="lp-sub">모두가 되는 날, 함께 찾아요</p>
         </div>
 
         <div className="lp-feats">
