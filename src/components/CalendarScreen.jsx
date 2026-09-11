@@ -391,8 +391,8 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
 
       {/* 방 이름 수정 모달 */}
       {showRenameModal && (
-        <div className="overlay" onClick={() => setShowRenameModal(false)}>
-          <div className="modal" onClick={e => e.stopPropagation()}>
+        <div className="overlay" style={{ alignItems: 'center', padding: '0 20px' }} onClick={() => setShowRenameModal(false)}>
+          <div className="modal" style={{ borderRadius: 20, width: '100%' }} onClick={e => e.stopPropagation()}>
             <div className="modal-title">방 이름 수정</div>
             <input className="inp" value={renameValue} onChange={e => setRenameValue(e.target.value)}
               maxLength={30} autoFocus style={{ marginBottom: 16 }}

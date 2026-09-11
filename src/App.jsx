@@ -81,13 +81,13 @@ export default function App() {
   }, [screen]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    if (loading || !user) return
+    if (loading || !user || roomsLoading) return
     const params = new URLSearchParams(window.location.search)
     const code = params.get('room')
     if (!code) return
     window.history.replaceState({}, '', window.location.pathname)
     handleJoinByCode(code.toUpperCase())
-  }, [user, loading]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [user, loading, roomsLoading]) // eslint-disable-line react-hooks/exhaustive-deps
 
   async function handleCreate(name) {
     const created = await createRoom(name)
@@ -103,6 +103,13 @@ export default function App() {
   }
 
   async function handleJoinByCode(code) {
+    const already = myRooms.find(r => r.id === code)
+    if (already) {
+      setRoom(already)
+      setScreen('cal')
+      history.pushState({ room: true }, '')
+      return
+    }
     const roomData = await joinRoom(code)
     if (!roomData) { showToast('방을 찾을 수 없어요 😢'); return }
     setRoom(roomData)
@@ -141,10 +148,8 @@ export default function App() {
   )
 
   if (loading || !assetsReady) return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', flexDirection: 'column', gap: 10 }}>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
       <img src={icon4} alt="" style={{ height: 80 }} />
-      <div style={{ fontFamily: 'HakgyoansimSaekyeonpil', fontSize: '3.2rem', color: 'var(--dark)' }}>언제보꼬</div>
-      <div style={{ fontSize: '1.28rem', color: 'var(--mid)', marginTop: 4 }}>친구들과 날짜 맞춰봐요</div>
     </div>
   )
 

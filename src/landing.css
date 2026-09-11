@@ -1,3 +1,14 @@
+/* ── LANDING ANIMATIONS ───────────────────────────── */
+@keyframes lp-blur-in {
+  from { opacity: 0; filter: blur(24px); }
+  to   { opacity: 1; filter: blur(0); }
+}
+
+@keyframes lp-slide-up {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 /* ── LANDING PAGE ────────────────────────────────── */
 .lp {
   min-height: 100svh;
@@ -25,6 +36,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  animation: lp-blur-in 1s ease both;
 }
 
 .lp-logo {
@@ -56,6 +68,7 @@
 /* ── HERO BODY ─────────────────────────────────── */
 .lp-hero-body {
   text-align: center;
+  animation: lp-slide-up 0.65s ease 0.35s both;
 }
 
 .lp-h1 {
@@ -79,6 +92,10 @@
   flex-direction: column;
   gap: 10px;
 }
+
+.lp-feat-card:nth-child(1) { animation: lp-slide-up 0.55s ease 0.55s both; }
+.lp-feat-card:nth-child(2) { animation: lp-slide-up 0.55s ease 0.75s both; }
+.lp-feat-card:nth-child(3) { animation: lp-slide-up 0.55s ease 0.95s both; }
 
 .lp-feat-card {
   background: rgba(255, 255, 255, 0.72);
@@ -114,6 +131,7 @@
 
 /* ── BUTTON ────────────────────────────────────── */
 .lp-btn {
+  animation: lp-slide-up 0.55s ease 1.15s both;
   background: rgba(0, 143, 255, 0.9);
   color: #fff;
   border: none;
