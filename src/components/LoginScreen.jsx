@@ -57,8 +57,8 @@ function inpClass(touched, error) {
   return `inp ${error === '' ? 'inp--valid' : 'inp--invalid'}`
 }
 
-export default function LoginScreen({ onGoogle, onIdLogin, onIdSignup, onResetPassword }) {
-  const [mode, setMode]           = useState('login')
+export default function LoginScreen({ onGoogle, onIdLogin, onIdSignup, onResetPassword, onGuestTry, initialMode = 'login' }) {
+  const [mode, setMode]           = useState(initialMode)
   const savedId = localStorage.getItem('saved_id') || ''
   const [id, setId]               = useState(savedId)
   const [rememberMe, setRememberMe] = useState(!!savedId)
@@ -214,6 +214,12 @@ export default function LoginScreen({ onGoogle, onIdLogin, onIdSignup, onResetPa
               ? <>처음이신가요?{' '}<button className="link-btn" onClick={() => switchMode('signup')}>회원가입</button></>
               : <>이미 계정이 있으신가요?{' '}<button className="link-btn" onClick={() => switchMode('login')}>로그인</button></>}
           </div>
+
+          {onGuestTry && mode === 'login' && (
+            <div style={{ textAlign: 'center', marginTop: 8 }}>
+              <button className="link-btn link-btn--muted" onClick={onGuestTry}>로그인 없이 체험해보기</button>
+            </div>
+          )}
         </>)}
 
       </div>

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Home, Users, User, CalendarDays, Check, ChevronLeft, ChevronRight, Smile, Plus } from 'lucide-react'
+import { Home, Users, User, CalendarDays, Check, ChevronLeft, ChevronRight, Smile, Plus, Lock } from 'lucide-react'
 import Face from './Face'
 import { icon1, icon2, icon4 } from '../assets/icons'
 import profileIcon from '../assets/profileIcon.svg'
@@ -246,7 +246,7 @@ function HomeCalendarTab({ myName, myRooms, onEnterRoom }) {
 }
 
 // ── 모임 탭 ─────────────────────────────────────
-function RoomsTab({ myRooms, roomsLoading, onCreate, onJoinCode, onEnterRoom, onLeaveRoom }) {
+function RoomsTab({ myRooms, roomsLoading, onCreate, onJoinCode, onEnterRoom, onLeaveRoom, canCreateRoom = true, onGoToSignup }) {
   const [selectionMode, setSelectionMode] = useState(false)
   const [selectedIds, setSelectedIds] = useState(new Set())
   const [showConfirm, setShowConfirm] = useState(false)
@@ -327,7 +327,14 @@ function RoomsTab({ myRooms, roomsLoading, onCreate, onJoinCode, onEnterRoom, on
 
       {!selectionMode && (
         <div className="rooms-actions">
-          <button className="btn btn-blue" onClick={() => onCreate('rooms')}>새로운 방 만들기</button>
+          {canCreateRoom ? (
+            <button className="btn btn-blue" onClick={() => onCreate('rooms')}>새로운 방 만들기</button>
+          ) : (
+            <button className="btn btn-ghost" style={{ opacity: 0.75 }} onClick={onGoToSignup}>
+              <Lock size={13} style={{ verticalAlign: 'middle', marginRight: 5 }} />
+              새 방 만들기 (로그인 필요)
+            </button>
+          )}
           <button className="btn btn-ghost" onClick={onJoinCode}>방 코드로 참여하기</button>
         </div>
       )}
@@ -407,6 +414,40 @@ function ProfileTab({ user, myName, onLogout, onUpdateName }) {
   )
 }
 
+// ── 게스트 탭들 ──────────────────────────────────
+function GuestHomeTab({ onGoToLogin }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '48px 24px 0' }}>
+      <img src={icon2} alt="" style={{ height: 80, marginBottom: 20 }} />
+      <div style={{ fontWeight: 700, fontSize: '1.84rem', marginBottom: 12 }}>전체 일정을 한눈에</div>
+      <div style={{ color: 'var(--mid)', fontSize: '1.4rem', lineHeight: 1.7, marginBottom: 32 }}>
+        로그인하면 개인 일정과 확정된 모임 날짜를<br />하나의 달력에서 통합 관리할 수 있어요.
+      </div>
+      <button className="btn btn-blue" style={{ width: '100%', maxWidth: 280 }} onClick={onGoToLogin}>
+        로그인하기
+      </button>
+    </div>
+  )
+}
+
+function GuestProfileTab({ onGoToLogin, onGoToSignup }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '48px 24px 0' }}>
+      <img src={icon4} alt="" style={{ height: 80, marginBottom: 20 }} />
+      <div style={{ fontWeight: 700, fontSize: '1.84rem', marginBottom: 12 }}>언제보꼬와 함께해요</div>
+      <div style={{ color: 'var(--mid)', fontSize: '1.4rem', lineHeight: 1.7, marginBottom: 32 }}>
+        가입하면 여러 방을 만들고 한눈에 관리하고,<br />개인 일정과 모임을 통합해서 볼 수 있어요.<br />친구들과의 약속을 더 쉽게 잡아보세요!
+      </div>
+      <button className="btn btn-blue" style={{ width: '100%', maxWidth: 280, marginBottom: 10 }} onClick={onGoToSignup}>
+        회원가입
+      </button>
+      <button className="btn btn-ghost" style={{ width: '100%', maxWidth: 280 }} onClick={onGoToLogin}>
+        이미 계정이 있어요
+      </button>
+    </div>
+  )
+}
+
 // ── 메인 ────────────────────────────────────────
 const IC = { color: (a) => a ? 'var(--calm)' : 'var(--mid)', size: 18, strokeWidth: 2.2 }
 const TABS = [
@@ -430,14 +471,25 @@ function RoomItemSkeleton() {
   )
 }
 
-export default function HomeScreen({ user, myName, myRooms, roomsLoading, initialTab = 'home', onCreate, onJoinCode, onEnterRoom, onLogout, onUpdateName, onLeaveRoom }) {
+export default function HomeScreen({ user, myName, myRooms, roomsLoading, initialTab = 'home', onCreate, onJoinCode, onEnterRoom, onLogout, onUpdateName, onLeaveRoom, isGuest, canCreateRoom, onGoToLogin, onGoToSignup }) {
   const [tab, setTab] = useState(initialTab === 'cal' ? 'home' : initialTab)
+
+  function handleFabClick() {
+    if (canCreateRoom) onCreate('home')
+    else onGoToSignup()
+  }
 
   return (
     <div className="screen" style={{ paddingTop: 24, paddingBottom: 94 }}>
-      {tab === 'home'    && <HomeCalendarTab myName={myName} myRooms={myRooms} onEnterRoom={onEnterRoom} />}
-      {tab === 'rooms'   && <RoomsTab   myRooms={myRooms} roomsLoading={roomsLoading} onCreate={onCreate} onJoinCode={onJoinCode} onEnterRoom={onEnterRoom} onLeaveRoom={onLeaveRoom} />}
-      {tab === 'profile' && <ProfileTab user={user} myName={myName} onLogout={onLogout} onUpdateName={onUpdateName} />}
+      {tab === 'home'    && (isGuest
+        ? <GuestHomeTab onGoToLogin={onGoToLogin} />
+        : <HomeCalendarTab myName={myName} myRooms={myRooms} onEnterRoom={onEnterRoom} />
+      )}
+      {tab === 'rooms'   && <RoomsTab myRooms={myRooms} roomsLoading={roomsLoading} onCreate={onCreate} onJoinCode={onJoinCode} onEnterRoom={onEnterRoom} onLeaveRoom={onLeaveRoom} canCreateRoom={canCreateRoom} onGoToSignup={onGoToSignup} />}
+      {tab === 'profile' && (isGuest
+        ? <GuestProfileTab onGoToLogin={onGoToLogin} onGoToSignup={onGoToSignup} />
+        : <ProfileTab user={user} myName={myName} onLogout={onLogout} onUpdateName={onUpdateName} />
+      )}
 
       <div className="home-nav-wrap">
         <div className="home-nav-pill">
@@ -459,8 +511,11 @@ export default function HomeScreen({ user, myName, myRooms, roomsLoading, initia
           })}
         </div>
 
-        <button onClick={() => onCreate('home')} className="home-nav-fab">
-          <Plus size={24} strokeWidth={2.5} />
+        <button onClick={handleFabClick} className="home-nav-fab">
+          {canCreateRoom
+            ? <Plus size={24} strokeWidth={2.5} />
+            : <Lock size={20} strokeWidth={2.5} />
+          }
         </button>
       </div>
     </div>

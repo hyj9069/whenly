@@ -82,6 +82,25 @@ export function useRooms(user, myName) {
     return roomData
   }
 
+  async function joinRoomDirect(code, userId, name) {
+    const { data: roomData, error } = await supabase
+      .from('rooms').select('*').eq('id', code).single()
+    if (error || !roomData) return null
+
+    const { data: existing } = await supabase
+      .from('members').select('id').eq('room_id', code).eq('user_id', userId).single()
+
+    if (!existing) {
+      const { error: memberErr } = await supabase.from('members').insert({
+        room_id: code, user_id: userId, name, unavailable_days: []
+      })
+      if (memberErr) return null
+    }
+
+    setMyRooms(prev => prev.find(r => r.id === code) ? prev : [...prev, roomData])
+    return roomData
+  }
+
   async function leaveRoom(roomId, isHost) {
     if (isHost) await supabase.from('rooms').delete().eq('id', roomId)
     else await supabase.from('members').delete().eq('room_id', roomId).eq('user_id', user.id)
@@ -107,5 +126,5 @@ export function useRooms(user, myName) {
     await leaveRoom(roomId, isHost)
   }
 
-  return { myRooms, roomsLoading, loadMyRooms, createRoom, joinRoom, leaveRoom, leaveRoomById, confirmDay, renameRoom }
+  return { myRooms, roomsLoading, loadMyRooms, createRoom, joinRoom, joinRoomDirect, leaveRoom, leaveRoomById, confirmDay, renameRoom }
 }

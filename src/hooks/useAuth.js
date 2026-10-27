@@ -96,6 +96,11 @@ export function useAuth() {
     return null
   }
 
+  async function signInAnonymously() {
+    const { data, error } = await supabase.auth.signInAnonymously()
+    return { user: data?.user ?? null, error }
+  }
+
   async function logout() {
     await supabase.auth.signOut()
   }
@@ -108,6 +113,6 @@ export function useAuth() {
   return {
     user, loading, recovering, myName: getUserName(user),
     loginWithGoogle, signInWithId, signUpWithId,
-    resetPassword, updatePassword, logout, updateName,
+    resetPassword, updatePassword, logout, updateName, signInAnonymously,
   }
 }
