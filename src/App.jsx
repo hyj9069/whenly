@@ -267,29 +267,6 @@ export default function App() {
     await loadMyRooms()
   }
 
-  // ── 조기 반환: 비로그인 체험하기 닉네임 화면
-  if (!loading && assetsReady && !user && !recovering && showGuestTry) {
-    return (
-      <GuestTryScreen
-        onBack={() => setShowGuestTry(false)}
-        onSubmit={handleGuestTryName}
-        loading={guestJoinLoading}
-      />
-    )
-  }
-
-  // ── 조기 반환: 공유 링크 비로그인 참가 선택 화면
-  if (!loading && assetsReady && !user && !recovering && pendingRoomCode && !showGuestLoginScreen) {
-    return (
-      <GuestChoiceScreen
-        roomCode={pendingRoomCode}
-        onLogin={handleGuestLoginChoice}
-        onGuestJoin={handleGuestJoin}
-        loading={guestJoinLoading}
-      />
-    )
-  }
-
   // ── 조기 반환: 랜딩 페이지 (공유링크나 체험 없이 첫 방문)
   if (!loading && assetsReady && !user && !recovering && showLanding && !pendingRoomCode) return (
     <LandingPage onStart={() => {
@@ -306,7 +283,7 @@ export default function App() {
 
   return (
     <>
-      {!user && !recovering && (
+      {!user && !recovering && !showGuestTry && !(pendingRoomCode && !showGuestLoginScreen) && (
         <LoginScreen
           onGoogle={loginWithGoogle}
           onIdLogin={signInWithId}
@@ -318,6 +295,23 @@ export default function App() {
             setShowLanding(false)
             setShowGuestTry(true)
           }}
+        />
+      )}
+
+      {!user && !recovering && showGuestTry && (
+        <GuestTryScreen
+          onBack={() => setShowGuestTry(false)}
+          onSubmit={handleGuestTryName}
+          loading={guestJoinLoading}
+        />
+      )}
+
+      {!user && !recovering && !showGuestTry && pendingRoomCode && !showGuestLoginScreen && (
+        <GuestChoiceScreen
+          roomCode={pendingRoomCode}
+          onLogin={handleGuestLoginChoice}
+          onGuestJoin={handleGuestJoin}
+          loading={guestJoinLoading}
         />
       )}
 
