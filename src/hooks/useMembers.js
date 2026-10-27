@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../supabase'
 
-export function useMembers(room) {
+export function useMembers(room, isGuest = false) {
   const [members, setMembers] = useState([])
 
   const fetchMembers = useCallback(async (roomId) => {
@@ -32,10 +32,16 @@ export function useMembers(room) {
 
     setMembers(prev => prev.map(m => m.id === me.id ? { ...m, unavailable_days: days } : m))
 
-    const { error } = await supabase
-      .from('members')
-      .update({ unavailable_days: days })
-      .eq('id', me.id)
+    let error
+    if (isGuest) {
+      const { error: e } = await supabase.rpc('guest_update_days', {
+        p_member_id: me.id, p_guest_id: userId, p_days: days
+      })
+      error = e
+    } else {
+      const { error: e } = await supabase.from('members').update({ unavailable_days: days }).eq('id', me.id)
+      error = e
+    }
 
     if (error) {
       fetchMembers(roomId)

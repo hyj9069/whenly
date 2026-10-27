@@ -82,8 +82,9 @@ function GuestTryScreen({ onBack, onSubmit, loading }) {
 }
 
 export default function App() {
-  const { user, loading, recovering, myName, loginWithGoogle, signInWithId, signUpWithId, resetPassword, updatePassword, logout, updateName, signInAnonymously } = useAuth()
-  const { myRooms, roomsLoading, loadMyRooms, createRoom, joinRoom, joinRoomDirect, leaveRoom, leaveRoomById, confirmDay, renameRoom } = useRooms(user, myName)
+  const { user, loading, recovering, myName, loginWithGoogle, signInWithId, signUpWithId, resetPassword, updatePassword, logout, updateName } = useAuth()
+  const [guestId, setGuestId] = useState(() => sessionStorage.getItem('guest_id'))
+  const { myRooms, roomsLoading, loadMyRooms, createRoom, joinRoom, joinRoomDirect, leaveRoom, leaveRoomById, confirmDay, renameRoom } = useRooms(user, myName, guestId)
   const [assetsReady, setAssetsReady] = useState(false)
   const [showLanding, setShowLanding] = useState(() => !sessionStorage.getItem('lp_seen'))
 
@@ -93,16 +94,14 @@ export default function App() {
     return params.get('room')?.toUpperCase() || null
   })
   const [guestName, setGuestName]                   = useState('')
-  const guestUserIdRef                              = useRef(null)
   const [guestJoinLoading, setGuestJoinLoading]     = useState(false)
   const [showGuestLoginScreen, setShowGuestLoginScreen] = useState(false)
   const [guestRoomsCreated, setGuestRoomsCreated]   = useState(0)
   const [loginInitialMode, setLoginInitialMode]     = useState('login')
-  // 'guest-try' 화면 전용 state
   const [showGuestTry, setShowGuestTry]             = useState(false)
 
-  const isGuest        = !!user?.is_anonymous
-  const effectiveUserId = user?.id || guestUserIdRef.current
+  const isGuest         = !user && !!guestId
+  const effectiveUserId = user?.id || guestId
   const effectiveName   = isGuest && guestName ? guestName : myName
   const canCreateRoom   = !isGuest || guestRoomsCreated < 1
 
@@ -115,7 +114,7 @@ export default function App() {
 
   const [screen, setScreen] = useState('home')
   const [room, setRoom] = useState(null)
-  const { members, toggleDay } = useMembers(room)
+  const { members, toggleDay } = useMembers(room, isGuest)
   const [showShare, setShowShare] = useState(false)
   const [toast, setToast] = useState({ msg: '', vis: false })
   const toastTimer = useRef(null)
@@ -135,7 +134,7 @@ export default function App() {
 
   // 로그인된 일반 회원 전용 URL 자동 참여
   useEffect(() => {
-    if (loading || !user || user.is_anonymous || roomsLoading) return
+    if (loading || !user || roomsLoading) return
     const params = new URLSearchParams(window.location.search)
     const code = params.get('room')
     if (!code) return
@@ -148,17 +147,12 @@ export default function App() {
     setGuestJoinLoading(true)
     window.history.replaceState({}, '', window.location.pathname)
 
-    const { user: anonUser, error } = await signInAnonymously()
-    if (error || !anonUser) {
-      setGuestJoinLoading(false)
-      showToast('참가 중 오류가 발생했어요')
-      return
-    }
-
-    guestUserIdRef.current = anonUser.id
+    const id = crypto.randomUUID()
+    sessionStorage.setItem('guest_id', id)
+    setGuestId(id)
     setGuestName(name)
 
-    const roomData = await joinRoomDirect(pendingRoomCode, anonUser.id, name)
+    const roomData = await joinRoomDirect(pendingRoomCode, id, name)
     setGuestJoinLoading(false)
 
     if (!roomData) {
@@ -172,20 +166,12 @@ export default function App() {
     history.pushState({ room: true }, '')
   }
 
-  // 비로그인 체험하기: 닉네임 입력 완료 → 익명 로그인 후 방 만들기 화면으로
-  async function handleGuestTryName(name) {
-    setGuestJoinLoading(true)
-
-    const { user: anonUser, error } = await signInAnonymously()
-    if (error || !anonUser) {
-      setGuestJoinLoading(false)
-      showToast('오류가 발생했어요. 잠시 후 다시 시도해주세요.')
-      return
-    }
-
-    guestUserIdRef.current = anonUser.id
+  // 비로그인 체험하기: 닉네임 입력 완료 → 방 만들기 화면으로
+  function handleGuestTryName(name) {
+    const id = crypto.randomUUID()
+    sessionStorage.setItem('guest_id', id)
+    setGuestId(id)
     setGuestName(name)
-    setGuestJoinLoading(false)
     setShowGuestTry(false)
     setScreen('create')
   }
@@ -198,18 +184,18 @@ export default function App() {
   }
 
   // 게스트 상태에서 로그인/회원가입 화면으로 이동
-  async function handleGoToLogin(initialMode = 'login') {
+  function handleGoToLogin(initialMode = 'login') {
     setLoginInitialMode(initialMode)
     setPendingRoomCode(null)
     sessionStorage.setItem('lp_seen', '1')
     setShowLanding(false)
     setGuestName('')
-    guestUserIdRef.current = null
+    setGuestId(null)
+    sessionStorage.removeItem('guest_id')
     setGuestRoomsCreated(0)
     setRoom(null)
     setScreen('home')
     setShowGuestTry(false)
-    await logout()
   }
 
   async function handleCreate(name) {
@@ -249,7 +235,8 @@ export default function App() {
   }
 
   function handleLogout() {
-    guestUserIdRef.current = null
+    setGuestId(null)
+    sessionStorage.removeItem('guest_id')
     setGuestName('')
     setGuestRoomsCreated(0)
     logout()
@@ -319,7 +306,7 @@ export default function App() {
         <PasswordResetScreen onSubmit={updatePassword} />
       )}
 
-      {user && screen === 'home' && (
+      {(user || isGuest) && screen === 'home' && (
         <HomeScreen
           user={user} myName={effectiveName} myRooms={myRooms} roomsLoading={roomsLoading}
           initialTab={homeInitialTab}
@@ -336,7 +323,7 @@ export default function App() {
         />
       )}
 
-      {user && screen === 'create' && (
+      {(user || isGuest) && screen === 'create' && (
         <CreateScreen onBack={() => goHome(createFromTab)} onCreate={handleCreate} defaultName={effectiveName} />
       )}
 
@@ -346,7 +333,7 @@ export default function App() {
 
       {effectiveUserId && screen === 'cal' && room && (
         <CalendarScreen
-          room={room} myUserId={effectiveUserId} myName={effectiveName} members={members}
+          room={room} myUserId={effectiveUserId} myName={effectiveName} members={members} isGuest={isGuest}
           onToggleDay={async day => {
             const ok = await toggleDay(room.id, effectiveUserId, day)
             if (ok === false) showToast('저장 실패 — Supabase 마이그레이션을 먼저 실행해주세요')

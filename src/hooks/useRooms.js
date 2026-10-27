@@ -2,18 +2,19 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../supabase'
 import { genId } from '../utils'
 
-export function useRooms(user, myName) {
+export function useRooms(user, myName, guestId = null) {
   const [myRooms, setMyRooms] = useState([])
   const [roomsLoading, setRoomsLoading] = useState(true)
 
   async function loadMyRooms() {
-    if (!user?.id) { setRoomsLoading(false); return }
+    const userId = user?.id || guestId
+    if (!userId) { setRoomsLoading(false); return }
     setRoomsLoading(true)
 
     const { data: memberRows, error: e1 } = await supabase
       .from('members')
       .select('room_id')
-      .eq('user_id', user.id)
+      .eq('user_id', userId)
 
     if (e1) { setRoomsLoading(false); return }
     if (!memberRows || memberRows.length === 0) {
@@ -33,11 +34,27 @@ export function useRooms(user, myName) {
   }
 
   useEffect(() => {
-    if (user) loadMyRooms()
+    if (user || guestId) loadMyRooms()
     else { setMyRooms([]); setRoomsLoading(false) }
-  }, [user]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [user, guestId]) // eslint-disable-line react-hooks/exhaustive-deps
 
   async function createRoom(name) {
+    if (!user) {
+      if (!guestId) return null
+      for (let i = 0; i < 5; i++) {
+        const id = genId()
+        const { data, error } = await supabase.rpc('guest_create_room', {
+          p_room_id: id, p_room_name: name, p_guest_id: guestId, p_guest_name: myName
+        })
+        if (!error && data) {
+          const created = { id, name }
+          setMyRooms(prev => [...prev.filter(r => r.id !== id), created])
+          return created
+        }
+      }
+      return null
+    }
+
     let created = null
     for (let i = 0; i < 5; i++) {
       const id = genId()
@@ -83,6 +100,16 @@ export function useRooms(user, myName) {
   }
 
   async function joinRoomDirect(code, userId, name) {
+    if (!user) {
+      const { data, error } = await supabase.rpc('guest_join_room', {
+        p_room_code: code, p_guest_id: userId, p_guest_name: name
+      })
+      if (error || !data) return null
+      const roomData = typeof data === 'string' ? JSON.parse(data) : data
+      setMyRooms(prev => prev.find(r => r.id === code) ? prev : [...prev, roomData])
+      return roomData
+    }
+
     const { data: roomData, error } = await supabase
       .from('rooms').select('*').eq('id', code).single()
     if (error || !roomData) return null
@@ -102,8 +129,13 @@ export function useRooms(user, myName) {
   }
 
   async function leaveRoom(roomId, isHost) {
-    if (isHost) await supabase.from('rooms').delete().eq('id', roomId)
-    else await supabase.from('members').delete().eq('room_id', roomId).eq('user_id', user.id)
+    if (!user) {
+      await supabase.rpc('guest_leave_room', { p_room_id: roomId, p_guest_id: guestId })
+    } else if (isHost) {
+      await supabase.from('rooms').delete().eq('id', roomId)
+    } else {
+      await supabase.from('members').delete().eq('room_id', roomId).eq('user_id', user.id)
+    }
     setMyRooms(prev => prev.filter(r => r.id !== roomId))
   }
 
@@ -120,9 +152,10 @@ export function useRooms(user, myName) {
   }
 
   async function leaveRoomById(roomId) {
+    const effectiveId = user?.id || guestId
     const { data } = await supabase
       .from('members').select('user_id').eq('room_id', roomId).order('created_at').limit(1)
-    const isHost = data?.[0]?.user_id === user.id
+    const isHost = data?.[0]?.user_id === effectiveId
     await leaveRoom(roomId, isHost)
   }
 

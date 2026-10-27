@@ -4,7 +4,7 @@ import { toDateStr, getDayFaceType, getMemberColor } from '../utils'
 import { useHolidays } from '../hooks/useHolidays'
 import { supabase } from '../supabase'
 
-export default function CalendarScreen({ room, myUserId, myName, members, onToggleDay, onConfirmDay, onRenameRoom, onOpenShare, onHome, onLeave }) {
+export default function CalendarScreen({ room, myUserId, myName, members, onToggleDay, onConfirmDay, onRenameRoom, onOpenShare, onHome, onLeave, isGuest = false }) {
   const today     = new Date()
   const todayY    = today.getFullYear()
   const todayM    = today.getMonth() + 1
@@ -110,7 +110,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
         <div style={{ flex: 1 }}>
           <div className="cal-room-name-row">
             <div className="cal-room-name">{room.name}</div>
-            {isHost && (
+            {isHost && !isGuest && (
               <button onClick={() => { setRenameValue(room.name); setShowRenameModal(true) }} className="cal-rename-btn">
                 <Pencil size={14} />
               </button>
@@ -135,7 +135,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
                 {cdParsed[0]}년 {cdParsed[1]}월 {cdParsed[2]}일
               </div>
             </div>
-            {isHost && (
+            {isHost && !isGuest && (
               <button onClick={() => setShowCancelConfirm(true)} className="cal-confirm-cancel">취소</button>
             )}
           </div>
@@ -266,7 +266,7 @@ export default function CalendarScreen({ room, myUserId, myName, members, onTogg
                   </>}
                 </>
               )}
-              {isHost && (
+              {isHost && !isGuest && (
                 <div className="detail-confirm">
                   {isConfirmed ? (
                     <button className="btn btn-ghost" style={{ fontSize: '1.31rem', padding: 10 }} onClick={() => setShowCancelConfirm(true)}>
