@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { supabase } from './supabase'
 import { useAuth } from './hooks/useAuth'
 import { useRooms } from './hooks/useRooms'
 import { useMembers } from './hooks/useMembers'
@@ -103,6 +104,8 @@ export default function App() {
   const [showGuestLoginScreen, setShowGuestLoginScreen] = useState(false)
   const [loginInitialMode, setLoginInitialMode]     = useState('login')
   const [showGuestTry, setShowGuestTry]             = useState(false)
+  const [hideGuestTry, setHideGuestTry]             = useState(false)
+  const [roomNotFound, setRoomNotFound]             = useState(false)
 
   const canCreateRoom = !isGuest || myRooms.length < 1
 
@@ -144,16 +147,32 @@ export default function App() {
     })
   }, [user]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // 공유 링크 재방문 시 이미 멤버인 게스트는 자동 입장
+  // 공유 링크 방 존재 여부 확인
+  useEffect(() => {
+    if (!pendingRoomCode) return
+    supabase.from('rooms').select('id').eq('id', pendingRoomCode).single()
+      .then(({ data }) => { if (!data) setRoomNotFound(true) })
+  }, [pendingRoomCode]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // 공유 링크 접근 시 게스트 방 1개 제한 처리
   useEffect(() => {
     if (!guestId || !pendingRoomCode || roomsLoading) return
     const existing = myRooms.find(r => r.id === pendingRoomCode)
-    if (!existing) return
-    window.history.replaceState({}, '', window.location.pathname)
-    setPendingRoomCode(null)
-    setRoom(existing)
-    setScreen('cal')
-    history.pushState({ room: true }, '')
+    if (existing) {
+      // 이미 이 방 멤버 → 자동 입장
+      window.history.replaceState({}, '', window.location.pathname)
+      setPendingRoomCode(null)
+      setRoom(existing)
+      setScreen('cal')
+      history.pushState({ room: true }, '')
+    } else if (myRooms.length >= 1) {
+      // 다른 방이 있음 → 로그인 유도 (체험하기 버튼 숨김)
+      window.history.replaceState({}, '', window.location.pathname)
+      setPendingRoomCode(null)
+      setHideGuestTry(true)
+      showToast('비로그인 상태에서는 방 1개만 참여할 수 있어요. 로그인해주세요.')
+      handleGoToLogin('login')
+    }
   }, [guestId, pendingRoomCode, roomsLoading, myRooms]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // 로그인된 일반 회원 전용 URL 자동 참여
@@ -304,7 +323,7 @@ export default function App() {
           onIdSignup={signUpWithId}
           onResetPassword={resetPassword}
           initialMode={loginInitialMode}
-          onGuestTry={() => {
+          onGuestTry={hideGuestTry ? undefined : () => {
             localStorage.setItem('lp_seen', '1')
             setShowLanding(false)
             setShowGuestTry(true)
@@ -320,7 +339,27 @@ export default function App() {
         />
       )}
 
-      {!user && !recovering && !showGuestTry && pendingRoomCode && !showGuestLoginScreen && (
+      {!user && !recovering && !showGuestTry && pendingRoomCode && !showGuestLoginScreen && roomNotFound && (
+        <div className="screen screen--center" style={{ textAlign: 'center', padding: '0 28px' }}>
+          <img src={icon4} alt="" style={{ height: 80, marginBottom: 20 }} />
+          <h2 style={{ fontWeight: 700, fontSize: '1.92rem', marginBottom: 10 }}>존재하지 않는 방이에요</h2>
+          <p style={{ color: 'var(--mid)', fontSize: '1.36rem', lineHeight: 1.7, marginBottom: 32 }}>
+            링크가 만료됐거나 방이 삭제됐어요.
+          </p>
+          <button className="btn btn-blue" style={{ width: '100%', maxWidth: 320 }} onClick={() => {
+            window.history.replaceState({}, '', window.location.pathname)
+            setPendingRoomCode(null)
+            setRoomNotFound(false)
+            localStorage.setItem('lp_seen', '1')
+            setShowLanding(false)
+            setShowGuestTry(true)
+          }}>
+            앱 체험해보기
+          </button>
+        </div>
+      )}
+
+      {!user && !recovering && !showGuestTry && pendingRoomCode && !showGuestLoginScreen && !roomNotFound && (
         <GuestChoiceScreen
           roomCode={pendingRoomCode}
           onLogin={handleGuestLoginChoice}
