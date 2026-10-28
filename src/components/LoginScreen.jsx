@@ -1,5 +1,5 @@
 ﻿import { useState } from 'react'
-import { Check, X } from 'lucide-react'
+import { Check, X, Sparkles } from 'lucide-react'
 import { icon4 } from '../assets/icons'
 import googleIcon from '../assets/googleIcon.svg'
 
@@ -217,7 +217,7 @@ export default function LoginScreen({ onGoogle, onIdLogin, onIdSignup, onResetPa
 
           {onGuestTry && mode === 'login' && (
             <div style={{ textAlign: 'center', marginTop: 8 }}>
-              <button className="link-btn link-btn--muted" onClick={onGuestTry}>로그인 없이 체험해보기</button>
+              <button className="link-btn link-btn--muted" onClick={onGuestTry} style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}><Sparkles size={15} />로그인 없이 체험해보기</button>
             </div>
           )}
         </>)}

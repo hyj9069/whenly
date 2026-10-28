@@ -69,3 +69,108 @@ alter table members add column unavailable_days text[] not null default '{}';
 -- create policy "read members"          on members for select using (true);
 -- create policy "manage own membership" on members for all
 --   using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+
+-- ══════════════════════════════════════════════
+-- 게스트 모드 마이그레이션
+-- Supabase SQL Editor에서 실행
+-- ══════════════════════════════════════════════
+
+-- 게스트 UUID는 auth.users에 없으므로 FK 제거
+alter table members drop constraint if exists members_user_id_fkey;
+
+-- 게스트 방 만들기 (SECURITY DEFINER로 RLS 우회)
+create or replace function guest_create_room(
+  p_room_id   text,
+  p_room_name text,
+  p_guest_id  text,
+  p_guest_name text
+)
+returns json
+language plpgsql
+security definer
+as $$
+begin
+  insert into rooms (id, name)
+  values (p_room_id, p_room_name);
+
+  insert into members (room_id, user_id, name, unavailable_days)
+  values (p_room_id, p_guest_id::uuid, p_guest_name, '{}');
+
+  return json_build_object('id', p_room_id, 'name', p_room_name);
+exception
+  when others then raise;
+end;
+$$;
+
+-- 게스트 방 참가
+create or replace function guest_join_room(
+  p_room_code  text,
+  p_guest_id   text,
+  p_guest_name text
+)
+returns json
+language plpgsql
+security definer
+as $$
+declare
+  v_room record;
+begin
+  select id, name, confirmed_day into v_room
+  from rooms where id = p_room_code;
+
+  if not found then return null; end if;
+
+  if not exists (
+    select 1 from members
+    where room_id = p_room_code and user_id = p_guest_id::uuid
+  ) then
+    insert into members (room_id, user_id, name, unavailable_days)
+    values (p_room_code, p_guest_id::uuid, p_guest_name, '{}');
+  end if;
+
+  return json_build_object(
+    'id', v_room.id,
+    'name', v_room.name,
+    'confirmed_day', v_room.confirmed_day
+  );
+end;
+$$;
+
+-- 게스트 방 나가기
+create or replace function guest_leave_room(
+  p_room_id  text,
+  p_guest_id text
+)
+returns void
+language plpgsql
+security definer
+as $$
+begin
+  delete from members
+  where room_id = p_room_id and user_id = p_guest_id::uuid;
+end;
+$$;
+
+-- 게스트 → 로그인 계정 병합
+-- 같은 방에 이미 계정이 있으면 게스트 row 삭제, 없으면 user_id를 계정으로 교체
+create or replace function merge_guest_to_user(
+  p_guest_id text,
+  p_user_id  uuid
+)
+returns void
+language plpgsql
+security definer
+as $$
+begin
+  delete from members
+  where user_id = p_guest_id::uuid
+    and room_id in (
+      select room_id from members where user_id = p_user_id
+    );
+
+  update members
+  set user_id = p_user_id
+  where user_id = p_guest_id::uuid;
+end;
+$$;

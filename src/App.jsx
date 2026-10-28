@@ -83,27 +83,28 @@ function GuestTryScreen({ onBack, onSubmit, loading }) {
 
 export default function App() {
   const { user, loading, recovering, myName, loginWithGoogle, signInWithId, signUpWithId, resetPassword, updatePassword, logout, updateName } = useAuth()
-  const [guestId, setGuestId] = useState(() => sessionStorage.getItem('guest_id'))
-  const { myRooms, roomsLoading, loadMyRooms, createRoom, joinRoom, joinRoomDirect, leaveRoom, leaveRoomById, confirmDay, renameRoom } = useRooms(user, myName, guestId)
+  const [guestId, setGuestId] = useState(() => localStorage.getItem('guest_id'))
+  const [guestName, setGuestName] = useState('')
+
+  const isGuest         = !user && !!guestId
+  const effectiveUserId = user?.id || guestId
+  const effectiveName   = isGuest && guestName ? guestName : myName
+
+  const { myRooms, roomsLoading, loadMyRooms, createRoom, joinRoom, joinRoomDirect, leaveRoom, leaveRoomById, confirmDay, renameRoom, mergeGuestToUser } = useRooms(user, effectiveName, guestId)
   const [assetsReady, setAssetsReady] = useState(false)
-  const [showLanding, setShowLanding] = useState(() => !sessionStorage.getItem('lp_seen'))
+  const [showLanding, setShowLanding] = useState(() => !localStorage.getItem('lp_seen'))
 
   // 게스트 상태
   const [pendingRoomCode, setPendingRoomCode] = useState(() => {
     const params = new URLSearchParams(window.location.search)
     return params.get('room')?.toUpperCase() || null
   })
-  const [guestName, setGuestName]                   = useState('')
   const [guestJoinLoading, setGuestJoinLoading]     = useState(false)
   const [showGuestLoginScreen, setShowGuestLoginScreen] = useState(false)
-  const [guestRoomsCreated, setGuestRoomsCreated]   = useState(0)
   const [loginInitialMode, setLoginInitialMode]     = useState('login')
   const [showGuestTry, setShowGuestTry]             = useState(false)
 
-  const isGuest         = !user && !!guestId
-  const effectiveUserId = user?.id || guestId
-  const effectiveName   = isGuest && guestName ? guestName : myName
-  const canCreateRoom   = !isGuest || guestRoomsCreated < 1
+  const canCreateRoom = !isGuest || myRooms.length < 1
 
   useEffect(() => {
     const srcs = [icon1, icon2, icon3, icon4, profileIcon]
@@ -132,6 +133,16 @@ export default function App() {
     return () => window.removeEventListener('popstate', handlePop)
   }, [screen]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  // 게스트 상태에서 로그인하면 방 이력 병합
+  useEffect(() => {
+    if (!user || !guestId) return
+    mergeGuestToUser(guestId, user.id).then(() => {
+      localStorage.removeItem('guest_id')
+      setGuestId(null)
+      setGuestName('')
+    })
+  }, [user]) // eslint-disable-line react-hooks/exhaustive-deps
+
   // 로그인된 일반 회원 전용 URL 자동 참여
   useEffect(() => {
     if (loading || !user || roomsLoading) return
@@ -148,7 +159,7 @@ export default function App() {
     window.history.replaceState({}, '', window.location.pathname)
 
     const id = crypto.randomUUID()
-    sessionStorage.setItem('guest_id', id)
+    localStorage.setItem('guest_id', id)
     setGuestId(id)
     setGuestName(name)
 
@@ -169,7 +180,7 @@ export default function App() {
   // 비로그인 체험하기: 닉네임 입력 완료 → 방 만들기 화면으로
   function handleGuestTryName(name) {
     const id = crypto.randomUUID()
-    sessionStorage.setItem('guest_id', id)
+    localStorage.setItem('guest_id', id)
     setGuestId(id)
     setGuestName(name)
     setShowGuestTry(false)
@@ -178,7 +189,7 @@ export default function App() {
 
   // GuestChoiceScreen에서 "로그인하고 참가하기" 선택
   function handleGuestLoginChoice() {
-    sessionStorage.setItem('lp_seen', '1')
+    localStorage.setItem('lp_seen', '1')
     setShowLanding(false)
     setShowGuestLoginScreen(true)
   }
@@ -187,12 +198,11 @@ export default function App() {
   function handleGoToLogin(initialMode = 'login') {
     setLoginInitialMode(initialMode)
     setPendingRoomCode(null)
-    sessionStorage.setItem('lp_seen', '1')
+    localStorage.setItem('lp_seen', '1')
     setShowLanding(false)
     setGuestName('')
     setGuestId(null)
-    sessionStorage.removeItem('guest_id')
-    setGuestRoomsCreated(0)
+    localStorage.removeItem('guest_id')
     setRoom(null)
     setScreen('home')
     setShowGuestTry(false)
@@ -205,7 +215,6 @@ export default function App() {
       showToast(`멤버 등록 실패: ${created.error} — Supabase 마이그레이션을 실행해주세요`)
       return
     }
-    if (isGuest) setGuestRoomsCreated(prev => prev + 1)
     setRoom(created)
     setScreen('cal')
     history.pushState({ room: true }, '')
@@ -236,9 +245,8 @@ export default function App() {
 
   function handleLogout() {
     setGuestId(null)
-    sessionStorage.removeItem('guest_id')
+    localStorage.removeItem('guest_id')
     setGuestName('')
-    setGuestRoomsCreated(0)
     logout()
     setRoom(null)
     setScreen('home')
@@ -257,7 +265,7 @@ export default function App() {
   // ── 조기 반환: 랜딩 페이지 (공유링크나 체험 없이 첫 방문)
   if (!loading && assetsReady && !user && !recovering && showLanding && !pendingRoomCode) return (
     <LandingPage onStart={() => {
-      sessionStorage.setItem('lp_seen', '1')
+      localStorage.setItem('lp_seen', '1')
       setShowLanding(false)
     }} />
   )
@@ -270,7 +278,7 @@ export default function App() {
 
   return (
     <>
-      {!user && !recovering && !showGuestTry && !(pendingRoomCode && !showGuestLoginScreen) && (
+      {!user && !isGuest && !recovering && !showGuestTry && !(pendingRoomCode && !showGuestLoginScreen) && (
         <LoginScreen
           onGoogle={loginWithGoogle}
           onIdLogin={signInWithId}
@@ -278,7 +286,7 @@ export default function App() {
           onResetPassword={resetPassword}
           initialMode={loginInitialMode}
           onGuestTry={() => {
-            sessionStorage.setItem('lp_seen', '1')
+            localStorage.setItem('lp_seen', '1')
             setShowLanding(false)
             setShowGuestTry(true)
           }}

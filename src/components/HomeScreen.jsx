@@ -246,7 +246,7 @@ function HomeCalendarTab({ myName, myRooms, onEnterRoom }) {
 }
 
 // ── 모임 탭 ─────────────────────────────────────
-function RoomsTab({ myRooms, roomsLoading, onCreate, onJoinCode, onEnterRoom, onLeaveRoom, canCreateRoom = true, onGoToSignup }) {
+function RoomsTab({ myRooms, roomsLoading, onCreate, onJoinCode, onEnterRoom, onLeaveRoom, canCreateRoom = true, onGoToSignup, onGoToLogin, isGuest = false }) {
   const [selectionMode, setSelectionMode] = useState(false)
   const [selectedIds, setSelectedIds] = useState(new Set())
   const [showConfirm, setShowConfirm] = useState(false)
@@ -330,12 +330,13 @@ function RoomsTab({ myRooms, roomsLoading, onCreate, onJoinCode, onEnterRoom, on
           {canCreateRoom ? (
             <button className="btn btn-blue" onClick={() => onCreate('rooms')}>새로운 방 만들기</button>
           ) : (
-            <button className="btn btn-ghost" style={{ opacity: 0.75 }} onClick={onGoToSignup}>
+            <button className="btn btn-ghost" style={{ opacity: 0.75 }} onClick={onGoToLogin}>
               <Lock size={13} style={{ verticalAlign: 'middle', marginRight: 5 }} />
               새 방 만들기 (로그인 필요)
             </button>
           )}
-          <button className="btn btn-ghost" onClick={onJoinCode}>방 코드로 참여하기</button>
+
+          {!isGuest && <button className="btn btn-ghost" onClick={onJoinCode}>방 코드로 참여하기</button>}
         </div>
       )}
 
@@ -476,7 +477,7 @@ export default function HomeScreen({ user, myName, myRooms, roomsLoading, initia
 
   function handleFabClick() {
     if (canCreateRoom) onCreate('home')
-    else onGoToSignup()
+    else onGoToLogin()
   }
 
   return (
@@ -485,7 +486,7 @@ export default function HomeScreen({ user, myName, myRooms, roomsLoading, initia
         ? <GuestHomeTab onGoToLogin={onGoToLogin} />
         : <HomeCalendarTab myName={myName} myRooms={myRooms} onEnterRoom={onEnterRoom} />
       )}
-      {tab === 'rooms'   && <RoomsTab myRooms={myRooms} roomsLoading={roomsLoading} onCreate={onCreate} onJoinCode={onJoinCode} onEnterRoom={onEnterRoom} onLeaveRoom={onLeaveRoom} canCreateRoom={canCreateRoom} onGoToSignup={onGoToSignup} />}
+      {tab === 'rooms'   && <RoomsTab myRooms={myRooms} roomsLoading={roomsLoading} onCreate={onCreate} onJoinCode={onJoinCode} onEnterRoom={onEnterRoom} onLeaveRoom={onLeaveRoom} canCreateRoom={canCreateRoom} onGoToSignup={onGoToSignup} onGoToLogin={onGoToLogin} isGuest={isGuest} />}
       {tab === 'profile' && (isGuest
         ? <GuestProfileTab onGoToLogin={onGoToLogin} onGoToSignup={onGoToSignup} />
         : <ProfileTab user={user} myName={myName} onLogout={onLogout} onUpdateName={onUpdateName} />

@@ -151,6 +151,11 @@ export function useRooms(user, myName, guestId = null) {
     return !error
   }
 
+  async function mergeGuestToUser(guestId, userId) {
+    await supabase.rpc('merge_guest_to_user', { p_guest_id: guestId, p_user_id: userId })
+    await loadMyRooms()
+  }
+
   async function leaveRoomById(roomId) {
     const effectiveId = user?.id || guestId
     const { data } = await supabase
@@ -159,5 +164,5 @@ export function useRooms(user, myName, guestId = null) {
     await leaveRoom(roomId, isHost)
   }
 
-  return { myRooms, roomsLoading, loadMyRooms, createRoom, joinRoom, joinRoomDirect, leaveRoom, leaveRoomById, confirmDay, renameRoom }
+  return { myRooms, roomsLoading, loadMyRooms, createRoom, joinRoom, joinRoomDirect, leaveRoom, leaveRoomById, confirmDay, renameRoom, mergeGuestToUser }
 }
