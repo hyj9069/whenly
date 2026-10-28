@@ -10,6 +10,7 @@ export function useRooms(user, myName, guestId = null) {
     const userId = user?.id || guestId
     if (!userId) { setRoomsLoading(false); return }
     setRoomsLoading(true)
+    supabase.rpc('cleanup_expired_rooms')
 
     const { data: memberRows, error: e1 } = await supabase
       .from('members')

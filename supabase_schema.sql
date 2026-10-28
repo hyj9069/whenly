@@ -79,6 +79,13 @@ alter table members add column unavailable_days text[] not null default '{}';
 -- 게스트 UUID는 auth.users에 없으므로 FK 제거
 alter table members drop constraint if exists members_user_id_fkey;
 
+-- 게스트 방 만료 컬럼 추가 (게스트 방만 30일 설정, 로그인 방은 null)
+alter table rooms add column if not exists expires_at timestamptz;
+
+-- 만료된 방은 RLS에서 자동 필터
+drop policy if exists "read rooms" on rooms;
+create policy "read rooms" on rooms for select using (expires_at is null or expires_at > now());
+
 -- 게스트 방 만들기 (SECURITY DEFINER로 RLS 우회)
 create or replace function guest_create_room(
   p_room_id   text,
@@ -91,8 +98,8 @@ language plpgsql
 security definer
 as $$
 begin
-  insert into rooms (id, name)
-  values (p_room_id, p_room_name);
+  insert into rooms (id, name, expires_at)
+  values (p_room_id, p_room_name, now() + interval '30 days');
 
   insert into members (room_id, user_id, name, unavailable_days)
   values (p_room_id, p_guest_id::uuid, p_guest_name, '{}');
@@ -100,6 +107,17 @@ begin
   return json_build_object('id', p_room_id, 'name', p_room_name);
 exception
   when others then raise;
+end;
+$$;
+
+-- 만료된 방 정리 (앱 실행 시 호출)
+create or replace function cleanup_expired_rooms()
+returns void
+language plpgsql
+security definer
+as $$
+begin
+  delete from rooms where expires_at < now();
 end;
 $$;
 
@@ -172,5 +190,10 @@ begin
   update members
   set user_id = p_user_id
   where user_id = p_guest_id::uuid;
+
+  -- 병합된 방은 만료 해제 (로그인 계정 소유가 됐으므로)
+  update rooms set expires_at = null
+  where id in (select room_id from members where user_id = p_user_id)
+    and expires_at is not null;
 end;
 $$;

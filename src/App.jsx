@@ -84,7 +84,7 @@ function GuestTryScreen({ onBack, onSubmit, loading }) {
 export default function App() {
   const { user, loading, recovering, myName, loginWithGoogle, signInWithId, signUpWithId, resetPassword, updatePassword, logout, updateName } = useAuth()
   const [guestId, setGuestId] = useState(() => localStorage.getItem('guest_id'))
-  const [guestName, setGuestName] = useState('')
+  const [guestName, setGuestName] = useState(() => localStorage.getItem('guest_name') || '')
 
   const isGuest         = !user && !!guestId
   const effectiveUserId = user?.id || guestId
@@ -138,10 +138,23 @@ export default function App() {
     if (!user || !guestId) return
     mergeGuestToUser(guestId, user.id).then(() => {
       localStorage.removeItem('guest_id')
+      localStorage.removeItem('guest_name')
       setGuestId(null)
       setGuestName('')
     })
   }, [user]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // 공유 링크 재방문 시 이미 멤버인 게스트는 자동 입장
+  useEffect(() => {
+    if (!guestId || !pendingRoomCode || roomsLoading) return
+    const existing = myRooms.find(r => r.id === pendingRoomCode)
+    if (!existing) return
+    window.history.replaceState({}, '', window.location.pathname)
+    setPendingRoomCode(null)
+    setRoom(existing)
+    setScreen('cal')
+    history.pushState({ room: true }, '')
+  }, [guestId, pendingRoomCode, roomsLoading, myRooms]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // 로그인된 일반 회원 전용 URL 자동 참여
   useEffect(() => {
@@ -158,8 +171,10 @@ export default function App() {
     setGuestJoinLoading(true)
     window.history.replaceState({}, '', window.location.pathname)
 
-    const id = crypto.randomUUID()
-    localStorage.setItem('guest_id', id)
+    const existingId = localStorage.getItem('guest_id')
+    const id = existingId || crypto.randomUUID()
+    if (!existingId) localStorage.setItem('guest_id', id)
+    localStorage.setItem('guest_name', name)
     setGuestId(id)
     setGuestName(name)
 
@@ -179,8 +194,10 @@ export default function App() {
 
   // 비로그인 체험하기: 닉네임 입력 완료 → 방 만들기 화면으로
   function handleGuestTryName(name) {
-    const id = crypto.randomUUID()
-    localStorage.setItem('guest_id', id)
+    const existingId = localStorage.getItem('guest_id')
+    const id = existingId || crypto.randomUUID()
+    if (!existingId) localStorage.setItem('guest_id', id)
+    localStorage.setItem('guest_name', name)
     setGuestId(id)
     setGuestName(name)
     setShowGuestTry(false)
@@ -203,6 +220,7 @@ export default function App() {
     setGuestName('')
     setGuestId(null)
     localStorage.removeItem('guest_id')
+    localStorage.removeItem('guest_name')
     setRoom(null)
     setScreen('home')
     setShowGuestTry(false)
@@ -246,6 +264,7 @@ export default function App() {
   function handleLogout() {
     setGuestId(null)
     localStorage.removeItem('guest_id')
+    localStorage.removeItem('guest_name')
     setGuestName('')
     logout()
     setRoom(null)
